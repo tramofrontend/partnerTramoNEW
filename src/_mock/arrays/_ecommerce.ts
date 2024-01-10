@@ -31,6 +31,17 @@ export const _ecommerceBestSalesman = [...Array(5)].map((_, index) => ({
   rank: `Top ${index + 1}`,
 }));
 
+export const _allProducts = [...Array(5)].map((_, index) => ({
+  id: _mock.id(index),
+  name: _mock.name.fullName(index),
+  email: _mock.email(index),
+  avatar: _mock.image.avatar(index + 8),
+  category: CATEGORY[index],
+  flag: `/assets/icons/flags/ic_flag_${COUNTRY[index]}.svg`,
+  total: _mock.number.price(index),
+  rank: `Top ${index + 1}`,
+}));
+
 export const _ecommerceLatestProducts = [...Array(5)].map((_, index) => ({
   id: _mock.id(index),
   name: PRODUCT_NAME[index],

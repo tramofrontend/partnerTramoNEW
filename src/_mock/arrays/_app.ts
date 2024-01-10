@@ -46,7 +46,7 @@ export const _appInvoices = [...Array(5)].map((_, index) => ({
   id: `${Date.now() + index}`,
   price: _mock.number.price(index),
   category: randomInArray(['Android', 'Mac', 'Windows']),
-  status: randomInArray(['paid', 'out_of_date', 'in_progress']),
+  status: randomInArray(['Success', 'Failed', 'Pending']),
 }));
 
 // ----------------------------------------------------------------------

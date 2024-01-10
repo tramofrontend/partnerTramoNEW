@@ -18,6 +18,9 @@ import {
   // PageThree,
   LoginPage,
   Dashboard,
+  HelpAndSupport,
+  PartnerBilling,
+  Referenceapidocs,
   // ResetPasswordPage,
   // NewPasswordPage,
   // NewLeadSteps,
@@ -96,147 +99,79 @@ export default function Router() {
       children: [
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         { path: 'dashboard', element: <Dashboard /> },
-        // { path: "newleads", element: <NewLeads /> },
-        // { path: "newleadsteps", element: <NewLeadSteps /> },
-        // { path: "ournetwork", element: <OurNetwork /> },
-        // {
-        //   path: "scheme",
-        //   children: [
-        //     {
-        //       element: <Navigate to="/auth/scheme/AllScheme" replace />,
-        //       index: true,
-        //     },
-        //     { path: "AllScheme", element: <AllScheme /> },
-        //     { path: "AddNewScheme", element: <AddNewSchemePage /> },
-        //     { path: "EditScheme", element: <EditScheme /> },
-        //     { path: "mapSchemeSetting", element: <MapSchemeSetting /> },
-        //     { path: "AllbbpsScheme", element: <AllBBPSScheme /> },
-        //     { path: "EditBBPSScheme", element: <EditBBPSScheme /> },
-        //     { path: "AddNewbbpsScheme", element: <AddNewBBPSScheme /> },
-        //     { path: "mapbbpsScheme", element: <MapBBPSScheme /> },
-        //   ],
-        // },
-        // {
-        //   path: "product",
-        //   children: [
-        //     {
-        //       element: (
-        //         <Navigate to="/auth/product/productmanagement" replace />
-        //       ),
-        //       index: true,
-        //     },
-        //     { path: "productmanagement", element: <ProductManagement /> },
-        //     { path: "assignvendor", element: <AssignVendor /> },
-        //     { path: "mapshortcode", element: <MapShortCode /> },
-        //   ],
-        // },
-        // {
-        //   path: "vendor",
-        //   children: [
-        //     {
-        //       element: <Navigate to="/auth/vendor/vendormanagement" replace />,
-        //       index: true,
-        //     },
-        //     { path: "vendormanagement", element: <VendorManagement /> },
-        //     { path: "moneytransferslots", element: <MoneyTransferSlots /> },
-        //     { path: "dmtslots", element: <DmtSlots /> },
-        //     { path: "aepsslots", element: <AepsSlots /> },
-        //     { path: "bbpslots", element: <BbpsSlots /> },
-        //   ],
-        // },
-        // {
-        //   path: "fundmanagement",
-        //   children: [
-        //     {
-        //       element: <Navigate to="/auth/fundmanagement/addbank" replace />,
-        //       index: true,
-        //     },
-        //     { path: "addbank", element: <AddBankAccount /> },
-        //     { path: "adminfundflow", element: <AdminFundFlow /> },
-        //     { path: "fundrequest", element: <FundRequest /> },
-        //   ],
-        // },
-        // { path: "bbpsmanagement", element: <BbpsManagement /> },
-        // { path: "rollmanagement", element: <RollManagement /> },
-        // {
-        //   path: "contentmanagement",
-        //   children: [
-        //     {
-        //       element: (
-        //         <Navigate to="/auth/contentmanagement/faqmanagement" replace />
-        //       ),
-        //       index: true,
-        //     },
-        //     { path: "faqmanagement", element: <Faqmanagement /> },
-        //     { path: "updateimage", element: <Updateimages /> },
-        //   ],
-        // },
-        // {
-        //   path: "tools",
-        //   children: [
-        //     {
-        //       element: <Navigate to="/auth/tools/smsmanagement" replace />,
-        //       index: true,
-        //     },
-        //     { path: "smsmanagement", element: <SmsEmailManagement /> },
-        //     { path: "panvarified", element: <PanVarified /> },
-        //     { path: "docusign", element: <DocuSignUpdate /> },
-        //     { path: "newsnotifications", element: <NewsNotifications /> },
-        //     { path: "vendorswitch", element: <VendorSwitch /> },
-        //     { path: "accountrecovery", element: <AccountRecovery /> },
-        //     { path: "bankmaster", element: <BankMaster /> },
-        //     { path: "newsflash", element: <NewsFlash /> },
-        //     { path: "uploadexternaldata", element: <UploadExternalData /> },
-        //     { path: "enablediscategories", element: <EnableDisCategories /> },
-        //     { path: "aeps", element: <AEPS /> },
-        //     { path: "Other", element: <Other /> },
-        //   ],
-        // },
-        // {
-        //   path: "reports",
-        //   children: [
-        //     {
-        //       element: (
-        //         <Navigate to="/auth/reports/alltransactionrecord" replace />
-        //       ),
-        //       index: true,
-        //     },
-        //     {
-        //       path: "alltransactionrecord",
-        //       element: <AllTransactionRecords />,
-        //     },
-        //     { path: "fundflow", element: <FundFlow /> },
-        //     {
-        //       path: "userwisetransactionrecord",
-        //       element: <UserwiseTransactionRecords />,
-        //     },
-        //     { path: "WalletLadger", element: <WalletLadger /> },
-        //     {
-        //       path: "WaitingAreaForDuplicateTxn",
-        //       element: <WaitingAreaForDuplicateTxn />,
-        //     },
-        //     { path: "HistoricalDataExport", element: <HistoricalDataExport /> },
-        //   ],
-        // },
-        // { path: "docapireference", element: <DocApiReference /> },
-        // { path: "salesmanagement", element: <SalesManagement /> },
-        // { path: "one", element: <PageOne /> },
-        // { path: "two", element: <PageTwo /> },
-        // { path: "three", element: <PageThree /> },
-        // {
-        //   path: "user",
-        //   children: [
-        //     {
-        //       element: <Navigate to="/dashboard/user/four" replace />,
-        //       index: true,
-        //     },
-        //     { path: "four", element: <PageFour /> },
-        //     { path: "five", element: <PageFive /> },
-        //     { path: "six", element: <PageSix /> },
-        //   ],
-        // },
+        { path: 'helpsupport', element: <HelpAndSupport /> },
+        {
+          path: 'partnerbilling',
+          element: <PartnerBilling />,
+        },
+        {
+          path: 'Referenceapidocs',
+          element: <Referenceapidocs />,
+        },
       ],
     },
+
+    //dashboard after login
+    //  {
+    //   path: "/auth",
+    //   element: (
+    //     <AuthGuard>
+    //       <DashboardLayout />
+    //     </AuthGuard>
+    //   ),
+    //   children: [
+    //     { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
+    //     { path: "mystats", element: <MyStats /> },
+    //     { path: "services", element: <Services /> },
+    //     { path: "network", element: <Network /> },
+    //     {
+    //       path: "transaction",
+    //       children: [
+    //         {
+    //           element: (
+    //             <Navigate to="/auth/transaction/mytransaction" replace />
+    //           ),
+    //           index: true,
+    //         },
+    //         { path: "mytransaction", element: <MyTransaction /> },
+    //         { path: "fundflow", element: <FundFlow /> },
+    //         { path: "walletladger", element: <WalletLadger /> },
+    //       ],
+    //     },
+    //     {
+    //       path: "scheme",
+    //       children: [
+    //         {
+    //           element: <Navigate to="/auth/scheme/allscheme" replace />,
+    //           index: true,
+    //         },
+    //         { path: "allscheme", element: <Scheme /> },
+    //         { path: "bbpsscheme", element: <BBPSScheme /> },
+    //       ],
+    //     },
+    //     {
+    //       path: "fundmanagement",
+    //       children: [
+    //         {
+    //           element: (
+    //             <Navigate to="/auth/fundmanagement/myfunddeposits" replace />
+    //           ),
+    //           index: true,
+    //         },
+    //         { path: "myfunddeposits", element: <MyFundDeposits /> },
+    //         { path: "mybankaccount", element: <MyBankAccount /> },
+    //         { path: "aepssettlement", element: <AEPSsettlement /> },
+    //         { path: "myfundrequest", element: <MyFundRequest /> },
+    //         { path: "managefundflow", element: <ManageFundFlow /> },
+    //         { path: "mynetworkfunds", element: <MyNetwrokFunds /> },
+    //       ],
+    //     },
+    //     { path: "setting", element: <Setting /> },
+    //     { path: "helpsupport", element: <HelpAndSupport /> },
+    //     { path: "userprofilepage", element: <UserProfilePage /> },
+    //   ],
+    // },
+
     {
       element: <CompactLayout />,
       children: [
