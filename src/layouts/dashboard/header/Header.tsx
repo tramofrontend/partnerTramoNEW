@@ -13,11 +13,13 @@ import Logo from '../../../components/logo';
 import Iconify from '../../../components/iconify';
 import { useSettingsContext } from '../../../components/settings';
 //
-import Searchbar from './Searchbar';
+
 import AccountPopover from './AccountPopover';
-import LanguagePopover from './LanguagePopover';
-import ContactsPopover from './ContactsPopover';
+
 import NotificationsPopover from './NotificationsPopover';
+import Label from 'src/components/label/Label';
+import { useAuthContext } from 'src/auth/useAuthContext';
+import { fCurrency } from 'src/utils/formatNumber';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +30,8 @@ type Props = {
 export default function Header({ onOpenNav }: Props) {
   const theme = useTheme();
 
+  const { user } = useAuthContext();
+
   const { themeLayout } = useSettingsContext();
 
   const isNavHorizontal = themeLayout === 'horizontal';
@@ -35,8 +39,17 @@ export default function Header({ onOpenNav }: Props) {
   const isNavMini = themeLayout === 'mini';
 
   const isDesktop = useResponsive('up', 'lg');
+  const isTablet = useResponsive('up', 'sm');
 
   const isOffset = useOffSetTop(HEADER.H_DASHBOARD_DESKTOP) && !isNavHorizontal;
+
+  const walletStyle = {
+    textTransform: 'capitalize',
+    borderColor: 'primary',
+    borderRadius: 8,
+    borderWidth: '2px',
+    borderStyle: 'solid',
+  };
 
   const renderContent = (
     <>
@@ -48,8 +61,6 @@ export default function Header({ onOpenNav }: Props) {
         </IconButton>
       )}
 
-      <Searchbar />
-
       <Stack
         flexGrow={1}
         direction="row"
@@ -57,13 +68,21 @@ export default function Header({ onOpenNav }: Props) {
         justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1.5 }}
       >
-        <LanguagePopover />
+        {isTablet ? (
+          <>
+            <Label variant="soft" color={'primary'} sx={walletStyle}>
+              {`main wallet = ${fCurrency(user?.main_wallet_amount) || 0}`}
+            </Label>
+            <Label variant="soft" color={'warning'} sx={walletStyle}>
+              {`AEPS wallet = ${fCurrency(user?.AEPS_wallet_amount) || 0}`}
+            </Label>
+            <NotificationsPopover />
 
-        <NotificationsPopover />
-
-        <ContactsPopover />
-
-        <AccountPopover />
+            <AccountPopover />
+          </>
+        ) : (
+          <NotificationsPopover />
+        )}
       </Stack>
     </>
   );

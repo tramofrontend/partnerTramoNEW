@@ -1,8 +1,11 @@
-import { forwardRef } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { forwardRef } from "react";
+import { Link as RouterLink } from "react-router-dom";
 // @mui
-import { useTheme } from '@mui/material/styles';
-import { Box, Link, BoxProps } from '@mui/material';
+import { useTheme } from "@mui/material/styles";
+import { Box, Link, BoxProps } from "@mui/material";
+import Tramo from "../../assets/logo/tramoTrmao-Final-Logo.svg";
+import Neo from "../../assets/logo/neo-Neosprint_logo_black.svg";
+import Image from "../image/Image";
 
 // ----------------------------------------------------------------------
 
@@ -35,14 +38,26 @@ const Logo = forwardRef<HTMLDivElement, LogoProps>(
         ref={ref}
         component="div"
         sx={{
-          width: 40,
-          height: 40,
-          display: 'inline-flex',
+          width: 120,
+          height: 70,
+          margin: "auto",
+          display: "inline-flex",
           ...sx,
         }}
         {...other}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 512 512">
+        <img
+          src={process.env.REACT_APP_LOGO == "Tramo" ? Tramo : Neo}
+          alt="LOGO"
+          width={"100%"}
+          height={"100%"}
+        />
+        {/* <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="100%"
+          height="100%"
+          viewBox="0 0 512 512"
+        >
           <defs>
             <linearGradient id="BG1" x1="100%" x2="50%" y1="9.946%" y2="50%">
               <stop offset="0%" stopColor={PRIMARY_DARK} />
@@ -60,7 +75,12 @@ const Logo = forwardRef<HTMLDivElement, LogoProps>(
             </linearGradient>
           </defs>
 
-          <g fill={PRIMARY_MAIN} fillRule="evenodd" stroke="none" strokeWidth="1">
+          <g
+            fill={PRIMARY_MAIN}
+            fillRule="evenodd"
+            stroke="none"
+            strokeWidth="1"
+          >
             <path
               fill="url(#BG1)"
               d="M183.168 285.573l-2.918 5.298-2.973 5.363-2.846 5.095-2.274 4.043-2.186 3.857-2.506 4.383-1.6 2.774-2.294 3.939-1.099 1.869-1.416 2.388-1.025 1.713-1.317 2.18-.95 1.558-1.514 2.447-.866 1.38-.833 1.312-.802 1.246-.77 1.18-.739 1.111-.935 1.38-.664.956-.425.6-.41.572-.59.8-.376.497-.537.69-.171.214c-10.76 13.37-22.496 23.493-36.93 29.334-30.346 14.262-68.07 14.929-97.202-2.704l72.347-124.682 2.8-1.72c49.257-29.326 73.08 1.117 94.02 40.927z"
@@ -74,7 +94,7 @@ const Logo = forwardRef<HTMLDivElement, LogoProps>(
               d="M450 384c26.509 0 48-21.491 48-48s-21.491-48-48-48-48 21.491-48 48 21.491 48 48 48"
             />
           </g>
-        </svg>
+        </svg> */}
       </Box>
     );
 
@@ -83,7 +103,7 @@ const Logo = forwardRef<HTMLDivElement, LogoProps>(
     }
 
     return (
-      <Link to="/" component={RouterLink} sx={{ display: 'contents' }}>
+      <Link to="/" component={RouterLink} sx={{ display: "contents" }}>
         {logo}
       </Link>
     );
