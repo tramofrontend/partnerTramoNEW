@@ -28,6 +28,23 @@ const navConfig = [
         path: PATH_DASHBOARD.dashboard,
         icon: ICONS.dashboard,
       },
+
+      {
+        title: 'Transactions',
+        path: PATH_DASHBOARD.transaction.root,
+        icon: ICONS.user,
+        children: [
+          {
+            title: 'My Transactions',
+            path: PATH_DASHBOARD.transaction.mytransaction,
+          },
+          {
+            title: 'Wallet Ladger',
+            path: PATH_DASHBOARD.transaction.walletladger,
+          },
+        ],
+      },
+
       {
         title: 'Support & Ticket',
         path: PATH_DASHBOARD.helpsupport,

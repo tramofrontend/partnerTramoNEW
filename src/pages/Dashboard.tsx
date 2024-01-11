@@ -1,11 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Typography, Button, CardContent, Box, Stack, Card } from '@mui/material';
-// _mock_
-
-// components
-// sections
+import { Grid, Typography, CardContent, Stack, Card } from '@mui/material';
 
 import { Api } from 'src/webservices';
 

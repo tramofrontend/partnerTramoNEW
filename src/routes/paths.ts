@@ -23,5 +23,13 @@ export const PATH_DASHBOARD = {
   partnerbilling: path(ROOTS_DASHBOARD, '/partnerbilling'),
   //Referenceapidocs
   Referenceapidocs: path(ROOTS_DASHBOARD, '/Referenceapidocs'),
+
+  //Trasaction & walletlaser
+
+  transaction: {
+    root: path(ROOTS_DASHBOARD, "/transaction"),
+    mytransaction: path(ROOTS_DASHBOARD, "/transaction/mytransaction"),
+    walletladger: path(ROOTS_DASHBOARD, "/transaction/walletladger"),
+  },
 }
 

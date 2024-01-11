@@ -20,12 +20,18 @@ export const LoginPage = Loadable(lazy(() => import('../pages/auth/LoginPage')))
 // );
 // export const NewPasswordPage = Loadable(lazy(() => import('../pages/auth/AuthNewPasswordForm')));
 
-// //DashBoard
+// DashBoard
 export const Dashboard = Loadable(lazy(() => import('../pages/Dashboard')));
+// Trasactions
+export const MyTransaction = Loadable(lazy(() => import('../pages/MyTransaction')));
+// walletladger
+export const WalletLadger = Loadable(lazy(() => import('../pages/WalletLadger')));
+
 //help and support
 export const HelpAndSupport = Loadable(lazy(() => import('../pages/SupportTicket')));
 //PartnerBilling
 export const PartnerBilling = Loadable(lazy(() => import('../pages/PartnerBilling')));
+//Referenceapidocs
 export const Referenceapidocs = Loadable(lazy(() => import('../pages/Referenceapidocs')));
 
 // export const PageOne = Loadable(lazy(() => import("../pages/PageOne")));
