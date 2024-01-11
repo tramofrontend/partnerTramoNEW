@@ -52,6 +52,9 @@ export const PATH_DASHBOARD = {
     // BBPSSchemePage: path(ROOTS_DASHBOARD, '/myservices/BBPSSchemePage'),
   },
 
+  //Apicredentials
+  Apicredential: path(ROOTS_DASHBOARD, '/Apicredentials'),
+
 
 }
 

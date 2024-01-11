@@ -40,6 +40,11 @@ export const MyFundDeposits = Loadable(
 export const MyActiveSecvices = Loadable(
   lazy(() => import('../sections/MyServices/MyActiveSecvices'))
 );
+
+export const ApiCredential = Loadable(
+  lazy(() => import('../sections/apicredentials/ApiCredentials'))
+);
+
 // export const AEPSsettlement = Loadable(
 //   lazy(() => import("../sections/FundManagement/AEPSsettlement"))
 // );

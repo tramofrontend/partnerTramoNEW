@@ -25,6 +25,7 @@ import {
   WalletLadger,
   MyFundDeposits,
   MyActiveSecvices,
+  ApiCredential,
   // ResetPasswordPage,
   // NewPasswordPage,
   // NewLeadSteps,
@@ -153,6 +154,11 @@ export default function Router() {
         // { path: 'MyScheme', element: <MyScheme /> },
         // { path: 'BBPSSchemePage', element: <BBPSSchemePage /> },
       ],
+    },
+
+    {
+      path: 'apicredentials',
+      element: <ApiCredential />,
     },
 
     {

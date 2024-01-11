@@ -70,6 +70,12 @@ const navConfig = [
       },
 
       {
+        title: 'API Credentials',
+        path: PATH_DASHBOARD.Apicredential,
+        icon: ICONS.user,
+      },
+
+      {
         title: 'My Services',
         path: PATH_DASHBOARD.myservices.root,
         icon: ICONS.user,
