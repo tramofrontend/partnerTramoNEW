@@ -21,8 +21,8 @@ import {
   HelpAndSupport,
   PartnerBilling,
   Referenceapidocs,
-  MyTransaction,
-  WalletLadger,
+  MyTransactions,
+  WalletLadgerEntry,
   MyFundDeposits,
   MyActiveSecvices,
   ApiCredentials,
@@ -117,15 +117,30 @@ export default function Router() {
           path: 'apicredentials',
           element: <ApiCredentials />,
         },
+
         {
-          path: 'transaction',
+          path: 'transactions',
           children: [
             {
               element: <Navigate to="/auth/transaction/mytransaction" replace />,
               index: true,
             },
-            { path: 'mytransaction', element: <MyTransaction /> },
-            { path: 'walletladger', element: <WalletLadger /> },
+            { path: 'mytransactions', element: <MyTransactions /> },
+            { path: 'Mywalletlaser', element: <WalletLadgerEntry /> },
+            // { path: 'BBPSSchemePage', element: <BBPSSchemePage /> },
+          ],
+        },
+
+        {
+          path: 'myservices',
+          children: [
+            {
+              element: <Navigate to="/dashboard/myservices/MyActiveServices" replace />,
+              index: true,
+            },
+            { path: 'MyActiveServices', element: <MyActiveSecvices /> },
+            // { path: 'MyScheme', element: <MyScheme /> },
+            // { path: 'BBPSSchemePage', element: <BBPSSchemePage /> },
           ],
         },
         {
@@ -141,18 +156,6 @@ export default function Router() {
             // { path: "myfundrequest", element: <MyFundRequest /> },
             // { path: "managefundflow", element: <ManageFundFlow /> },
             // { path: "mynetworkfunds", element: <MyNetwrokFunds /> },
-          ],
-        },
-        {
-          path: 'myservices',
-          children: [
-            {
-              element: <Navigate to="/dashboard/myservices/MyActiveServices" replace />,
-              index: true,
-            },
-            { path: 'MyActiveServices', element: <MyActiveSecvices /> },
-            // { path: 'MyScheme', element: <MyScheme /> },
-            // { path: 'BBPSSchemePage', element: <BBPSSchemePage /> },
           ],
         },
       ],

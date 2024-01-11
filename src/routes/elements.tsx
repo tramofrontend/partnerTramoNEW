@@ -23,9 +23,14 @@ export const LoginPage = Loadable(lazy(() => import('../pages/auth/LoginPage')))
 // DashBoard
 export const Dashboard = Loadable(lazy(() => import('../pages/Dashboard')));
 // Trasactions
-export const MyTransaction = Loadable(lazy(() => import('../pages/MyTransaction')));
+export const MyTransactions = Loadable(lazy(() => import('../pages/MyTransaction')));
 // walletladger
-export const WalletLadger = Loadable(lazy(() => import('../pages/WalletLadger')));
+export const WalletLadgerEntry = Loadable(lazy(() => import('../pages/WalletLadger')));
+
+//MyActiveSecvices
+export const MyActiveSecvices = Loadable(
+  lazy(() => import('../sections/MyServices/MyActiveSecvices'))
+);
 
 //help and support
 export const HelpAndSupport = Loadable(lazy(() => import('../pages/SupportTicket')));
@@ -40,9 +45,6 @@ export const Referenceapidocs = Loadable(lazy(() => import('../pages/Referenceap
 //Fund Requests
 export const MyFundDeposits = Loadable(
   lazy(() => import('../sections/FundManagement/MyFundDeposites'))
-);
-export const MyActiveSecvices = Loadable(
-  lazy(() => import('../sections/MyServices/MyActiveSecvices'))
 );
 
 // export const AEPSsettlement = Loadable(

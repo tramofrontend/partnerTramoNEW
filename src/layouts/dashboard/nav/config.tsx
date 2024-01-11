@@ -36,12 +36,22 @@ const navConfig = [
         children: [
           {
             title: 'My Transactions',
-            path: PATH_DASHBOARD.transaction.mytransaction,
+            path: PATH_DASHBOARD.transaction.Mytransactions,
           },
           {
             title: 'Wallet Ladger',
-            path: PATH_DASHBOARD.transaction.walletladger,
+            path: PATH_DASHBOARD.transaction.Walletladger,
           },
+        ],
+      },
+      {
+        title: 'My Services',
+        path: PATH_DASHBOARD.myservices.root,
+        icon: ICONS.user,
+        children: [
+          { title: 'My Active Services', path: PATH_DASHBOARD.myservices.MyActiveServices },
+          // { title: 'My Scheme', path: PATH_DASHBOARD.myservices.MyScheme },
+          // { title: 'View BBPS Scheme', path: PATH_DASHBOARD.myservices.BBPSSchemePage },
         ],
       },
 
@@ -66,17 +76,6 @@ const navConfig = [
           //   title: "My Fund Requests",
           //   path: PATH_DASHBOARD.fundmanagement.myfundrequest,
           // },
-        ],
-      },
-
-      {
-        title: 'My Services',
-        path: PATH_DASHBOARD.myservices.root,
-        icon: ICONS.user,
-        children: [
-          { title: 'My Active Services', path: PATH_DASHBOARD.myservices.MyActiveServices },
-          // { title: 'My Scheme', path: PATH_DASHBOARD.myservices.MyScheme },
-          // { title: 'View BBPS Scheme', path: PATH_DASHBOARD.myservices.BBPSSchemePage },
         ],
       },
 
