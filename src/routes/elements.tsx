@@ -33,6 +33,25 @@ export const HelpAndSupport = Loadable(lazy(() => import('../pages/SupportTicket
 export const PartnerBilling = Loadable(lazy(() => import('../pages/PartnerBilling')));
 //Referenceapidocs
 export const Referenceapidocs = Loadable(lazy(() => import('../pages/Referenceapidocs')));
+//Fund Requests
+export const MyFundDeposits = Loadable(
+  lazy(() => import('../sections/FundManagement/MyFundDeposites'))
+);
+// export const MyBankAccount = Loadable(
+//   lazy(() => import("../sections/FundManagement/MyBankAccount"))
+// );
+// export const AEPSsettlement = Loadable(
+//   lazy(() => import("../sections/FundManagement/AEPSsettlement"))
+// );
+// export const MyFundRequest = Loadable(
+//   lazy(() => import("../sections/FundManagement/MyFundRequest"))
+// );
+// export const ManageFundFlow = Loadable(
+//   lazy(() => import("../sections/FundManagement/ManageFundFlow"))
+// );
+// export const MyNetwrokFunds = Loadable(
+//   lazy(() => import("../sections/FundManagement/MyNetworkFunds"))
+// );
 
 // export const PageOne = Loadable(lazy(() => import("../pages/PageOne")));
 // export const PageTwo = Loadable(lazy(() => import("../pages/PageTwo")));

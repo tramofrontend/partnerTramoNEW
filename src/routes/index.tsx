@@ -23,6 +23,7 @@ import {
   Referenceapidocs,
   MyTransaction,
   WalletLadger,
+  MyFundDeposits,
   // ResetPasswordPage,
   // NewPasswordPage,
   // NewLeadSteps,
@@ -122,6 +123,21 @@ export default function Router() {
         },
         { path: 'mytransaction', element: <MyTransaction /> },
         { path: 'walletladger', element: <WalletLadger /> },
+      ],
+    },
+    {
+      path: 'fundmanagement',
+      children: [
+        {
+          element: <Navigate to="/auth/fundmanagement/myfunddeposits" replace />,
+          index: true,
+        },
+        { path: 'myfunddeposits', element: <MyFundDeposits /> },
+        // { path: "mybankaccount", element: <MyBankAccount /> },
+        // { path: "aepssettlement", element: <AEPSsettlement /> },
+        // { path: "myfundrequest", element: <MyFundRequest /> },
+        // { path: "managefundflow", element: <ManageFundFlow /> },
+        // { path: "mynetworkfunds", element: <MyNetwrokFunds /> },
       ],
     },
 

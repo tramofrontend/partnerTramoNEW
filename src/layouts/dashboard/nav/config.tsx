@@ -46,6 +46,30 @@ const navConfig = [
       },
 
       {
+        title: 'Fund Management',
+        path: PATH_DASHBOARD.fundmanagement.root,
+        icon: ICONS.user,
+        children: [
+          {
+            title: 'My Fund Deposits',
+            path: PATH_DASHBOARD.fundmanagement.myfunddeposits,
+          },
+          // {
+          //   title: "AEPS settlement",
+          //   path: PATH_DASHBOARD.fundmanagement.aepssettlement,
+          // },
+          // {
+          //   title: "Bank Accounts",
+          //   path: PATH_DASHBOARD.fundmanagement.mybankaccount,
+          // },
+          // {
+          //   title: "My Fund Requests",
+          //   path: PATH_DASHBOARD.fundmanagement.myfundrequest,
+          // },
+        ],
+      },
+
+      {
         title: 'Support & Ticket',
         path: PATH_DASHBOARD.helpsupport,
         icon: ICONS.ecommerce,

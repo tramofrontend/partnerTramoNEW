@@ -31,5 +31,18 @@ export const PATH_DASHBOARD = {
     mytransaction: path(ROOTS_DASHBOARD, "/transaction/mytransaction"),
     walletladger: path(ROOTS_DASHBOARD, "/transaction/walletladger"),
   },
+  //Fund request
+
+  fundmanagement: {
+    root: path(ROOTS_DASHBOARD, "/fundmanagement"),
+    myfunddeposits: path(ROOTS_DASHBOARD, "/fundmanagement/myfunddeposits"),
+    // mybankaccount: path(ROOTS_DASHBOARD, "/fundmanagement/mybankaccount"),
+    // aepssettlement: path(ROOTS_DASHBOARD, "/fundmanagement/aepssettlement"),
+    // myfundrequest: path(ROOTS_DASHBOARD, "/fundmanagement/myfundrequest"),
+    // managefundflow: path(ROOTS_DASHBOARD, "/fundmanagement/managefundflow"),
+    // mynetworkfunds: path(ROOTS_DASHBOARD, "/fundmanagement/mynetworkfunds"),
+  },
+
+
 }
 
