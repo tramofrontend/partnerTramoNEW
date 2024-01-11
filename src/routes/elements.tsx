@@ -32,7 +32,7 @@ export const HelpAndSupport = Loadable(lazy(() => import('../pages/SupportTicket
 //PartnerBilling
 export const PartnerBilling = Loadable(lazy(() => import('../pages/PartnerBilling')));
 
-export const ApiCredential = Loadable(
+export const ApiCredentials = Loadable(
   lazy(() => import('../sections/apicredentials/ApiCredentials'))
 );
 //Referenceapidocs

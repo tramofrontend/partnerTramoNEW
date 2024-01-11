@@ -103,7 +103,6 @@ function ApiCredential() {
       <TabPanel value={valueTabs} index={1}>
         <UatCredential />
       </TabPanel>
-
       <TabPanel value={valueTabs} index={2}>
         <ProductionAccess />
       </TabPanel>

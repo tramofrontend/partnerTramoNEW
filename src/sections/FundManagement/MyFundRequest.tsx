@@ -63,7 +63,7 @@ export default function (props: any) {
         currentPage: currentPage,
       },
     };
-    Api(`agent/fundManagement/getRaisedRequests`, "POST", body, token).then(
+    Api(`apiBox/fundManagement/getRaisedRequests`, "POST", body, token).then(
       (Response: any) => {
         console.log("======FundsRequests All==response=====>", Response);
         if (Response.status == 200) {

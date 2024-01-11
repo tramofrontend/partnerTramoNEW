@@ -25,7 +25,7 @@ import {
   WalletLadger,
   MyFundDeposits,
   MyActiveSecvices,
-  ApiCredential,
+  ApiCredentials,
   // ResetPasswordPage,
   // NewPasswordPage,
   // NewLeadSteps,
@@ -158,7 +158,7 @@ export default function Router() {
 
     {
       path: 'apicredentials',
-      element: <ApiCredential />,
+      element: <ApiCredentials />,
     },
 
     {
