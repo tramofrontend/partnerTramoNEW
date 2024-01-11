@@ -92,7 +92,7 @@ const navConfig = [
       },
       {
         title: 'API Credentials',
-        path: PATH_DASHBOARD.Apicredential,
+        path: PATH_DASHBOARD.apicredentials,
         icon: ICONS.user,
       },
       {

@@ -113,52 +113,49 @@ export default function Router() {
           path: 'Referenceapidocs',
           element: <Referenceapidocs />,
         },
-      ],
-    },
-
-    {
-      path: 'transaction',
-      children: [
         {
-          element: <Navigate to="/auth/transaction/mytransaction" replace />,
-          index: true,
+          path: 'apicredentials',
+          element: <ApiCredentials />,
         },
-        { path: 'mytransaction', element: <MyTransaction /> },
-        { path: 'walletladger', element: <WalletLadger /> },
-      ],
-    },
-    {
-      path: 'fundmanagement',
-      children: [
         {
-          element: <Navigate to="/auth/fundmanagement/myfunddeposits" replace />,
-          index: true,
+          path: 'transaction',
+          children: [
+            {
+              element: <Navigate to="/auth/transaction/mytransaction" replace />,
+              index: true,
+            },
+            { path: 'mytransaction', element: <MyTransaction /> },
+            { path: 'walletladger', element: <WalletLadger /> },
+          ],
         },
-        { path: 'myfunddeposits', element: <MyFundDeposits /> },
-        // { path: "mybankaccount", element: <MyBankAccount /> },
-        // { path: "aepssettlement", element: <AEPSsettlement /> },
-        // { path: "myfundrequest", element: <MyFundRequest /> },
-        // { path: "managefundflow", element: <ManageFundFlow /> },
-        // { path: "mynetworkfunds", element: <MyNetwrokFunds /> },
-      ],
-    },
-
-    {
-      path: 'myservices',
-      children: [
         {
-          element: <Navigate to="/dashboard/myservices/MyActiveServices" replace />,
-          index: true,
+          path: 'fundmanagement',
+          children: [
+            {
+              element: <Navigate to="/auth/fundmanagement/myfunddeposits" replace />,
+              index: true,
+            },
+            { path: 'myfunddeposits', element: <MyFundDeposits /> },
+            // { path: "mybankaccount", element: <MyBankAccount /> },
+            // { path: "aepssettlement", element: <AEPSsettlement /> },
+            // { path: "myfundrequest", element: <MyFundRequest /> },
+            // { path: "managefundflow", element: <ManageFundFlow /> },
+            // { path: "mynetworkfunds", element: <MyNetwrokFunds /> },
+          ],
         },
-        { path: 'MyActiveServices', element: <MyActiveSecvices /> },
-        // { path: 'MyScheme', element: <MyScheme /> },
-        // { path: 'BBPSSchemePage', element: <BBPSSchemePage /> },
+        {
+          path: 'myservices',
+          children: [
+            {
+              element: <Navigate to="/dashboard/myservices/MyActiveServices" replace />,
+              index: true,
+            },
+            { path: 'MyActiveServices', element: <MyActiveSecvices /> },
+            // { path: 'MyScheme', element: <MyScheme /> },
+            // { path: 'BBPSSchemePage', element: <BBPSSchemePage /> },
+          ],
+        },
       ],
-    },
-
-    {
-      path: 'apicredentials',
-      element: <ApiCredentials />,
     },
 
     {

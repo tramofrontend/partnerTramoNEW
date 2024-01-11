@@ -23,7 +23,7 @@ export const PATH_DASHBOARD = {
   partnerbilling: path(ROOTS_DASHBOARD, '/partnerbilling'),
 
   //Apicredentials
-  Apicredential: path(ROOTS_DASHBOARD, '/Apicredentials'),
+  apicredentials: path(ROOTS_DASHBOARD, '/apicredentials'),
 
   //Referenceapidocs
   Referenceapidocs: path(ROOTS_DASHBOARD, '/Referenceapidocs'),
