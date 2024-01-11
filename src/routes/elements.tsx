@@ -37,9 +37,9 @@ export const Referenceapidocs = Loadable(lazy(() => import('../pages/Referenceap
 export const MyFundDeposits = Loadable(
   lazy(() => import('../sections/FundManagement/MyFundDeposites'))
 );
-// export const MyBankAccount = Loadable(
-//   lazy(() => import("../sections/FundManagement/MyBankAccount"))
-// );
+export const MyActiveSecvices = Loadable(
+  lazy(() => import('../sections/MyServices/MyActiveSecvices'))
+);
 // export const AEPSsettlement = Loadable(
 //   lazy(() => import("../sections/FundManagement/AEPSsettlement"))
 // );

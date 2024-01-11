@@ -24,6 +24,7 @@ import {
   MyTransaction,
   WalletLadger,
   MyFundDeposits,
+  MyActiveSecvices,
   // ResetPasswordPage,
   // NewPasswordPage,
   // NewLeadSteps,
@@ -138,6 +139,19 @@ export default function Router() {
         // { path: "myfundrequest", element: <MyFundRequest /> },
         // { path: "managefundflow", element: <ManageFundFlow /> },
         // { path: "mynetworkfunds", element: <MyNetwrokFunds /> },
+      ],
+    },
+
+    {
+      path: 'myservices',
+      children: [
+        {
+          element: <Navigate to="/dashboard/myservices/MyActiveServices" replace />,
+          index: true,
+        },
+        { path: 'MyActiveServices', element: <MyActiveSecvices /> },
+        // { path: 'MyScheme', element: <MyScheme /> },
+        // { path: 'BBPSSchemePage', element: <BBPSSchemePage /> },
       ],
     },
 

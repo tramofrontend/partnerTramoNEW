@@ -43,6 +43,15 @@ export const PATH_DASHBOARD = {
     // mynetworkfunds: path(ROOTS_DASHBOARD, "/fundmanagement/mynetworkfunds"),
   },
 
+  //Services 
+
+  myservices: {
+    root: path(ROOTS_DASHBOARD, '/myservices'),
+    MyActiveServices: path(ROOTS_DASHBOARD, '/myservices/MyActiveServices'),
+    // MyScheme: path(ROOTS_DASHBOARD, '/myservices/MyScheme'),
+    // BBPSSchemePage: path(ROOTS_DASHBOARD, '/myservices/BBPSSchemePage'),
+  },
+
 
 }
 

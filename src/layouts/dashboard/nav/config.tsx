@@ -70,6 +70,17 @@ const navConfig = [
       },
 
       {
+        title: 'My Services',
+        path: PATH_DASHBOARD.myservices.root,
+        icon: ICONS.user,
+        children: [
+          { title: 'My Active Services', path: PATH_DASHBOARD.myservices.MyActiveServices },
+          // { title: 'My Scheme', path: PATH_DASHBOARD.myservices.MyScheme },
+          // { title: 'View BBPS Scheme', path: PATH_DASHBOARD.myservices.BBPSSchemePage },
+        ],
+      },
+
+      {
         title: 'Support & Ticket',
         path: PATH_DASHBOARD.helpsupport,
         icon: ICONS.ecommerce,
