@@ -21,6 +21,10 @@ export const PATH_DASHBOARD = {
   helpsupport: path(ROOTS_DASHBOARD, "/helpsupport"),
   //Partner Billing
   partnerbilling: path(ROOTS_DASHBOARD, '/partnerbilling'),
+
+  //Apicredentials
+  Apicredential: path(ROOTS_DASHBOARD, '/Apicredentials'),
+
   //Referenceapidocs
   Referenceapidocs: path(ROOTS_DASHBOARD, '/Referenceapidocs'),
 
@@ -52,8 +56,7 @@ export const PATH_DASHBOARD = {
     // BBPSSchemePage: path(ROOTS_DASHBOARD, '/myservices/BBPSSchemePage'),
   },
 
-  //Apicredentials
-  Apicredential: path(ROOTS_DASHBOARD, '/Apicredentials'),
+
 
 
 }

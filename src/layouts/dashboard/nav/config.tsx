@@ -70,12 +70,6 @@ const navConfig = [
       },
 
       {
-        title: 'API Credentials',
-        path: PATH_DASHBOARD.Apicredential,
-        icon: ICONS.user,
-      },
-
-      {
         title: 'My Services',
         path: PATH_DASHBOARD.myservices.root,
         icon: ICONS.user,
@@ -92,9 +86,14 @@ const navConfig = [
         icon: ICONS.ecommerce,
       },
       {
-        title: 'Support & Ticket',
+        title: 'Billing',
         path: PATH_DASHBOARD.partnerbilling,
         icon: ICONS.ecommerce,
+      },
+      {
+        title: 'API Credentials',
+        path: PATH_DASHBOARD.Apicredential,
+        icon: ICONS.user,
       },
       {
         title: 'Reference API Docs',

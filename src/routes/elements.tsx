@@ -31,6 +31,10 @@ export const WalletLadger = Loadable(lazy(() => import('../pages/WalletLadger'))
 export const HelpAndSupport = Loadable(lazy(() => import('../pages/SupportTicket')));
 //PartnerBilling
 export const PartnerBilling = Loadable(lazy(() => import('../pages/PartnerBilling')));
+
+export const ApiCredential = Loadable(
+  lazy(() => import('../sections/apicredentials/ApiCredentials'))
+);
 //Referenceapidocs
 export const Referenceapidocs = Loadable(lazy(() => import('../pages/Referenceapidocs')));
 //Fund Requests
@@ -39,10 +43,6 @@ export const MyFundDeposits = Loadable(
 );
 export const MyActiveSecvices = Loadable(
   lazy(() => import('../sections/MyServices/MyActiveSecvices'))
-);
-
-export const ApiCredential = Loadable(
-  lazy(() => import('../sections/apicredentials/ApiCredentials'))
 );
 
 // export const AEPSsettlement = Loadable(

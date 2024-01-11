@@ -30,7 +30,7 @@ import ProductionAccess from './ProductionAccess';
 import CallBackUrl from './CallBackUrl';
 import MyWhilelistedIp from './MyWhilelistedIp';
 
-function ApiCredentials() {
+function ApiCredential() {
   interface TabPanelProps {
     children?: React.ReactNode;
     index: number;
@@ -114,4 +114,4 @@ function ApiCredentials() {
   );
 }
 
-export default ApiCredentials;
+export default ApiCredential;
