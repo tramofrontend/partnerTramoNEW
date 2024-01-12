@@ -37,8 +37,8 @@ export const PATH_DASHBOARD = {
   myservices: {
     root: path(ROOTS_DASHBOARD, '/myservices'),
     MyActiveServices: path(ROOTS_DASHBOARD, '/myservices/MyActiveServices'),
-    // MyScheme: path(ROOTS_DASHBOARD, '/myservices/MyScheme'),
-    // BBPSSchemePage: path(ROOTS_DASHBOARD, '/myservices/BBPSSchemePage'),
+    MyScheme: path(ROOTS_DASHBOARD, '/myservices/MyScheme'),
+    BBPSSchemePage: path(ROOTS_DASHBOARD, '/myservices/BBPSSchemePage'),
   },
 
 
@@ -46,12 +46,10 @@ export const PATH_DASHBOARD = {
 
   fundmanagement: {
     root: path(ROOTS_DASHBOARD, "/fundmanagement"),
-    myfunddeposits: path(ROOTS_DASHBOARD, "/fundmanagement/myfunddeposits"),
-    // mybankaccount: path(ROOTS_DASHBOARD, "/fundmanagement/mybankaccount"),
-    // aepssettlement: path(ROOTS_DASHBOARD, "/fundmanagement/aepssettlement"),
-    // myfundrequest: path(ROOTS_DASHBOARD, "/fundmanagement/myfundrequest"),
-    // managefundflow: path(ROOTS_DASHBOARD, "/fundmanagement/managefundflow"),
-    // mynetworkfunds: path(ROOTS_DASHBOARD, "/fundmanagement/mynetworkfunds"),
+    myfunddeposit: path(ROOTS_DASHBOARD, "/fundmanagement/myfunddeposit"),
+    bankDetail: path(ROOTS_DASHBOARD, "/fundmanagement/bankDetail"),
+    aepssettlement: path(ROOTS_DASHBOARD, "/fundmanagement/aepssettlement"),
+
   },
 
 

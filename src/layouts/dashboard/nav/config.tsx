@@ -50,8 +50,8 @@ const navConfig = [
         icon: ICONS.user,
         children: [
           { title: 'My Active Services', path: PATH_DASHBOARD.myservices.MyActiveServices },
-          // { title: 'My Scheme', path: PATH_DASHBOARD.myservices.MyScheme },
-          // { title: 'View BBPS Scheme', path: PATH_DASHBOARD.myservices.BBPSSchemePage },
+          { title: 'My Scheme', path: PATH_DASHBOARD.myservices.MyScheme },
+          { title: 'View BBPS Scheme', path: PATH_DASHBOARD.myservices.BBPSSchemePage },
         ],
       },
 
@@ -62,16 +62,16 @@ const navConfig = [
         children: [
           {
             title: 'My Fund Deposits',
-            path: PATH_DASHBOARD.fundmanagement.myfunddeposits,
+            path: PATH_DASHBOARD.fundmanagement.myfunddeposit,
           },
-          // {
-          //   title: "AEPS settlement",
-          //   path: PATH_DASHBOARD.fundmanagement.aepssettlement,
-          // },
-          // {
-          //   title: "Bank Accounts",
-          //   path: PATH_DASHBOARD.fundmanagement.mybankaccount,
-          // },
+          {
+            title: 'View Update Bank Detail',
+            path: PATH_DASHBOARD.fundmanagement.bankDetail,
+          },
+          {
+            title: 'Bank Accounts',
+            path: PATH_DASHBOARD.fundmanagement.aepssettlement,
+          },
           // {
           //   title: "My Fund Requests",
           //   path: PATH_DASHBOARD.fundmanagement.myfundrequest,

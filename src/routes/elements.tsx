@@ -32,6 +32,14 @@ export const MyActiveSecvices = Loadable(
   lazy(() => import('../sections/MyServices/MyActiveSecvices'))
 );
 
+export const MyScheme = Loadable(
+  lazy(() => import('../sections/MyServices/ViewScheme/MySchemePage'))
+);
+
+export const BBPSSchemePage = Loadable(
+  lazy(() => import('../sections/MyServices/ViewScheme/BBPSSchemePage'))
+);
+
 //help and support
 export const HelpAndSupport = Loadable(lazy(() => import('../pages/SupportTicket')));
 //PartnerBilling
@@ -40,16 +48,20 @@ export const PartnerBilling = Loadable(lazy(() => import('../pages/PartnerBillin
 export const ApiCredentials = Loadable(
   lazy(() => import('../sections/apicredentials/ApiCredentials'))
 );
+
 //Referenceapidocs
 export const Referenceapidocs = Loadable(lazy(() => import('../pages/Referenceapidocs')));
 //Fund Requests
-export const MyFundDeposits = Loadable(
+export const MyFundDeposit = Loadable(
   lazy(() => import('../sections/FundManagement/MyFundDeposites'))
 );
 
-// export const AEPSsettlement = Loadable(
-//   lazy(() => import("../sections/FundManagement/AEPSsettlement"))
-// );
+export const BankDetail = Loadable(lazy(() => import('../sections/FundManagement/BankDetail')));
+
+export const AepsSettlement = Loadable(
+  lazy(() => import('../sections/FundManagement/AEPSsettlement'))
+);
+
 // export const MyFundRequest = Loadable(
 //   lazy(() => import("../sections/FundManagement/MyFundRequest"))
 // );
@@ -59,12 +71,5 @@ export const MyFundDeposits = Loadable(
 // export const MyNetwrokFunds = Loadable(
 //   lazy(() => import("../sections/FundManagement/MyNetworkFunds"))
 // );
-
-// export const PageOne = Loadable(lazy(() => import("../pages/PageOne")));
-// export const PageTwo = Loadable(lazy(() => import("../pages/PageTwo")));
-// export const PageThree = Loadable(lazy(() => import("../pages/PageThree")));
-// export const PageFour = Loadable(lazy(() => import("../pages/PageFour")));
-// export const PageFive = Loadable(lazy(() => import("../pages/PageFive")));
-// export const PageSix = Loadable(lazy(() => import("../pages/PageSix")));
 
 export const Page404 = Loadable(lazy(() => import('../pages/Page404')));
