@@ -221,7 +221,7 @@ export default function AllBankDetails() {
     let token = localStorage.getItem('token');
     {
       role == 'agent'
-        ? Api(`apiBox/dist_BankDetails`, 'GET', '', token).then((Response: any) => {
+        ? Api(`agent/dist_BankDetails`, 'GET', '', token).then((Response: any) => {
             console.log('======dist_BankDetails==response=====>' + Response);
             if (Response.status == 200) {
               if (Response.data.code == 200) {
@@ -235,7 +235,7 @@ export default function AllBankDetails() {
               }
             }
           })
-        : Api(`apiBox/mdist_BankDetails`, 'GET', '', token).then((Response: any) => {
+        : Api(`agent/mdist_BankDetails`, 'GET', '', token).then((Response: any) => {
             console.log('======mdist_BankDetails==response=====>' + Response);
             if (Response.status == 200) {
               if (Response.data.code == 200) {
@@ -283,7 +283,7 @@ export default function AllBankDetails() {
 
   const getAdminBankList = () => {
     let token = localStorage.getItem('token');
-    Api(`apiBox/fundManagement/getAdminBank`, 'GET', '', token).then((Response: any) => {
+    Api(`agent/fundManagement/getAdminBank`, 'GET', '', token).then((Response: any) => {
       if (Response.status == 200) {
         if (Response.data.code == 200) {
           setAdminbank(Response.data.data);
@@ -318,7 +318,7 @@ export default function AllBankDetails() {
           },
         ],
       };
-      Api('apiBox/loadWallet_request', 'POST', body, token).then((Response: any) => {
+      Api('agent/loadWallet_request', 'POST', body, token).then((Response: any) => {
         console.log('==========>>product Filter', Response);
         if (Response.status == 200) {
           if (Response.data.code == 200) {
