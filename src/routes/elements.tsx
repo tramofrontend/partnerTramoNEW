@@ -1,5 +1,5 @@
 import { Suspense, lazy, ElementType } from 'react';
-// components
+
 import LoadingScreen from '../components/loading-screen';
 
 // ----------------------------------------------------------------------
@@ -15,10 +15,6 @@ const Loadable = (Component: ElementType) => (props: any) =>
 
 //Login
 export const LoginPage = Loadable(lazy(() => import('../pages/auth/LoginPage')));
-// export const ResetPasswordPage = Loadable(
-//   lazy(() => import('../pages/auth/AuthResetPasswordForm'))
-// );
-// export const NewPasswordPage = Loadable(lazy(() => import('../pages/auth/AuthNewPasswordForm')));
 
 // DashBoard
 export const Dashboard = Loadable(lazy(() => import('../pages/Dashboard')));
@@ -44,7 +40,7 @@ export const BBPSSchemePage = Loadable(
 export const HelpAndSupport = Loadable(lazy(() => import('../pages/SupportTicket')));
 //PartnerBilling
 export const PartnerBilling = Loadable(lazy(() => import('../pages/PartnerBilling')));
-
+//ApiCredentials
 export const ApiCredentials = Loadable(
   lazy(() => import('../sections/apicredentials/ApiCredentials'))
 );
@@ -61,15 +57,5 @@ export const BankDetail = Loadable(lazy(() => import('../sections/FundManagement
 export const AepsSettlement = Loadable(
   lazy(() => import('../sections/FundManagement/AEPSsettlement'))
 );
-
-// export const MyFundRequest = Loadable(
-//   lazy(() => import("../sections/FundManagement/MyFundRequest"))
-// );
-// export const ManageFundFlow = Loadable(
-//   lazy(() => import("../sections/FundManagement/ManageFundFlow"))
-// );
-// export const MyNetwrokFunds = Loadable(
-//   lazy(() => import("../sections/FundManagement/MyNetworkFunds"))
-// );
 
 export const Page404 = Loadable(lazy(() => import('../pages/Page404')));

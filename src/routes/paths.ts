@@ -6,8 +6,7 @@ const ROOTS_DASHBOARD = "/auth";
 
 export const PATH_AUTH = {
   login: "/login",
-  // resetpassword: "/resetpassword",
-  // newpassword: "/newpassword",
+
 };
 
 export const PATH_DASHBOARD = {

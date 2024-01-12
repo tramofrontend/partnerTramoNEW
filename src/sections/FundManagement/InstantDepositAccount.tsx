@@ -277,7 +277,7 @@ export default function InstantDepositAccount() {
   const vpaAccount = () => {
     let token = localStorage.getItem('token');
     Api(`apiBox/get_AgentDetail`, 'GET', '', token).then((Response: any) => {
-      console.log('========registerForAutoCollect,,,,,,,,,,,,,,,,,=====>' + Response);
+      console.log('========registerForAutoCollect=====>' + Response);
 
       if (Response.status == 200) {
         setCustomerId(Response.data.data.autoCollect.customerId);

@@ -15,7 +15,7 @@ const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
 export const requestPermission = () => {
-  console.log("Requesting User Permission......");
+  console.log("Requesting User Permission");
   Notification.requestPermission().then((permission) => {
     if (permission === "granted") {
       console.log("Notification User Permission Granted.");
@@ -47,4 +47,4 @@ export const onMessageListener = () =>
     onMessage(messaging, (payload) => {
       resolve(payload);
     });
-});
+  });

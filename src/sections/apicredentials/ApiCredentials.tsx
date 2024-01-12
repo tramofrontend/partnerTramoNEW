@@ -1,29 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import React from 'react';
+
 // @mui
-import {
-  Container,
-  Card,
-  Stack,
-  Grid,
-  InputAdornment,
-  Box,
-  Button,
-  Tab,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
-  Tabs,
-  Modal,
-  FormControlLabel,
-  styled,
-  SwitchProps,
-  Checkbox,
-  Typography,
-  Switch,
-} from '@mui/material';
+import { Box, Tab, Tabs, Typography } from '@mui/material';
 
 import UatCredential from './UatCredential';
 import ProductionAccess from './ProductionAccess';

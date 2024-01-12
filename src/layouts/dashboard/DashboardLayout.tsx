@@ -24,8 +24,6 @@ export default function DashboardLayout() {
 
   const isNavHorizontal = themeLayout === 'horizontal';
 
-  const isNavMini = themeLayout === 'mini';
-
   const handleOpen = () => {
     setOpen(true);
   };
@@ -46,27 +44,6 @@ export default function DashboardLayout() {
         <Main>
           <Outlet />
         </Main>
-      </>
-    );
-  }
-
-  if (isNavMini) {
-    return (
-      <>
-        <Header onOpenNav={handleOpen} />
-
-        <Box
-          sx={{
-            display: { lg: 'flex' },
-            minHeight: { lg: 1 },
-          }}
-        >
-          {isDesktop ? <NavMini /> : renderNavVertical}
-
-          <Main>
-            <Outlet />
-          </Main>
-        </Box>
       </>
     );
   }

@@ -381,7 +381,6 @@ export default function LoadYourWallet() {
           display="grid"
           gridTemplateColumns={{
             xs: 'repeat(1, 1fr)',
-            // sm: '0.2fr 0.8fr',
           }}
         >
           <Grid>
