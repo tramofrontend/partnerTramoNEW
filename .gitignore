@@ -5,19 +5,27 @@
 /.pnp
 .pnp.js
 
+#  build / generate output
+.nuxt
+dist
+build
+build-asmpartner
+build-tramopartnerportal
+build_dev_partner_tramo
+
 # testing
 /coverage
 
-# production
-/build
+
+
+/.env.development
+/.env.neo.production
+/.env.production
 
 # misc
 .DS_Store
-/.env
-/.env.local
-/.env.development.local
-/.env.test.local
-/.env.production.local
+
+
 
 npm-debug.log*
 yarn-debug.log*

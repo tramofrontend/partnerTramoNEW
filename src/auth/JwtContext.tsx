@@ -19,6 +19,7 @@ enum Types {
   LOGIN = 'LOGIN',
   REGISTER = 'REGISTER',
   LOGOUT = 'LOGOUT',
+  UPDATE_USER = 'UPDATE_USER',
 }
 
 type Payload = {
@@ -30,6 +31,9 @@ type Payload = {
     user: AuthUserType;
   };
   [Types.REGISTER]: {
+    user: AuthUserType;
+  };
+  [Types.UPDATE_USER]: {
     user: AuthUserType;
   };
   [Types.LOGOUT]: undefined;
@@ -61,6 +65,13 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
     };
   }
   if (action.type == Types.REGISTER) {
+    return {
+      ...state,
+      isAuthenticated: true,
+      user: action.payload.user,
+    };
+  }
+  if (action.type === Types.UPDATE_USER) {
     return {
       ...state,
       isAuthenticated: true,
@@ -181,6 +192,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     });
   };
 
+  //UPSATE USER
+  const UpdateUserDetail = async (val: any) => {
+    dispatch({
+      type: Types.UPDATE_USER,
+      payload: {
+        user: { ...state.user, ...val },
+      },
+    });
+  };
   // LOGOUT
   const logout = async () => {
     setSession(null);
@@ -201,6 +221,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         loginWithTwitter: () => {},
         logout,
         register,
+        UpdateUserDetail,
       }}
     >
       {children}
