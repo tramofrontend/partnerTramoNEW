@@ -26,8 +26,19 @@ import { fDate, fDateTime } from 'src/utils/formatTime';
 import { useAuthContext } from 'src/auth/useAuthContext';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from "yup";
+import FormProvider from 'src/components/hook-form/FormProvider';
+import { RHFTextField } from 'src/components/hook-form';
+import { LoadingButton } from '@mui/lab';
 
 // ----------------------------------------------------------------------
+type FormValuesProps = {
+  date: string;
+  clientRefId: string;
+};
+
 
 type RowProps = {
   id: string;
@@ -88,6 +99,25 @@ export default function WalletLadger() {
     { id: 'walletId', label: 'Wallet Id' },
   ];
 
+  const FilterSchema = Yup.object().shape({});
+  const defaultValues = {
+    date: "",
+    clientRefId: "",
+  };
+  const methods = useForm<FormValuesProps>({
+    resolver: yupResolver(FilterSchema),
+    defaultValues,
+  });
+
+  const {
+    reset,
+    watch,
+    setValue,
+    getValues,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = methods;
+
   const {
     startDate,
     endDate,
@@ -114,6 +144,9 @@ export default function WalletLadger() {
         pageSize: pageSize,
         currentPage: currentPage,
       },
+      clientRefId: getValues("clientRefId") || "",
+      startDate: startDate || "",
+      endDate: endDate || "",
     };
     Api(`agent/walletLedger`, 'POST', body, token).then((Response: any) => {
       console.log('======Transaction==response=====>' + Response);
@@ -131,117 +164,120 @@ export default function WalletLadger() {
     });
   };
 
-  const ExportData = () => {
-    let token = localStorage.getItem('token');
+  // const ExportData = () => {
+  //   let token = localStorage.getItem('token');
 
-    let body = {
-      pageInitData: {
-        pageSize: '',
-        currentPage: '',
-      },
-      clientRefId: '',
-      status: '',
-      transactionType: '',
-      startDate: startDate,
-      endDate: endDate,
-    };
+  //   let body = {
+  //     pageInitData: {
+  //       pageSize: '',
+  //       currentPage: '',
+  //     },
+  //     clientRefId: '',
+  //     status: '',
+  //     transactionType: '',
+  //     startDate: startDate,
+  //     endDate: endDate,
+  //   };
 
-    Api(`agent/walletLedger`, 'POST', body, token).then((Response: any) => {
-      console.log('======walletLedger==response=====>' + Response);
-      if (Response.status == 200) {
-        if (Response.data.code == 200) {
-          if (Response.data.data.data.length) {
-            const Dataapi = Response.data.data.data;
+  //   Api(`agent/walletLedger`, 'POST', body, token).then((Response: any) => {
+  //     console.log('======walletLedger==response=====>' + Response);
+  //     if (Response.status == 200) {
+  //       if (Response.data.code == 200) {
+  //         if (Response.data.data.data.length) {
+  //           const Dataapi = Response.data.data.data;
 
-            console.log(
-              'Response of the ==============walletLedger===========>',
-              Response.data?.data?.data
-            );
-            const formattedData = Response.data.data.data.map((item: any) => ({
-              createdAt: new Date(item?.createdAt).toLocaleString(),
-              client_ref_Id: item?.client_ref_Id,
-              walletId: item?.walletId,
-              'Opening Balance':
-                user?._id === item?.agentDetails?.id?._id
-                  ? item?.agentDetails?.oldMainWalletBalance
-                  : user?._id === item?.distributorDetails?.id?._id
-                  ? item?.distributorDetails?.oldMainWalletBalance
-                  : user?._id === item?.masterDistributorDetails?.id?._id
-                  ? item?.masterDistributorDetails?.oldMainWalletBalance
-                  : '',
+  //           console.log(
+  //             'Response of the ==============walletLedger===========>',
+  //             Response.data?.data?.data
+  //           );
+  //           const formattedData = Response.data.data.data.map((item: any) => ({
+  //             createdAt: new Date(item?.createdAt).toLocaleString(),
+  //             client_ref_Id: item?.client_ref_Id,
+  //             walletId: item?.walletId,
+  //             'Opening Balance':
+  //               user?._id === item?.agentDetails?.id?._id
+  //                 ? item?.agentDetails?.oldMainWalletBalance
+  //                 : user?._id === item?.distributorDetails?.id?._id
+  //                 ? item?.distributorDetails?.oldMainWalletBalance
+  //                 : user?._id === item?.masterDistributorDetails?.id?._id
+  //                 ? item?.masterDistributorDetails?.oldMainWalletBalance
+  //                 : '',
 
-              'Closing Balance':
-                user?._id === item?.agentDetails?.id?._id
-                  ? item?.agentDetails?.newMainWalletBalance
-                  : user?._id === item?.distributorDetails?.id?._id
-                  ? item?.distributorDetails?.newMainWalletBalance
-                  : user?._id === item?.masterDistributorDetails?.id?._id
-                  ? item?.masterDistributorDetails?.newMainWalletBalance
-                  : '',
-              ' Commission Amount':
-                user?._id === item?.agentDetails?.id?._id
-                  ? item?.agentDetails?.commissionAmount
-                  : user?._id === item?.distributorDetails?.id?._id
-                  ? item?.distributorDetails?.commissionAmount
-                  : user?._id === item?.masterDistributorDetails?.id?._id
-                  ? item?.masterDistributorDetails?.commissionAmount
-                  : '',
-              GST: item?.transaction?.GST,
-              TDS: item?.transaction?.TDS,
+  //             'Closing Balance':
+  //               user?._id === item?.agentDetails?.id?._id
+  //                 ? item?.agentDetails?.newMainWalletBalance
+  //                 : user?._id === item?.distributorDetails?.id?._id
+  //                 ? item?.distributorDetails?.newMainWalletBalance
+  //                 : user?._id === item?.masterDistributorDetails?.id?._id
+  //                 ? item?.masterDistributorDetails?.newMainWalletBalance
+  //                 : '',
+  //             ' Commission Amount':
+  //               user?._id === item?.agentDetails?.id?._id
+  //                 ? item?.agentDetails?.commissionAmount
+  //                 : user?._id === item?.distributorDetails?.id?._id
+  //                 ? item?.distributorDetails?.commissionAmount
+  //                 : user?._id === item?.masterDistributorDetails?.id?._id
+  //                 ? item?.masterDistributorDetails?.commissionAmount
+  //                 : '',
+  //             GST: item?.transaction?.GST,
+  //             TDS: item?.transaction?.TDS,
 
-              amount: item?.transaction?.amount,
-              categoryName: item?.transaction?.categoryName,
-              clientRefId: item?.transaction?.clientRefId,
-              credit: item?.transaction?.credit,
-              debit: item?.transaction?.credit,
+  //             amount: item?.transaction?.amount,
+  //             categoryName: item?.transaction?.categoryName,
+  //             clientRefId: item?.transaction?.clientRefId,
+  //             credit: item?.transaction?.credit,
+  //             debit: item?.transaction?.credit,
 
-              productName: item?.transaction?.productName,
-              status: item?.transaction?.status,
-              transactionType: item?.transaction?.transactionType,
-              vendorUtrNumber: item?.transaction?.vendorUtrNumber,
-            }));
+  //             productName: item?.transaction?.productName,
+  //             status: item?.transaction?.status,
+  //             transactionType: item?.transaction?.transactionType,
+  //             vendorUtrNumber: item?.transaction?.vendorUtrNumber,
+  //           }));
 
-            const ws = XLSX.utils.json_to_sheet(formattedData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-            const currentDate = fDateTime(new Date());
-            XLSX.writeFile(wb, `WalletLadger${currentDate}.xlsx`);
+  //           const ws = XLSX.utils.json_to_sheet(formattedData);
+  //           const wb = XLSX.utils.book_new();
+  //           XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+  //           const currentDate = fDateTime(new Date());
+  //           XLSX.writeFile(wb, `WalletLadger${currentDate}.xlsx`);
 
-            console.log('======getUser===data.data ===Transaction====>', Response);
-          } else {
-            enqueueSnackbar('Data Not Found ');
-          }
-        } else {
-          console.log('======Transaction=======>' + Response);
-        }
-      }
-    });
-  };
+  //           console.log('======getUser===data.data ===Transaction====>', Response);
+  //         } else {
+  //           enqueueSnackbar('Data Not Found ');
+  //         }
+  //       } else {
+  //         console.log('======Transaction=======>' + Response);
+  //       }
+  //     }
+  //   });
+  // };
 
   return (
     <>
       <Helmet>
         <title>Wallet Ladger | </title>
       </Helmet>
-
-      <>
-        <Stack flexDirection={'row'} justifyContent={'end'}>
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2}
-            style={{ padding: '0 25px', marginBottom: '10px' }}
-          >
-            <FileFilterButton
-              isSelected={!!isSelectedValuePicker}
-              startIcon={<Iconify icon="eva:calendar-fill" />}
-              onClick={onOpenPicker}
-            >
-              {`${fDate(startDate)} - ${fDate(endDate)}`}
-            </FileFilterButton>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Stack sx={{ maxHeight: window.innerHeight - 220 }}>
+        <FormProvider
+          methods={methods}
+          onSubmit={handleSubmit(getTransactional)}
+        >
+          <Stack flexDirection={"row"} m={1} gap={1}>
+            <RHFTextField
+              name="clientRefId"
+              placeholder={"Client Ref Id"}
+              sx={{ width: 300 }}
+            />
+            <Stack flexDirection={"row"} gap={1}>
+              <FileFilterButton
+                isSelected={!!isSelectedValuePicker}
+                startIcon={<Iconify icon="eva:calendar-fill" />}
+                onClick={onOpenPicker}
+              >
+                {isSelectedValuePicker ? shortLabel : "Select Date"}
+              </FileFilterButton>
               <DateRangePicker
                 variant="input"
-                title="Select Date Range"
+                title="Choose Maximum 31 Days"
                 startDate={startDate}
                 endDate={endDate}
                 onChangeStartDate={onChangeStartDate}
@@ -250,25 +286,47 @@ export default function WalletLadger() {
                 onClose={onClosePicker}
                 isSelected={isSelectedValuePicker}
                 isError={isError}
+                // additionalFunction={ExportData}
               />
-            </LocalizationProvider>
-            <Button variant="contained" onClick={ExportData}>
-              Export
-            </Button>
+            </Stack>
+            <LoadingButton
+              variant="contained"
+              type="submit"
+              loading={isSubmitting}
+            >
+              Search
+            </LoadingButton>
+            <LoadingButton
+              variant="contained"
+              onClick={() => {
+                reset(defaultValues);
+                getTransactional();
+                onChangeEndDate(null);
+                onChangeStartDate(null);
+              }}
+            >
+              Clear
+            </LoadingButton>
           </Stack>
-        </Stack>
+        </FormProvider>
+
         {sendLoding ? (
           <ApiDataLoading />
         ) : (
           <Grid item xs={12} md={6} lg={8}>
-            <Scrollbar>
-              <TableContainer>
-                <Table sx={{ minWidth: 720 }} stickyHeader aria-label="sticky table">
+            <TableContainer>
+              <Scrollbar sx={{ maxHeight: window.innerHeight - 200 }}>
+                <Table
+                  sx={{ minWidth: 720 }}
+                  aria-label="customized table"
+                  stickyHeader
+                  size="small"
+                >
                   <TableHeadCustom
                     headLabel={
-                      user?.role == 'm_distributor'
+                      user?.role == "m_distributor"
                         ? MDtableLabels
-                        : user?.role == 'distributor'
+                        : user?.role == "distributor"
                         ? distributortableLabels
                         : agenttableLabels
                     }
@@ -276,14 +334,16 @@ export default function WalletLadger() {
 
                   <TableBody>
                     {Array.isArray(ladgerData) &&
-                      ladgerData.map((row: any) => <LadgerRow key={row._id} row={row} />)}
+                      ladgerData.map((row: any) => (
+                        <LadgerRow key={row._id} row={row} />
+                      ))}
                   </TableBody>
                 </Table>
-              </TableContainer>
-            </Scrollbar>
+              </Scrollbar>
+            </TableContainer>
           </Grid>
         )}
-      </>
+      </Stack>
 
       <CustomPagination
         pageSize={pageSize}
