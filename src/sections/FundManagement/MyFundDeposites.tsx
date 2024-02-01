@@ -44,9 +44,8 @@ import InstantDepositAccount from './InstantDepositAccount';
 import AllBankDetails from './AllBankDetails';
 import AllRequests from './AllRequests';
 import Image from 'src/components/image/Image';
-// import neodeposit from '../../assets/icons/neodeposit.svg';
-import { convertToWords } from 'src/components/customFunctions/ToWords';
-import Scrollbar from 'src/components/scrollbar/Scrollbar';
+// import neodeposit from 'src/assets/deposit icon/neodeposit.svg';
+import { truncate } from 'lodash';
 
 type FormValuesProps = {
   rupee: string;
@@ -74,6 +73,7 @@ function MyFundDeposits() {
 
   const [uploadFile, setUploadFile] = useState<any>();
   const [docUrl, setDocUrl] = useState('');
+  const [selectedOption, setSelectedOption] = useState('');
   const [selectedBankID, setSelectedBankID] = useState<any>([]);
   const [selectedMode, setSelectedMode] = useState<any>([]);
   const [selectedModes, setSelectedModes] = useState<any>([]);
@@ -83,7 +83,11 @@ function MyFundDeposits() {
   );
   const [dataB, setData] = useState([]);
   const [selectedItem, setSelectedItem] = useState('');
-  const [requestRaise, setRequestRaise] = useState();
+  const [requestRaise, setRequestRaise] = useState(false);
+  const [newAmmount, setNewAmmount] = useState<any>();
+  const { control, setValue } = useForm();
+  const [allAmount, setAllAmount] = useState<any>();
+  const [isButtonDisabled, setButtonDisabled] = useState(false);
   const [minAmount, setMinAmount] = useState<any>();
   const [maxAmount, setMaxAmount] = useState<any>();
   const [verifyLoding, setVerifyLoading] = useState(false);
@@ -105,6 +109,11 @@ function MyFundDeposits() {
       .required('Mobile number is required'),
   });
 
+  const handleOptionChange = (event: any) => {
+    setSelectedOption(event.target.value);
+    console.log('Selected option:', event.target.value);
+  };
+
   useEffect(() => {
     getBankDeatails();
   }, []);
@@ -117,7 +126,7 @@ function MyFundDeposits() {
     Api(`apiBox/fundManagement/getAdminBank/` + event.target.value._id, 'GET', '', token).then(
       (Response: any) => {
         console.log(
-          '===========>Modes List  Response==========>',
+          '======>>>>>Modes List  Response====>>>>>>',
           Response.data.data.modes_of_transfer
         );
 
@@ -140,13 +149,49 @@ function MyFundDeposits() {
     setSelectedModeId(event.target.value.modeId);
   };
 
-  const defaultValues = {
-    rupee: '',
-    mobile: '',
-    branch: '',
-    trxID: '',
-    amount: '',
+  const handleRupeeChange = (e: any) => {
+    const amount = e.target.value;
+    setValue('amount', amount);
+    setAllAmount(amount);
+    if (selectedModes.transactionFeeType === 'Charge') {
+      if (
+        selectedModes.transactionFeeOption.for_Agent === 'percentage' ||
+        selectedModes.transactionFeeOption.for_Agent === 'percentage' ||
+        selectedModes.transactionFeeOption.for_Agent === 'percentage'
+      ) {
+        const finalAmmount: number = (amount * selectedModes.transactionFeeValue.for_Agent) / 100;
+
+        setNewAmmount(finalAmmount);
+      } else if (
+        selectedModes.transactionFeeOption.for_Agent === 'flat' ||
+        selectedModes.transactionFeeOption.for_Agent === 'flat' ||
+        selectedModes.transactionFeeOption.for_Agent === 'flat'
+      ) {
+        const finalAmmount: number = amount - selectedModes.transactionFeeValue.for_Agent;
+
+        setNewAmmount(finalAmmount);
+      }
+    } else if (selectedModes.transactionFeeType === 'Commission') {
+      if (
+        selectedModes.transactionFeeOption.for_Agent === 'percentage' ||
+        selectedModes.transactionFeeOption.for_Agent === 'percentage' ||
+        selectedModes.transactionFeeOption.for_Agent === 'percentage'
+      ) {
+        const finalAmmount: number = (amount * selectedModes.transactionFeeValue.for_Agent) / 100;
+        setNewAmmount(finalAmmount);
+      } else if (
+        selectedModes.transactionFeeOption.for_Agent === 'flat' ||
+        selectedModes.transactionFeeOption.for_Agent === 'flat' ||
+        selectedModes.transactionFeeOption.for_Agent === 'flat'
+      ) {
+        const finalAmmount: number = amount - selectedModes.transactionFeeValue.for_Agent;
+
+        setNewAmmount(finalAmmount);
+      }
+    }
   };
+
+  const defaultValues = { rupee: '', mobile: '', branch: '', trxID: '', amount: '' };
 
   const methods = useForm<FormValuesProps>({
     mode: 'onChange',
@@ -157,19 +202,21 @@ function MyFundDeposits() {
 
   const {
     reset,
-    watch,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
   const getBankDeatails = () => {
+    setVerifyLoading(true);
     let token = localStorage.getItem('token');
     Api(`apiBox/fundManagement/getAdminBank`, 'GET', '', token).then((Response: any) => {
-      console.log('=========>Bank List  Response===============>', Response);
+      console.log('======>>>>>Bank List  Response====>>>>>>', Response);
       if (Response.status == 200) {
         if (Response.data.code == 200) {
           const bankNames = Response.data.data.map((item: any) => item);
           setData(bankNames);
+
+          setVerifyLoading(false);
         } else {
           console.log('======BankList=======>' + Response);
         }
@@ -204,299 +251,263 @@ function MyFundDeposits() {
   };
 
   const onSubmit = async (data: FormValuesProps) => {
-    if (docUrl !== '') {
-      setVerifyLoading(true);
-      let token = localStorage.getItem('token');
-      let body = {
-        bankId: selectedBankID,
-        modeId: selectedModeId,
+    setVerifyLoading(true);
+    let token = localStorage.getItem('token');
+    let body = {
+      bankId: selectedBankID,
+      modeId: selectedModeId,
+      // amount: allAmount,
+      amount: data.amount,
+      date_of_deposit: formattedDate,
+      transactional_details: {
+        branch: data.branch,
+        trxId: data.trxID,
+        mobile: data.mobile,
+      },
+      request_to: 'ADMIN',
+      transactionSlip: docUrl,
+    };
 
-        amount: data.amount,
-        date_of_deposit: formattedDate,
-        transactional_details: {
-          branch: data.branch,
-          trxId: data.trxID,
-          mobile: data.mobile,
-        },
-        request_to: 'ADMIN',
-        transactionSlip: docUrl,
-      };
+    Api(`apiBox/fundManagement/raiseRequest`, 'POST', body, token).then((Response: any) => {
+      if (Response.status == 200) {
+        if (Response.data.code == 200) {
+          setRequestRaise(true);
+          setButtonDisabled(true);
+          setVerifyLoading(false);
+          reset(defaultValues);
+          setSelectedItem('');
+          setMaxAmount('');
+          setMinAmount('');
+          setSelectedModes([]);
+          setUploadFile('');
+          // setAllAmount();
 
-      Api(`apiBox/fundManagement/raiseRequest`, 'POST', body, token).then((Response: any) => {
-        if (Response.status == 200) {
-          if (Response.data.code == 200) {
-            setRequestRaise(Response.data.Id);
-
-            setVerifyLoading(false);
-            reset(defaultValues);
-            setSelectedItem('');
-            setMaxAmount('');
-            setMinAmount('');
-            setSelectedModes([]);
-            setUploadFile('');
-            setDocUrl('');
-            enqueueSnackbar(Response.data.message);
-          } else {
-            enqueueSnackbar(Response.data.message);
-            setVerifyLoading(false);
-          }
+          enqueueSnackbar(Response.data.message);
+        } else {
+          enqueueSnackbar(Response.data.message);
         }
-      });
-    } else {
-      enqueueSnackbar('Please upload Trasaction slip');
-    }
+      }
+    });
   };
-
-  // const onSubmit = async (data: FormValuesProps) => {
-  //   setVerifyLoading(true);
-  //   let token = localStorage.getItem("token");
-  //   let body = {
-  //     bankId: selectedBankID,
-  //     modeId: selectedModeId,
-  //     // amount: allAmount,
-  //     amount: data.amount,
-  //     date_of_deposit: formattedDate,
-  //     transactional_details: {
-  //       branch: data.branch,
-  //       trxId: data.trxID,
-  //       mobile: data.mobile,
-  //     },
-  //     request_to: "ADMIN",
-  //     transactionSlip: docUrl,
-  //   };
-
-  //   Api(`agent/fundManagement/raiseRequest`, "POST", body, token).then(
-  //     (Response: any) => {
-  //       if (Response.status == 200) {
-  //         if (Response.data.code == 200) {
-  //           setRequestRaise(Response.data.Id);
-
-  //           setVerifyLoading(false);
-  //           reset(defaultValues);
-  //           setSelectedItem("");
-  //           setMaxAmount("");
-  //           setMinAmount("");
-  //           setSelectedModes([]);
-  //           setUploadFile("");
-  //           // setAllAmount();
-
-  //           enqueueSnackbar(Response.data.message);
-  //         } else {
-  //           enqueueSnackbar(Response.data.message);
-  //           setVerifyLoading(false);
-  //         }
-  //       }
-  //     }
-  //   );
-  // };
 
   return (
     <>
-      <Scrollbar sx={{ maxHeight: window.innerHeight - 100, p: 2 }}>
-        <Grid
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 2,
-          }}
-        >
-          <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-            <Card
-              sx={{
-                bgcolor: '#00000',
-                boxShadow: '5',
-                borderRadius: '10px',
-                p: 2,
-              }}
-            >
-              <Stack gap={1}>
-                <Tabs value={'active'} aria-label="basic tabs example">
-                  <Tab
-                    sx={{ mx: 1, textAlign: 'start' }}
-                    value={'active'}
-                    label={
-                      <Grid
-                        display={'grid'}
-                        gridTemplateColumns={'repeat(2, auto)'}
-                        gap={1}
-                        alignItems={'center'}
-                      >
-                        {/* <Image
-                          src={neodeposit}
-                          alt=""
-                          sx={{ width: 30, height: 30, objectFit: 'cover' }}
-                        /> */}
-                        <Stack>
-                          <Typography variant="h5">{'New Fund Request'}</Typography>
-                        </Stack>
-                      </Grid>
-                    }
-                  />
-                </Tabs>
-
-                <FormControl variant="outlined" size="small">
-                  <InputLabel id="data-select-label">Select Bank</InputLabel>
-                  <Select
-                    labelId="data-select-label"
-                    id="data-select"
-                    value={selectedItem}
-                    onChange={handleSelectChange}
-                    label="Select an Bank"
+      <Grid sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
+        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+          <Stack
+            borderRadius={'10px'}
+            sx={{ bgcolor: '#00000', boxShadow: '5', px: 2, display: 'grid', gap: 1 }}
+          >
+            <Tabs value={'active'} aria-label="basic tabs example">
+              <Tab
+                sx={{ mx: 3, textAlign: 'start' }}
+                value={'active'}
+                label={
+                  <Grid
+                    display={'grid'}
+                    gridTemplateColumns={'repeat(2, auto)'}
+                    gap={1}
+                    alignItems={'center'}
                   >
-                    {dataB.map((item: any) => (
-                      <MenuItem key={item._id} value={item}>
-                        {item.bank_details.bank_name}{' '}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                <FormControl variant="outlined" size="small">
-                  <InputLabel id="data-select-label">Select Mode</InputLabel>
-                  <Select
-                    labelId="data-select-label"
-                    id="data-select"
-                    value={selectedModes}
-                    onChange={handleSelectModes}
-                    label="Select Mode"
-                  >
-                    {selectedMode.map((item: any) => (
-                      <MenuItem key={item._id} value={item}>
-                        {item.modeName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <Stack>
-                  {(minAmount || maxAmount) && (
-                    <Typography variant="overline" display="block" gutterBottom>
-                      Min Amount :{minAmount} And Max Amount : {maxAmount}
-                    </Typography>
-                  )}
-                  <RHFTextField name="amount" label="Amount" />
-                  {selectedModes?.transactionFeeValue && (
-                    <Typography variant="overline" display="block" gutterBottom>
-                      {/* Charge : {newAmmount} */}
-                      {selectedModes.transactionFeeType === 'Charge' &&
-                      selectedModes?.transactionFeeValue?.for_Agent > 0 ? (
-                        <>
-                          <Stack direction="row" gap={6}>
-                            <Typography color={'red'}>
-                              Charge : {selectedModes?.transactionFeeValue?.for_Agent}{' '}
-                            </Typography>{' '}
-                            <Typography textAlign="end">
-                              {convertToWords(+watch('amount'))}
-                            </Typography>
-                          </Stack>
-                        </>
-                      ) : selectedModes.transactionFeeType === 'Commission' &&
-                        selectedModes?.transactionFeeValue?.for_Agent > 0 ? (
-                        <>
-                          <Stack direction="row" gap={1}>
-                            <Typography color={'green'} variant="caption">
-                              {' '}
-                              Commission : {selectedModes?.transactionFeeValue?.for_Agent}{' '}
-                            </Typography>
-                            <Typography textAlign="end" variant="caption">
-                              {convertToWords(+watch('amount'))}
-                            </Typography>
-                          </Stack>
-                        </>
-                      ) : (
-                        ''
-                      )}
-                    </Typography>
-                  )}
-                </Stack>
-                <RHFTextField type="number" name="mobile" label="Registered Mobile Number" />
-                <Stack flexDirection={'row'} gap={1}>
-                  <RHFTextField name="branch" label="Branch" />
-                  <RHFTextField name="trxID" label="TRXID" />
-                </Stack>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DesktopDatePicker
-                    label="Date "
-                    inputFormat="DD/MM/YYYY"
-                    maxDate={dayjs(new Date())}
-                    minDate={dayjs(new Date().setDate(new Date().getDate() - 4))}
-                    value={selectedDate}
-                    onChange={handleChange}
-                    renderInput={(params: any) => <TextField {...params} sx={{ size: 'small' }} />}
-                  />
-                </LocalizationProvider>
-                <Stack>
-                  <Typography>Upload Receipt</Typography>
-                  <Upload
-                    file={uploadFile}
-                    onDrop={handleDropSingleFile}
-                    onDelete={() => setUploadFile(null)}
-                  />
-                  {uploadFile && (
-                    <Stack flexDirection={'row'} mt={1}>
-                      {success == 'upload' && (
-                        <LoadingButton
-                          variant="contained"
-                          component="span"
-                          style={{ width: 'fit-content' }}
-                          onClick={() => uploadDoc()}
-                        >
-                          Upload File
-                        </LoadingButton>
-                      )}
+                    {/* <Image
+                      src={neodeposit}
+                      alt=""
+                      sx={{ width: 30, height: 30, objectFit: 'cover' }}
+                    /> */}
+                    <Stack>
+                      <Typography variant="h5">{'New Fund Request'}</Typography>
                     </Stack>
-                  )}
-                </Stack>
+                  </Grid>
+                }
+              />
+            </Tabs>
 
-                <LoadingButton
-                  type="submit"
-                  variant="contained"
-                  loading={isSubmitting || verifyLoding}
+            <FormControl variant="outlined" size="small">
+              <InputLabel id="data-select-label">Select Bank</InputLabel>
+
+              {verifyLoding ? (
+                <CircularProgress />
+              ) : (
+                <Select
+                  labelId="data-select-label"
+                  id="data-select"
+                  value={selectedItem}
+                  onChange={handleSelectChange}
+                  label="Select an Bank"
                 >
-                  Submit
-                </LoadingButton>
+                  {dataB.map((item: any) => (
+                    <MenuItem key={item._id} value={item}>
+                      {item.bank_details.bank_name}{' '}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            </FormControl>
 
-                {/*  */}
+            <FormControl variant="outlined" size="small">
+              <InputLabel id="data-select-label">Select Mode</InputLabel>
+              <Select
+                labelId="data-select-label"
+                id="data-select"
+                value={selectedModes}
+                onChange={handleSelectModes}
+                label="Select Mode"
+              >
+                {selectedMode.map((item: any) => (
+                  <MenuItem key={item._id} value={item}>
+                    {item.modeName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <Stack>
+              <Typography variant="overline" display="block" gutterBottom>
+                Min Amount :{minAmount} And Max Amount : {maxAmount}
+              </Typography>
+              {/* <Controller
+                name="amount"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <RHFTextField
+                    {...field}
+                    variant="outlined"
+                    label="Enter Amount"
+                    size="small"
+                    onChange={handleRupeeChange}
+                  />
+                )}
+              /> */}
+              <RHFTextField name="amount" label="Amount" size="small" />
+
+              {selectedModes?.transactionFeeValue && (
+                <Typography variant="overline" display="block" gutterBottom>
+                  {/* Charge : {newAmmount} */}
+                  {selectedModes.transactionFeeType === 'Charge' &&
+                  selectedModes?.transactionFeeValue?.for_Agent > 0 ? (
+                    <>
+                      {' '}
+                      <Typography color={'red'}>
+                        Charge : {selectedModes?.transactionFeeValue?.for_Agent}{' '}
+                      </Typography>{' '}
+                    </>
+                  ) : selectedModes.transactionFeeType === 'Commission' &&
+                    selectedModes?.transactionFeeValue?.for_Agent > 0 ? (
+                    <>
+                      {' '}
+                      <Typography color={'green'}>
+                        {' '}
+                        Commission : {selectedModes?.transactionFeeValue?.for_Agent}{' '}
+                      </Typography>
+                    </>
+                  ) : (
+                    ''
+                  )}
+                </Typography>
+              )}
+            </Stack>
+            <RHFTextField
+              type="number"
+              name="mobile"
+              label="Registered Mobile Number"
+              size="small"
+            />
+            <Stack flexDirection={'row'} gap={2}>
+              <RHFTextField name="branch" label="Branch" size="small" />
+              <RHFTextField name="trxID" label="TRXID" size="small" />
+            </Stack>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DesktopDatePicker
+                label="Date "
+                inputFormat="DD/MM/YYYY"
+                maxDate={dayjs(new Date())}
+                minDate={dayjs(new Date().setDate(new Date().getDate() - 4))}
+                value={selectedDate}
+                onChange={handleChange}
+                renderInput={(params) => <TextField {...params} sx={{ size: 'small' }} />}
+              />
+            </LocalizationProvider>
+            <Stack>
+              <Stack>Upload Receipt</Stack>
+              <Upload
+                file={uploadFile}
+                onDrop={handleDropSingleFile}
+                onDelete={() => setUploadFile(null)}
+              />
+              <Stack
+                flexDirection={'row'}
+                mt={2}
+                style={uploadFile != null ? { visibility: 'visible' } : { visibility: 'hidden' }}
+              >
+                {success == 'upload' ? (
+                  <LoadingButton
+                    variant="contained"
+                    component="span"
+                    style={{ width: 'fit-content' }}
+                    onClick={() => uploadDoc()}
+                  >
+                    Upload File
+                  </LoadingButton>
+                ) : (
+                  ''
+                )}
               </Stack>
-            </Card>
-          </FormProvider>
-          <Stack
-            sx={{
-              bgcolor: '#00000',
-              boxShadow: '5',
-            }}
-            borderRadius={'10px'}
-            textAlign={'left'}
-            gap={2}
-          >
-            <AllBankDetails />
-          </Stack>
+            </Stack>
 
-          <Stack
-            sx={{
-              bgcolor: '#00000',
-              boxShadow: '5',
-            }}
-            borderRadius={'10px'}
-            textAlign={'left'}
-            gap={2}
-          >
-            <InstantDepositAccount />
+            {verifyLoding ? (
+              <CircularProgress />
+            ) : (
+              <LoadingButton
+                type="submit"
+                variant="contained"
+                loading={isSubmitting}
+                sx={{ mt: 1 }}
+                // disabled={isButtonDisabled}
+              >
+                Submit{' '}
+              </LoadingButton>
+            )}
+            {/*  */}
           </Stack>
-        </Grid>
-      </Scrollbar>
-      {/* <Grid>
+        </FormProvider>
         <Stack
           sx={{
-            bgcolor: "#00000",
-            boxShadow: "5",
+            bgcolor: '#00000',
+            boxShadow: '5',
           }}
-          borderRadius={"10px"}
+          borderRadius={'10px'}
+          textAlign={'left'}
+          gap={2}
+        >
+          <AllBankDetails />
+        </Stack>
+
+        <Stack
+          sx={{
+            bgcolor: '#00000',
+            boxShadow: '5',
+          }}
+          borderRadius={'10px'}
+          textAlign={'left'}
+          gap={2}
+        >
+          <InstantDepositAccount />
+        </Stack>
+      </Grid>
+      <Grid>
+        <Stack
+          sx={{
+            bgcolor: '#00000',
+            boxShadow: '5',
+          }}
+          borderRadius={'10px'}
           py={5}
           gap={2}
         >
           <AllRequests requestRaise={requestRaise} banklist={dataB} />
         </Stack>
-      </Grid> */}
+      </Grid>
     </>
   );
 }

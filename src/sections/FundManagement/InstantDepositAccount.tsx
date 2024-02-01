@@ -9,17 +9,18 @@ import {
   Tab,
   MenuItem,
   Modal,
+  styled,
   SwitchProps,
   Checkbox,
   Switch,
 } from '@mui/material';
 // routes
-
-import Image from 'src/components/image/Image';
+import { PATH_DASHBOARD } from 'src/routes/paths';
 // components
 import { Helmet } from 'react-helmet-async';
 // sections
-
+import { _ecommerceBestSalesman } from 'src/_mock/arrays';
+import { LoadingButton } from '@mui/lab';
 // form
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -27,14 +28,19 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Label from 'src/components/label/Label';
 import { Upload } from 'src/components/upload';
 import { UploadFile } from 'src/webservices';
-
+import Image from 'src/components/image/Image';
 import { Box, CardProps, Typography } from '@mui/material';
+import FormProvider, { RHFTextField, RHFSelect } from 'src/components/hook-form';
 import React from 'react';
 import { Api } from 'src/webservices';
 import { Icon } from '@iconify/react';
 import { useSnackbar } from 'notistack';
-// import neodeposit from '../../assets/icons/neodeposit.svg';
+import Scrollbar from 'src/components/scrollbar/Scrollbar';
+import neodeposit from 'src/assets/deposit icon/neodeposit.svg';
+import mannualdeposit from 'src/assets/deposit icon/manualdeposit.svg';
 import { useAuthContext } from 'src/auth/useAuthContext';
+// import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 // import { Label } from '@mui/icons-material';
 
@@ -56,6 +62,7 @@ const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
 export default function InstantDepositAccount() {
   const { user } = useAuthContext();
+  // const agentDetail = useSelector((state: any) => state.agent.data);
   const { enqueueSnackbar } = useSnackbar();
   const [ABank, setAbank] = React.useState([]);
   const [dBank, setDbank] = React.useState([]);
@@ -175,7 +182,7 @@ export default function InstantDepositAccount() {
       status: 'active',
       name: 'Instant Deposits',
       label: 'Auto collect Deposits',
-      // icon: neodeposit,
+      icon: neodeposit,
     },
   ];
 
@@ -245,26 +252,26 @@ export default function InstantDepositAccount() {
     let token = localStorage.getItem('token');
     {
       role == 'agent'
-        ? Api(`apiBox/dist_BankDetails`, 'GET', '', token).then((Response: any) => {
+        ? Api(`agent/dist_BankDetails`, 'GET', '', token).then((Response: any) => {
             console.log('======dist_BankDetails==response=====>' + Response);
             if (Response.status == 200) {
               if (Response.data.code == 200) {
-                setDbank(Response?.data?.dbank?.bankAccounts);
-                setMDbank(Response?.data?.mbank?.bankAccounts);
-                setDBankTab(Response?.data?.dbank?.bankAccounts[0]);
-                setMDBankTab(Response?.data?.mbank?.bankAccounts[0]);
+                setDbank(Response.data.dbank.bankAccounts);
+                setMDbank(Response.data.mbank.bankAccounts);
+                setDBankTab(Response.data.dbank.bankAccounts[0]);
+                setMDBankTab(Response.data.mbank.bankAccounts[0]);
                 console.log('======dist_BankDetails===data.data 200====>', Response.data.success);
               } else {
                 console.log('======dist_BankDetails=======>' + Response);
               }
             }
           })
-        : Api(`apiBox/mdist_BankDetails`, 'GET', '', token).then((Response: any) => {
+        : Api(`agent/mdist_BankDetails`, 'GET', '', token).then((Response: any) => {
             console.log('======mdist_BankDetails==response=====>' + Response);
             if (Response.status == 200) {
               if (Response.data.code == 200) {
-                setMDbank(Response?.data?.mdata?.bankAccounts);
-                setMDBankTab(Response?.data?.mdata?.bankAccounts[0]);
+                setMDbank(Response.data.mdata.bankAccounts);
+                setMDBankTab(Response.data.mdata.bankAccounts[0]);
                 console.log('======mdist_BankDetails===data.data 200====>', Response.data.success);
               } else {
                 console.log('======mdist_BankDetails=======>' + Response);
@@ -276,8 +283,8 @@ export default function InstantDepositAccount() {
 
   const vpaAccount = () => {
     let token = localStorage.getItem('token');
-    Api(`apiBox/get_AgentDetail`, 'GET', '', token).then((Response: any) => {
-      console.log('========registerForAutoCollect=====>' + Response);
+    Api(`agent/get_AgentDetail`, 'GET', '', token).then((Response: any) => {
+      console.log('========registerForAutoCollect,,,,,,,,,,,,,,,,,=====>' + Response);
 
       if (Response.status == 200) {
         setCustomerId(Response.data.data.autoCollect.customerId);
@@ -291,7 +298,7 @@ export default function InstantDepositAccount() {
         enqueueSnackbar(Response.data.message);
       } else {
         console.log('======BankList=======>' + Response);
-        enqueueSnackbar(Response?.data?.message);
+        enqueueSnackbar(Response.data.message);
       }
     });
   };
@@ -329,7 +336,7 @@ export default function InstantDepositAccount() {
 
   const getAdminBankList = () => {
     let token = localStorage.getItem('token');
-    Api(`apiBox/fundManagement/getAdminBank`, 'GET', '', token).then((Response: any) => {
+    Api(`agent/fundManagement/getAdminBank`, 'GET', '', token).then((Response: any) => {
       console.log('======BankList==response=====>' + Response);
       if (Response.status == 200) {
         if (Response.data.code == 200) {
@@ -347,7 +354,7 @@ export default function InstantDepositAccount() {
     let token = localStorage.getItem('token');
     let id = user?._id;
 
-    Api(`apiBox/createVirtualAccount/` + id, 'GET', '', token).then((Response: any) => {
+    Api(`agent/createVirtualAccount/` + id, 'GET', '', token).then((Response: any) => {
       if (Response.status == 200) {
         console.log('CreateCustomerId==========>', Response);
         enqueueSnackbar(Response.data.message);
@@ -362,7 +369,7 @@ export default function InstantDepositAccount() {
   const RegisterVPAacc = () => {
     let token = localStorage.getItem('token');
     let id = user?._id;
-    Api(`apiBox/registerForAutoCollect/` + id, 'GET', '', token).then((Response: any) => {
+    Api(`agent/registerForAutoCollect/` + id, 'GET', '', token).then((Response: any) => {
       if (Response.status == 200) {
         console.log('RegisterVPAAccount==========>', Response);
         enqueueSnackbar(Response.data.message);
@@ -395,7 +402,7 @@ export default function InstantDepositAccount() {
           },
         ],
       };
-      Api('apiBox/loadWallet_request', 'POST', body, token).then((Response: any) => {
+      Api('agent/loadWallet_request', 'POST', body, token).then((Response: any) => {
         console.log('==========>>product Filter', Response);
         if (Response.status == 200) {
           if (Response.data.code == 200) {
@@ -442,9 +449,9 @@ export default function InstantDepositAccount() {
   return (
     <>
       <Helmet>
-        <title>View Update Bank Detail | {process.env.REACT_APP_COMPANY_NAME}</title>
+        <title>View Update Bank Detail | Tramo</title>
       </Helmet>
-      <Box>
+      <Box style={{ padding: '0', marginTop: '-2.5vw' }}>
         <Tabs
           value={currentTab}
           aria-label="basic tabs example"
@@ -453,7 +460,7 @@ export default function InstantDepositAccount() {
           {category.map((tab: any) => (
             <Tab
               key={tab._id}
-              sx={{ mx: 3, textAlign: 'start' }}
+              sx={{ mx: 3, mt: 6, textAlign: 'start' }}
               label={
                 <Grid
                   display={'grid'}
@@ -505,13 +512,7 @@ export default function InstantDepositAccount() {
                                   icon="uil:copy"
                                 />
                               </Typography>
-                              <Typography
-                                sx={{
-                                  fontWeight: 700,
-                                  fontSize: '1.1em',
-                                  pt: 1.5,
-                                }}
-                              >
+                              <Typography sx={{ fontWeight: 700, fontSize: '1.1em', pt: 1.5 }}>
                                 Bank Name
                               </Typography>
                               <Typography
@@ -525,13 +526,7 @@ export default function InstantDepositAccount() {
                                 />
                               </Typography>
 
-                              <Typography
-                                sx={{
-                                  fontWeight: 700,
-                                  fontSize: '1.1em',
-                                  pt: 1.5,
-                                }}
-                              >
+                              <Typography sx={{ fontWeight: 700, fontSize: '1.1em', pt: 1.5 }}>
                                 IFSC
                               </Typography>
                               <Typography
@@ -544,13 +539,7 @@ export default function InstantDepositAccount() {
                                   icon="uil:copy"
                                 />
                               </Typography>
-                              <Typography
-                                sx={{
-                                  fontWeight: 700,
-                                  fontSize: '1.1em',
-                                  pt: 1.5,
-                                }}
-                              >
+                              <Typography sx={{ fontWeight: 700, fontSize: '1.1em', pt: 1.5 }}>
                                 Name
                               </Typography>
                               <Typography
@@ -576,6 +565,14 @@ export default function InstantDepositAccount() {
                           </Button>
                         )}
                       </Grid>
+                      {/* <Typography>
+                       
+                        <Link to="/dashboard/fundmanagement/MyFundDeposites">
+                          {' '}
+                          My Fund Deposits{' '}
+                        </Link>
+                        .
+                      </Typography> */}
                     </Grid>
                   </Box>
                 ) : (

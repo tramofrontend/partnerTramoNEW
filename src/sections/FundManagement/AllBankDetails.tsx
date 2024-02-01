@@ -15,11 +15,11 @@ import {
   Switch,
 } from '@mui/material';
 // routes
-// import neodeposit from '../../assets/icons/neodeposit.svg';
+import { PATH_DASHBOARD } from 'src/routes/paths';
 // components
 import { Helmet } from 'react-helmet-async';
 // sections
-
+import { _ecommerceBestSalesman } from 'src/_mock/arrays';
 import { LoadingButton } from '@mui/lab';
 // form
 import * as Yup from 'yup';
@@ -34,14 +34,14 @@ import React from 'react';
 import { Api } from 'src/webservices';
 import { useSnackbar } from 'notistack';
 import Scrollbar from 'src/components/scrollbar/Scrollbar';
+import { useAuthContext } from 'src/auth/useAuthContext';
+
 import punjab_national_bank from '../../assets/icons/punjab_national_bank.svg';
 import Axis_Bank from '../../assets/icons/Axis_Bank.svg';
 import SBI_Logo from '../../assets/icons/SBI_Logo.svg';
 import Demo_Bank from '../../assets/icons/demobank.png';
 import useCopyToClipboard from 'src/hooks/useCopyToClipboard';
 import Iconify from 'src/components/iconify';
-import Image from 'src/components/image/Image';
-import { useAuthContext } from 'src/auth/useAuthContext';
 
 // import { Label } from '@mui/icons-material';
 
@@ -62,9 +62,10 @@ interface Props extends CardProps {}
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
 export default function AllBankDetails() {
-  const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
+  const { enqueueSnackbar } = useSnackbar();
   const { copy } = useCopyToClipboard();
+  // const agentDetail = useSelector((state: any) => state.agent.data);
   const [ABank, setAbank] = React.useState([]);
   const [dBank, setDbank] = React.useState([]);
   const [MDbank, setMDbank] = React.useState([]);
@@ -171,6 +172,20 @@ export default function AllBankDetails() {
   const duser = user?.referralCode;
 
   const users = [{ _id: 1, user_name: 'Company', code: 'C' }];
+  //   {
+  //     _id: 2,
+  //     user_name: 'Master Distributor',
+  //     code: mdCode,
+  //   },
+  //   { _id: 3, user_name: 'Distributor', code: agentDetail.referralCode },
+  // ];
+  // if (role == 'distributor') {
+  //   users.pop();
+  // } else if (role == 'm_distributor' || duser == '') {
+  //   users.pop();
+  //   users.pop();
+  // } else {
+  // }
 
   const style = {
     position: 'absolute' as 'absolute',
@@ -188,6 +203,13 @@ export default function AllBankDetails() {
       enqueueSnackbar('Copied!');
       copy(text);
     }
+  };
+
+  const copyToClipboard = (str: any) => {
+    enqueueSnackbar('Copied: ' + str);
+    if (navigator && navigator.clipboard && navigator.clipboard.writeText)
+      return navigator.clipboard.writeText(str);
+    return Promise.reject('The Clipboard API is not available.');
   };
 
   useEffect(() => {
@@ -221,26 +243,26 @@ export default function AllBankDetails() {
     let token = localStorage.getItem('token');
     {
       role == 'agent'
-        ? Api(`agent/dist_BankDetails`, 'GET', '', token).then((Response: any) => {
+        ? Api(`apiBox/dist_BankDetails`, 'GET', '', token).then((Response: any) => {
             console.log('======dist_BankDetails==response=====>' + Response);
             if (Response.status == 200) {
               if (Response.data.code == 200) {
-                setDbank(Response?.data?.dbank?.bankAccounts);
-                setMDbank(Response?.data?.mbank?.bankAccounts);
-                setDBankTab(Response?.data?.dbank?.bankAccounts[0]);
-                setMDBankTab(Response?.data?.mbank?.bankAccounts[0]);
+                setDbank(Response.data.dbank.bankAccounts);
+                setMDbank(Response.data.mbank.bankAccounts);
+                setDBankTab(Response.data.dbank.bankAccounts[0]);
+                setMDBankTab(Response.data.mbank.bankAccounts[0]);
                 console.log('======dist_BankDetails===data.data 200====>', Response.data.success);
               } else {
                 console.log('======dist_BankDetails=======>' + Response);
               }
             }
           })
-        : Api(`agent/mdist_BankDetails`, 'GET', '', token).then((Response: any) => {
+        : Api(`apiBox/mdist_BankDetails`, 'GET', '', token).then((Response: any) => {
             console.log('======mdist_BankDetails==response=====>' + Response);
             if (Response.status == 200) {
               if (Response.data.code == 200) {
-                setMDbank(Response?.data?.mdata?.bankAccounts);
-                setMDBankTab(Response?.data?.mdata?.bankAccounts[0]);
+                setMDbank(Response.data.mdata.bankAccounts);
+                setMDBankTab(Response.data.mdata.bankAccounts[0]);
                 console.log('======mdist_BankDetails===data.data 200====>', Response.data.success);
               } else {
                 console.log('======mdist_BankDetails=======>' + Response);
@@ -283,7 +305,7 @@ export default function AllBankDetails() {
 
   const getAdminBankList = () => {
     let token = localStorage.getItem('token');
-    Api(`agent/fundManagement/getAdminBank`, 'GET', '', token).then((Response: any) => {
+    Api(`apiBox/fundManagement/getAdminBank`, 'GET', '', token).then((Response: any) => {
       if (Response.status == 200) {
         if (Response.data.code == 200) {
           setAdminbank(Response.data.data);
@@ -318,7 +340,7 @@ export default function AllBankDetails() {
           },
         ],
       };
-      Api('agent/loadWallet_request', 'POST', body, token).then((Response: any) => {
+      Api('apiBox/loadWallet_request', 'POST', body, token).then((Response: any) => {
         console.log('==========>>product Filter', Response);
         if (Response.status == 200) {
           if (Response.data.code == 200) {
@@ -365,7 +387,7 @@ export default function AllBankDetails() {
   return (
     <>
       <Helmet>
-        <title>View Update Bank Detail |{process.env.REACT_APP_COMPANY_NAME}</title>
+        <title>View Update Bank Detail | {process.env.React_APP_COMPANYNAME}</title>
       </Helmet>
       <Box
         rowGap={2}
@@ -384,30 +406,6 @@ export default function AllBankDetails() {
               borderTopRightRadius: 10,
             }}
           >
-            <Tabs value={'active'} aria-label="basic tabs example">
-              <Tab
-                sx={{ mx: 3, textAlign: 'start' }}
-                value={'active'}
-                label={
-                  <Grid
-                    display={'grid'}
-                    gridTemplateColumns={'repeat(2, auto)'}
-                    gap={1}
-                    alignItems={'center'}
-                  >
-                    {/* <Image
-                      src={neodeposit}
-                      alt=""
-                      sx={{ width: 30, height: 30, objectFit: 'cover' }}
-                    /> */}
-                    <Stack>
-                      <Typography variant="h5">{'Company Bank'}</Typography>
-                    </Stack>
-                  </Grid>
-                }
-              />
-            </Tabs>
-
             <Tabs
               value={userTab}
               aria-label="basic tabs example"
@@ -492,10 +490,9 @@ export default function AllBankDetails() {
         <Grid p={1}>
           <Typography variant="h5">Beneficiary Name</Typography>
           <Stack flexDirection={'row'} justifyContent={'space-between'}>
-            <Typography>{process.env.REACT_APP_COMPANY_NAME} Technolab Private Limited</Typography>
+            <Typography> Technolab Private Limited.</Typography>
             <Tooltip title="Copy" placement="top">
-              {/* <IconButton onClick={() => onCopy('Tramo technologies Pvt. Ltd.')}> */}
-              <IconButton onClick={() => onCopy('Tramo Technolab Private Limited')}>
+              <IconButton onClick={() => onCopy('Tramo technologies Pvt. Ltd.')}>
                 <Iconify icon="eva:copy-fill" width={24} />
               </IconButton>
             </Tooltip>
@@ -511,9 +508,9 @@ export default function AllBankDetails() {
           </Stack>
           <Typography variant="h5">Account Number</Typography>
           <Stack flexDirection={'row'} justifyContent={'space-between'}>
-            <Typography>{adminBankTab.bank_details.account_number}</Typography>
+            <Typography>{adminBankTab?.bank_details?.account_number}</Typography>
             <Tooltip title="Copy" placement="top">
-              <IconButton onClick={() => onCopy(adminBankTab.bank_details.account_number)}>
+              <IconButton onClick={() => onCopy(adminBankTab?.bank_details?.account_number)}>
                 <Iconify icon="eva:copy-fill" width={24} />
               </IconButton>
             </Tooltip>
@@ -521,7 +518,7 @@ export default function AllBankDetails() {
 
           <Typography variant="h5">Ifsc Code</Typography>
           <Stack flexDirection={'row'} justifyContent={'space-between'}>
-            <Typography>{adminBankTab.bank_details.ifsc}</Typography>
+            <Typography>{adminBankTab?.bank_details?.ifsc}</Typography>
             <Tooltip title="Copy" placement="top">
               <IconButton onClick={() => onCopy(adminBankTab.bank_details.ifsc)}>
                 <Iconify icon="eva:copy-fill" width={24} />
@@ -566,11 +563,9 @@ export default function AllBankDetails() {
                   <RHFSelect
                     name="transferfrom"
                     label="Transfered From Bank Account"
+                    size="small"
                     placeholder="Transfered From Bank Account"
-                    SelectProps={{
-                      native: false,
-                      sx: { textTransform: 'capitalize' },
-                    }}
+                    SelectProps={{ native: false, sx: { textTransform: 'capitalize' } }}
                   >
                     {ABank.map((item: any, index: any) => {
                       return (
@@ -585,11 +580,9 @@ export default function AllBankDetails() {
                 <RHFSelect
                   name="transferto"
                   label="Transfered To"
+                  size="small"
                   placeholder="Transfered To "
-                  SelectProps={{
-                    native: false,
-                    sx: { textTransform: 'capitalize' },
-                  }}
+                  SelectProps={{ native: false, sx: { textTransform: 'capitalize' } }}
                 >
                   {users.map((item: any, index: any) => {
                     return (
@@ -603,11 +596,9 @@ export default function AllBankDetails() {
                 <RHFSelect
                   name="depositto"
                   label="Deposited To"
+                  size="small"
                   placeholder="Deposited To"
-                  SelectProps={{
-                    native: false,
-                    sx: { textTransform: 'capitalize' },
-                  }}
+                  SelectProps={{ native: false, sx: { textTransform: 'capitalize' } }}
                 >
                   {bankList.map((item: any, index: any) => {
                     return (
@@ -625,11 +616,9 @@ export default function AllBankDetails() {
                   <RHFSelect
                     name="deposittype"
                     label="Deposit Type"
+                    size="small"
                     placeholder="Deposit Type"
-                    SelectProps={{
-                      native: false,
-                      sx: { textTransform: 'capitalize' },
-                    }}
+                    SelectProps={{ native: false, sx: { textTransform: 'capitalize' } }}
                   >
                     {transactionType.map((item: any) => {
                       return (
@@ -645,20 +634,21 @@ export default function AllBankDetails() {
                   type="number"
                   name="amount"
                   label="Amount"
+                  size="small"
                   placeholder="Amount"
                   value={Amount}
                   onChange={(e) => setAmount(e.target.value)}
                 />
                 {deposit == 'CASH' && Amount ? (
                   <Typography variant="body2" color={'red'}>
-                    Rs. {(Amount * charge) / 100} total charge (@Rs. {charge}
-                    /1000) are applicable. Your wallet will be loaded with Rs.{' '}
-                    {Amount - (Amount * charge) / 100}.
+                    Rs. {(Amount * charge) / 100} total charge (@Rs. {charge}/1000) are applicable.
+                    Your wallet will be loaded with Rs. {Amount - (Amount * charge) / 100}.
                   </Typography>
                 ) : null}
                 <RHFTextField
                   name="utr"
                   label="UTR / Transaction ID"
+                  size="small"
                   placeholder="UTR / Transaction ID"
                 />
                 <RHFTextField
@@ -666,6 +656,7 @@ export default function AllBankDetails() {
                   name="transactionDate"
                   InputLabelProps={{ shrink: true }}
                   label="Transaction Date"
+                  size="small"
                 />
                 <Stack>
                   <Stack>
