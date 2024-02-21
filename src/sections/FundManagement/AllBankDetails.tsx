@@ -35,7 +35,6 @@ import { Api } from 'src/webservices';
 import { useSnackbar } from 'notistack';
 import Scrollbar from 'src/components/scrollbar/Scrollbar';
 import { useAuthContext } from 'src/auth/useAuthContext';
-
 import punjab_national_bank from '../../assets/icons/punjab_national_bank.svg';
 import Axis_Bank from '../../assets/icons/Axis_Bank.svg';
 import SBI_Logo from '../../assets/icons/SBI_Logo.svg';

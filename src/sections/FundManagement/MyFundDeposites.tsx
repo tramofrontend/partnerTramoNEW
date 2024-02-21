@@ -365,25 +365,11 @@ function MyFundDeposits() {
               <Typography variant="overline" display="block" gutterBottom>
                 Min Amount :{minAmount} And Max Amount : {maxAmount}
               </Typography>
-              {/* <Controller
-                name="amount"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <RHFTextField
-                    {...field}
-                    variant="outlined"
-                    label="Enter Amount"
-                    size="small"
-                    onChange={handleRupeeChange}
-                  />
-                )}
-              /> */}
+
               <RHFTextField name="amount" label="Amount" size="small" />
 
               {selectedModes?.transactionFeeValue && (
                 <Typography variant="overline" display="block" gutterBottom>
-                  {/* Charge : {newAmmount} */}
                   {selectedModes.transactionFeeType === 'Charge' &&
                   selectedModes?.transactionFeeValue?.for_Agent > 0 ? (
                     <>
@@ -463,7 +449,6 @@ function MyFundDeposits() {
                 variant="contained"
                 loading={isSubmitting}
                 sx={{ mt: 1 }}
-                // disabled={isButtonDisabled}
               >
                 Submit{' '}
               </LoadingButton>
