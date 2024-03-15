@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from "react";
 
 // @mui
 import {
@@ -13,31 +13,34 @@ import {
   SwitchProps,
   Checkbox,
   Switch,
-} from '@mui/material';
+} from "@mui/material";
 // routes
-import { PATH_DASHBOARD } from 'src/routes/paths';
+import { PATH_DASHBOARD } from "src/routes/paths";
 // components
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from "react-helmet-async";
 // sections
 
-import { LoadingButton } from '@mui/lab';
+import { LoadingButton } from "@mui/lab";
 // form
-import * as Yup from 'yup';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import Label from 'src/components/label/Label';
-import { Upload } from 'src/components/upload';
-import { UploadFile } from 'src/webservices';
+import * as Yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import Label from "src/components/label/Label";
+import { Upload } from "src/components/upload";
+import { UploadFile } from "src/webservices";
 
-import { Box, CardProps, Typography } from '@mui/material';
-import FormProvider, { RHFTextField, RHFSelect } from 'src/components/hook-form';
-import React from 'react';
-import { Api } from 'src/webservices';
-import { Icon } from '@iconify/react';
-import { useSnackbar } from 'notistack';
-import Scrollbar from 'src/components/scrollbar/Scrollbar';
-import { Link } from 'react-router-dom';
-import { useAuthContext } from 'src/auth/useAuthContext';
+import { Box, CardProps, Typography } from "@mui/material";
+import FormProvider, {
+  RHFTextField,
+  RHFSelect,
+} from "src/components/hook-form";
+import React from "react";
+import { Api } from "src/webservices";
+import { Icon } from "@iconify/react";
+import { useSnackbar } from "notistack";
+import Scrollbar from "src/components/scrollbar/Scrollbar";
+import { Link } from "react-router-dom";
+import { useAuthContext } from "src/auth/useAuthContext";
 
 // import { Label } from '@mui/icons-material';
 
@@ -55,7 +58,7 @@ type FormValuesProps = {
 
 interface Props extends CardProps {}
 
-const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
 export default function LoadYourWallet() {
   const { user } = useAuthContext();
@@ -65,16 +68,16 @@ export default function LoadYourWallet() {
   const [MDbank, setMDbank] = React.useState([]);
   const [adminBank, setAdminbank] = React.useState([]);
   const [bankList, setBankList] = React.useState([]);
-  const [success, setSuccess] = useState('upload');
+  const [success, setSuccess] = useState("upload");
   const [charge, setCharge] = React.useState<any>();
-  const [docName, setDocName] = useState('');
+  const [docName, setDocName] = useState("");
   const [requestTo, setRequestTo] = useState<any>();
-  const [docUrl, setDocUrl] = useState('');
+  const [docUrl, setDocUrl] = useState("");
 
   const [transactionType, setTransactionType] = useState<any>([]);
   const handleDropSingleFile = useCallback((acceptedFiles: File[]) => {
     const uploadFile = acceptedFiles[0];
-    setSuccess('upload');
+    setSuccess("upload");
     if (uploadFile) {
       setUploadFile(
         Object.assign(uploadFile, {
@@ -86,66 +89,66 @@ export default function LoadYourWallet() {
   const [uploadFile, setUploadFile] = useState<any>();
 
   const [dBankTab, setDBankTab] = useState({
-    accountNumber: '',
-    bankBranch: '',
-    bankName: '',
-    ifsc: '',
-    name: '',
-    pincode: '',
-    state: '',
-    _id: '',
+    accountNumber: "",
+    bankBranch: "",
+    bankName: "",
+    ifsc: "",
+    name: "",
+    pincode: "",
+    state: "",
+    _id: "",
   });
   const [mdBankTab, setMDBankTab] = useState({
-    accountNumber: '',
-    bankBranch: '',
-    bankName: '',
-    ifsc: '',
-    name: '',
-    pincode: '',
-    state: '',
-    _id: '',
+    accountNumber: "",
+    bankBranch: "",
+    bankName: "",
+    ifsc: "",
+    name: "",
+    pincode: "",
+    state: "",
+    _id: "",
   });
   const [adminBankTab, setAdminBankTab] = useState({
-    accountNumber: '',
-    bankBranch: '',
-    bankName: '',
-    ifsc: '',
-    name: '',
-    pincode: '',
-    state: '',
-    _id: '',
+    accountNumber: "",
+    bankBranch: "",
+    bankName: "",
+    ifsc: "",
+    name: "",
+    pincode: "",
+    state: "",
+    _id: "",
   });
   const [bankdetail, setBankDetail] = useState({
-    accountNumber: '',
-    bankName: '',
-    ifsc: '',
-    name: '',
+    accountNumber: "",
+    bankName: "",
+    ifsc: "",
+    name: "",
   });
-  const [userTab, setUserTab] = useState('C');
-  const [deposit, setDeposit] = useState('');
+  const [userTab, setUserTab] = useState("C");
+  const [deposit, setDeposit] = useState("");
   const [Amount, setAmount] = React.useState<any>();
-  const [mdCode, setMDcode] = useState('');
+  const [mdCode, setMDcode] = useState("");
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const FilterSchema = Yup.object().shape({
-    transactionDate: Yup.string().required('Transaction date is required'),
-    utr: Yup.string().required('Transaction ID is required'),
+    transactionDate: Yup.string().required("Transaction date is required"),
+    utr: Yup.string().required("Transaction ID is required"),
     // amount: Yup.string().test(),
-    depositto: Yup.string().required('Deposits date is required'),
-    transferto: Yup.string().required('Transaction to is required'),
+    depositto: Yup.string().required("Deposits date is required"),
+    transferto: Yup.string().required("Transaction to is required"),
     // transferfrom: Yup.string().required(),
-    deposittype: Yup.string().required('Deposite type is required'),
+    deposittype: Yup.string().required("Deposite type is required"),
   });
   const defaultValues = {
-    transactionDate: '',
-    utr: '',
-    amount: '',
-    depositto: '',
-    transferto: '',
-    transferfrom: '',
-    deposittype: '',
+    transactionDate: "",
+    utr: "",
+    amount: "",
+    depositto: "",
+    transferto: "",
+    transferfrom: "",
+    deposittype: "",
   };
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(FilterSchema),
@@ -162,38 +165,38 @@ export default function LoadYourWallet() {
   const duser = user?.referralCode;
 
   const users = [
-    { _id: 1, user_name: 'Company', code: 'C' },
+    { _id: 1, user_name: "Company", code: "C" },
     {
       _id: 2,
-      user_name: 'Master Distributor',
+      user_name: "Master Distributor",
       code: mdCode,
     },
-    { _id: 3, user_name: 'Distributor', code: user?.referralCode },
+    { _id: 3, user_name: "Distributor", code: user?.referralCode },
   ];
-  if (role == 'distributor') {
+  if (role == "distributor") {
     users.pop();
-  } else if (role == 'm_distributor' || duser == '') {
+  } else if (role == "m_distributor" || duser == "") {
     users.pop();
     users.pop();
   } else {
   }
 
   const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     width: 400,
-    bgcolor: '#ffffff',
+    bgcolor: "#ffffff",
     boxShadow: 24,
     p: 4,
   };
 
   const copyToClipboard = (str: any) => {
-    enqueueSnackbar('Copied: ' + str);
+    enqueueSnackbar("Copied: " + str);
     if (navigator && navigator.clipboard && navigator.clipboard.writeText)
       return navigator.clipboard.writeText(str);
-    return Promise.reject('The Clipboard API is not available.');
+    return Promise.reject("The Clipboard API is not available.");
   };
 
   useEffect(() => {
@@ -205,14 +208,14 @@ export default function LoadYourWallet() {
   }, []);
 
   function getBank(val: string) {
-    if (val.startsWith('D')) {
+    if (val.startsWith("D")) {
       setRequestTo(user?.referralCode);
       setBankList(dBank);
-    } else if (val.startsWith('M')) {
+    } else if (val.startsWith("M")) {
       setRequestTo(mdCode);
       setBankList(MDbank);
     } else {
-      setRequestTo('Admin');
+      setRequestTo("Admin");
       setBankList(adminBank);
     }
   }
@@ -224,95 +227,121 @@ export default function LoadYourWallet() {
   }
 
   const getAllBank = () => {
-    let token = localStorage.getItem('token');
+    let token = localStorage.getItem("token");
     {
-      role == 'agent'
-        ? Api(`apiBox/dist_BankDetails`, 'GET', '', token).then((Response: any) => {
-            console.log('======dist_BankDetails==response=====>' + Response);
-            if (Response.status == 200) {
-              if (Response.data.code == 200) {
-                setDbank(Response.data.dbank.bankAccounts);
-                setMDbank(Response.data.mbank.bankAccounts);
-                setDBankTab(Response.data.dbank.bankAccounts[0]);
-                setMDBankTab(Response.data.mbank.bankAccounts[0]);
-                console.log('======dist_BankDetails===data.data 200====>', Response.data.success);
-              } else {
-                console.log('======dist_BankDetails=======>' + Response);
+      role == "agent"
+        ? Api(`apiBox/dist_BankDetails`, "GET", "", token).then(
+            (Response: any) => {
+              console.log("======dist_BankDetails==response=====>" + Response);
+              if (Response.status == 200) {
+                if (Response.data.code == 200) {
+                  setDbank(Response.data.dbank.bankAccounts);
+                  setMDbank(Response.data.mbank.bankAccounts);
+                  setDBankTab(Response.data.dbank.bankAccounts[0]);
+                  setMDBankTab(Response.data.mbank.bankAccounts[0]);
+                  console.log(
+                    "======dist_BankDetails===data.data 200====>",
+                    Response.data.success
+                  );
+                } else {
+                  console.log("======dist_BankDetails=======>" + Response);
+                }
               }
             }
-          })
-        : Api(`apiBox/mdist_BankDetails`, 'GET', '', token).then((Response: any) => {
-            console.log('======mdist_BankDetails==response=====>' + Response);
-            if (Response.status == 200) {
-              if (Response.data.code == 200) {
-                setMDbank(Response.data.mdata.bankAccounts);
-                setMDBankTab(Response.data.mdata.bankAccounts[0]);
-                console.log('======mdist_BankDetails===data.data 200====>', Response.data.success);
-              } else {
-                console.log('======mdist_BankDetails=======>' + Response);
+          )
+        : Api(`apiBox/mdist_BankDetails`, "GET", "", token).then(
+            (Response: any) => {
+              console.log("======mdist_BankDetails==response=====>" + Response);
+              if (Response.status == 200) {
+                if (Response.data.code == 200) {
+                  setMDbank(Response.data.mdata.bankAccounts);
+                  setMDBankTab(Response.data.mdata.bankAccounts[0]);
+                  console.log(
+                    "======mdist_BankDetails===data.data 200====>",
+                    Response.data.success
+                  );
+                } else {
+                  console.log("======mdist_BankDetails=======>" + Response);
+                }
               }
             }
-          });
+          );
     }
   };
 
   const getBankList = () => {
-    let token = localStorage.getItem('token');
+    let token = localStorage.getItem("token");
     let id = user?._id;
-    Api(`user/get_user_bank_list/` + id, 'GET', '', token).then((Response: any) => {
-      console.log('======BankList==response=====>' + Response);
-      if (Response.status == 200) {
-        if (Response.data.code == 200) {
-          setAbank(Response.data.success[0].bankAccounts);
-          console.log('======BankList===data.data 200====>', Response.data.success);
-        } else {
-          console.log('======BankList=======>' + Response);
+    Api(`user/get_user_bank_list/` + id, "GET", "", token).then(
+      (Response: any) => {
+        console.log("======BankList==response=====>" + Response);
+        if (Response.status == 200) {
+          if (Response.data.code == 200) {
+            setAbank(Response.data.success[0].bankAccounts);
+            console.log(
+              "======BankList===data.data 200====>",
+              Response.data.success
+            );
+          } else {
+            console.log("======BankList=======>" + Response);
+          }
         }
       }
-    });
+    );
   };
 
   const getMDcode = () => {
-    let token = localStorage.getItem('token');
-    Api(`auth/userData`, 'GET', '', token).then((Response: any) => {
-      console.log('======BankList==response=====>' + Response);
+    let token = localStorage.getItem("token");
+    Api(`auth/userData`, "GET", "", token).then((Response: any) => {
+      console.log("======BankList==response=====>" + Response);
       if (Response.status == 200) {
         if (Response.data.code == 200) {
           setMDcode(Response.data.data.m_distCode);
-          console.log('======BankList===data.data 200====>', Response.data.success);
+          console.log(
+            "======BankList===data.data 200====>",
+            Response.data.success
+          );
         } else {
-          console.log('======BankList=======>' + Response);
+          console.log("======BankList=======>" + Response);
         }
       }
     });
   };
 
   const getAdminBankList = () => {
-    let token = localStorage.getItem('token');
-    Api(`admin/getBankList/646da52e7a55f384c140d4dc`, 'GET', '', token).then((Response: any) => {
-      console.log('======BankList==response=====>' + Response);
-      if (Response.status == 200) {
-        if (Response.data.code == 200) {
-          setAdminbank(Response.data.success[0].bankAccounts);
-          setAdminBankTab(Response.data.success[0].bankAccounts[0]);
-          console.log('======BankList===data.data 200====>', Response.data.success);
-        } else {
-          console.log('======BankList=======>' + Response);
+    let token = localStorage.getItem("token");
+    Api(`admin/getBankList/646da52e7a55f384c140d4dc`, "GET", "", token).then(
+      (Response: any) => {
+        console.log("======BankList==response=====>" + Response);
+        if (Response.status == 200) {
+          if (Response.data.code == 200) {
+            setAdminbank(Response.data.success[0].bankAccounts);
+            setAdminBankTab(Response.data.success[0].bankAccounts[0]);
+            console.log(
+              "======BankList===data.data 200====>",
+              Response.data.success
+            );
+          } else {
+            console.log("======BankList=======>" + Response);
+          }
         }
       }
-    });
+    );
   };
 
   const loadWallet = (data: FormValuesProps) => {
-    if (Amount != '') {
-      let token = localStorage.getItem('token');
+    if (Amount != "") {
+      let token = localStorage.getItem("token");
       let body = {
         requestTo: requestTo,
         txnDetails: [
           {
             toAccountName: bankdetail.bankName,
             transactionType: data.deposittype,
-            cashTxnCharge: data.deposittype.toLowerCase() == 'cash' ? (Amount * charge) / 100 : 0,
+            cashTxnCharge:
+              data.deposittype.toLowerCase() == "cash"
+                ? (Amount * charge) / 100
+                : 0,
             transferFrom: data.transferfrom,
             depositAmount: Amount,
             transactionId: data.utr,
@@ -325,68 +354,80 @@ export default function LoadYourWallet() {
           },
         ],
       };
-      Api('apiBox/loadWallet_request', 'POST', body, token).then((Response: any) => {
-        console.log('==========>>product Filter', Response);
-        if (Response.status == 200) {
-          if (Response.data.code == 200) {
-            reset(defaultValues);
-            handleClose();
-            setUploadFile(null);
-            enqueueSnackbar(Response.data.message);
-            console.log('=====product filter code 200', Response.data.data);
-          } else {
-            console.log('==============>>> post mobile number', Response.massage);
+      Api("agent/loadWallet_request", "POST", body, token).then(
+        (Response: any) => {
+          console.log("==========>>product Filter", Response);
+          if (Response.status == 200) {
+            if (Response.data.code == 200) {
+              reset(defaultValues);
+              handleClose();
+              setUploadFile(null);
+              enqueueSnackbar(Response.data.message);
+              console.log("=====product filter code 200", Response.data.data);
+            } else {
+              console.log(
+                "==============>>> post mobile number",
+                Response.massage
+              );
+            }
           }
         }
-      });
+      );
     }
   };
 
   const uploadDoc = () => {
-    setSuccess('wait');
+    setSuccess("wait");
     let doc = uploadFile;
-    console.log('===file', uploadFile);
-    let token = localStorage.getItem('token');
+    console.log("===file", uploadFile);
+    let token = localStorage.getItem("token");
     let formData = new FormData();
-    formData.append('document', doc);
-    formData.append('directoryName', 'others');
-    UploadFile(`upload/upload_agent_doc`, formData, token).then((Response: any) => {
-      // console.log("=====token===aadharFront===", token)
-      console.log('=====uploadAadharfrontResponse========>' + JSON.stringify(Response));
-      if (Response.status == 200) {
-        if (Response.data.status == 'success') {
-          enqueueSnackbar('successfully file uploaded');
-          setDocUrl(Response.data.filePath);
-          console.log('===200=aadharFront====', Response.data.filePath);
-          setSuccess('success');
+    formData.append("document", doc);
+    formData.append("directoryName", "others");
+    UploadFile(`upload/upload_agent_doc`, formData, token).then(
+      (Response: any) => {
+        // console.log("=====token===aadharFront===", token)
+        console.log(
+          "=====uploadAadharfrontResponse========>" + JSON.stringify(Response)
+        );
+        if (Response.status == 200) {
+          if (Response.data.status == "success") {
+            enqueueSnackbar("successfully file uploaded");
+            setDocUrl(Response.data.filePath);
+            console.log("===200=aadharFront====", Response.data.filePath);
+            setSuccess("success");
+          } else {
+            enqueueSnackbar("Server didn`t response", { variant: "error" });
+            console.log("=====404=aadharFront===", Response.data.message);
+          }
         } else {
-          enqueueSnackbar('Server didn`t response', { variant: 'error' });
-          console.log('=====404=aadharFront===', Response.data.message);
+          enqueueSnackbar("file must be less then 1mb", { variant: "error" });
         }
-      } else {
-        enqueueSnackbar('file must be less then 1mb', { variant: 'error' });
       }
-    });
+    );
   };
 
   return (
     <>
       <Helmet>
-        <title>View Update Bank Detail | {process.env.REACT_APP_COMPANY_NAME}</title>
+        <title>
+          View Update Bank Detail | {process.env.REACT_APP_COMPANY_NAME}
+        </title>
       </Helmet>
-      <Box style={{ padding: '0' }}>
+      <Box style={{ padding: "0" }}>
         <Box
           rowGap={3}
           columnGap={10}
           display="grid"
           gridTemplateColumns={{
-            xs: 'repeat(1, 1fr)',
+            xs: "repeat(1, 1fr)",
+            // sm: '0.2fr 0.8fr',
           }}
         >
           <Grid>
             <Box
               sx={{
-                background: '#F4F6F8',
+                background: "#F4F6F8",
                 pl: 1,
                 borderTopLeftRadius: 10,
                 borderTopRightRadius: 10,
@@ -409,7 +450,7 @@ export default function LoadYourWallet() {
               </Tabs>
             </Box>
 
-            {userTab == 'Distributor' ? (
+            {userTab == "Distributor" ? (
               <Tabs
                 value={dBankTab.bankName}
                 aria-label="basic tabs example"
@@ -420,13 +461,13 @@ export default function LoadYourWallet() {
                     key={tab._id}
                     onClick={() => setDBankTab(tab)}
                     sx={{ mr: 1 }}
-                    variant={dBankTab._id == tab._id ? 'contained' : 'outlined'}
+                    variant={dBankTab._id == tab._id ? "contained" : "outlined"}
                   >
                     {tab.bankName}
                   </Button>
                 ))}
               </Tabs>
-            ) : userTab == 'Master Distributor' ? (
+            ) : userTab == "Master Distributor" ? (
               <Tabs
                 value={mdBankTab.bankName}
                 aria-label="basic tabs example"
@@ -437,7 +478,9 @@ export default function LoadYourWallet() {
                     key={tab._id}
                     onClick={() => setMDBankTab(tab)}
                     sx={{ mr: 1 }}
-                    variant={mdBankTab._id == tab._id ? 'contained' : 'outlined'}
+                    variant={
+                      mdBankTab._id == tab._id ? "contained" : "outlined"
+                    }
                   >
                     {tab.bankName}
                   </Button>
@@ -454,7 +497,11 @@ export default function LoadYourWallet() {
                     key={tab._id}
                     onClick={() => setAdminBankTab(tab)}
                     sx={{ mr: 1 }}
-                    variant={adminBankTab.bankName == tab.bankName ? 'contained' : 'outlined'}
+                    variant={
+                      adminBankTab.bankName == tab.bankName
+                        ? "contained"
+                        : "outlined"
+                    }
                   >
                     {tab.bankName}
                   </Button>
@@ -462,97 +509,123 @@ export default function LoadYourWallet() {
               </Tabs>
             )}
             <Typography>
-              <Link to="/dashboard/fundmanagement/MyFundDeposites"> My Fund Deposits </Link>.
+              <Link to="/dashboard/fundmanagement/MyFundDeposites">
+                {" "}
+                My Fund Deposits{" "}
+              </Link>
+              .
             </Typography>
           </Grid>
           <Box
             display="grid"
             width={{
-              xs: '100%',
-              sm: '50%',
+              xs: "100%",
+              sm: "50%",
             }}
           >
-            <Grid sx={{ p: 2, border: '1px dashed black', borderRadius: '20px' }}>
-              <Typography sx={{ fontWeight: 700, fontSize: '1.1em', pt: 1.5 }}>
+            <Grid
+              sx={{ p: 2, border: "1px dashed black", borderRadius: "20px" }}
+            >
+              <Typography sx={{ fontWeight: 700, fontSize: "1.1em", pt: 1.5 }}>
                 Beneficiary Name
               </Typography>
               <Typography
                 onClick={(e) => copyToClipboard(e.currentTarget.textContent)}
-                sx={{ cursor: 'pointer' }}
+                sx={{ cursor: "pointer" }}
               >
-                {userTab == 'Distributor'
+                {userTab == "Distributor"
                   ? dBankTab.name
-                  : userTab == 'Master Distributor'
+                  : userTab == "Master Distributor"
                   ? mdBankTab.name
-                  : 'Tramo Technolab Private Limited'}{' '}
-                <Icon style={{ fontSize: '20px', float: 'right' }} icon="uil:copy" />
+                  : "Tramo Technolab Private Limited"}{" "}
+                <Icon
+                  style={{ fontSize: "20px", float: "right" }}
+                  icon="uil:copy"
+                />
               </Typography>
-              <Typography sx={{ fontWeight: 700, fontSize: '1.1em', pt: 1.5 }}>
+              <Typography sx={{ fontWeight: 700, fontSize: "1.1em", pt: 1.5 }}>
                 Bank Name
               </Typography>
               <Typography
                 onClick={(e) => copyToClipboard(e.currentTarget.textContent)}
-                sx={{ cursor: 'pointer' }}
+                sx={{ cursor: "pointer" }}
               >
                 {
-                  (userTab == 'Distributor'
+                  (userTab == "Distributor"
                     ? dBankTab
-                    : userTab == 'Master Distributor'
+                    : userTab == "Master Distributor"
                     ? mdBankTab
                     : adminBankTab
                   ).bankName
                 }
-                <Icon style={{ fontSize: '20px', float: 'right' }} icon="uil:copy" />
+                <Icon
+                  style={{ fontSize: "20px", float: "right" }}
+                  icon="uil:copy"
+                />
               </Typography>
-              <Typography sx={{ fontWeight: 700, fontSize: '1.1em', pt: 1.5 }}>
+              <Typography sx={{ fontWeight: 700, fontSize: "1.1em", pt: 1.5 }}>
                 Account Number
               </Typography>
               <Typography
                 onClick={(e) => copyToClipboard(e.currentTarget.textContent)}
-                sx={{ cursor: 'pointer' }}
+                sx={{ cursor: "pointer" }}
               >
                 {
-                  (userTab == 'Distributor'
+                  (userTab == "Distributor"
                     ? dBankTab
-                    : userTab == 'Master Distributor'
+                    : userTab == "Master Distributor"
                     ? mdBankTab
                     : adminBankTab
                   ).accountNumber
-                }{' '}
-                <Icon style={{ fontSize: '20px', float: 'right' }} icon="uil:copy" />
+                }{" "}
+                <Icon
+                  style={{ fontSize: "20px", float: "right" }}
+                  icon="uil:copy"
+                />
               </Typography>
-              <Typography sx={{ fontWeight: 700, fontSize: '1.1em', pt: 1.5 }}>
+              <Typography sx={{ fontWeight: 700, fontSize: "1.1em", pt: 1.5 }}>
                 Ifsc Code
               </Typography>
               <Typography
                 onClick={(e) => copyToClipboard(e.currentTarget.textContent)}
-                sx={{ cursor: 'pointer' }}
+                sx={{ cursor: "pointer" }}
               >
                 {
-                  (userTab == 'Distributor'
+                  (userTab == "Distributor"
                     ? dBankTab
-                    : userTab == 'Master Distributor'
+                    : userTab == "Master Distributor"
                     ? mdBankTab
                     : adminBankTab
                   ).ifsc
-                }{' '}
-                <Icon style={{ fontSize: '20px', float: 'right' }} icon="uil:copy" />
+                }{" "}
+                <Icon
+                  style={{ fontSize: "20px", float: "right" }}
+                  icon="uil:copy"
+                />
               </Typography>
-              <Typography sx={{ fontWeight: 700, fontSize: '1.1em', pt: 1.5 }}>
+              <Typography sx={{ fontWeight: 700, fontSize: "1.1em", pt: 1.5 }}>
                 Acount Type
               </Typography>
               <Typography
                 onClick={(e) => copyToClipboard(e.currentTarget.textContent)}
-                sx={{ cursor: 'pointer' }}
+                sx={{ cursor: "pointer" }}
               >
-                Current <Icon style={{ fontSize: '20px', float: 'right' }} icon="uil:copy" />
+                Current{" "}
+                <Icon
+                  style={{ fontSize: "20px", float: "right" }}
+                  icon="uil:copy"
+                />
               </Typography>
             </Grid>
           </Box>
           <Typography>I have deposited the fund to this account</Typography>
-          <Button variant="contained" sx={{ width: 'fit-content' }} onClick={handleOpen}>
-            {' '}
-            Raise my Request{' '}
+          <Button
+            variant="contained"
+            sx={{ width: "fit-content" }}
+            onClick={handleOpen}
+          >
+            {" "}
+            Raise my Request{" "}
           </Button>
         </Box>
       </Box>
@@ -566,7 +639,7 @@ export default function LoadYourWallet() {
         aria-describedby="modal-modal-description"
       >
         <FormProvider methods={methods} onSubmit={handleSubmit(loadWallet)}>
-          <Box sx={style} style={{ borderRadius: '20px', width: '50%' }}>
+          <Box sx={style} style={{ borderRadius: "20px", width: "50%" }}>
             <Scrollbar sx={{ maxHeight: 600, pr: 1 }}>
               <Grid
                 rowGap={3}
@@ -574,18 +647,18 @@ export default function LoadYourWallet() {
                 display="grid"
                 pt={1}
                 gridTemplateColumns={{
-                  xs: 'repeat(1, 1fr)',
+                  xs: "repeat(1, 1fr)",
                   // sm: 'repeat(2, 1fr)'
                 }}
               >
-                {deposit != 'cash' && (
+                {deposit != "cash" && (
                   <RHFSelect
                     name="transferfrom"
                     label="Transfered From Bank Account"
                     placeholder="Transfered From Bank Account"
                     SelectProps={{
                       native: false,
-                      sx: { textTransform: 'capitalize' },
+                      sx: { textTransform: "capitalize" },
                     }}
                   >
                     {ABank.map((item: any, index: any) => {
@@ -604,12 +677,16 @@ export default function LoadYourWallet() {
                   placeholder="Transfered To "
                   SelectProps={{
                     native: false,
-                    sx: { textTransform: 'capitalize' },
+                    sx: { textTransform: "capitalize" },
                   }}
                 >
                   {users.map((item: any, index: any) => {
                     return (
-                      <MenuItem key={index} value={item.code} onClick={() => getBank(item.code)}>
+                      <MenuItem
+                        key={index}
+                        value={item.code}
+                        onClick={() => getBank(item.code)}
+                      >
                         {item.user_name}
                       </MenuItem>
                     );
@@ -622,7 +699,7 @@ export default function LoadYourWallet() {
                   placeholder="Deposited To"
                   SelectProps={{
                     native: false,
-                    sx: { textTransform: 'capitalize' },
+                    sx: { textTransform: "capitalize" },
                   }}
                 >
                   {bankList.map((item: any, index: any) => {
@@ -644,12 +721,16 @@ export default function LoadYourWallet() {
                     placeholder="Deposit Type"
                     SelectProps={{
                       native: false,
-                      sx: { textTransform: 'capitalize' },
+                      sx: { textTransform: "capitalize" },
                     }}
                   >
                     {transactionType.map((item: any) => {
                       return (
-                        <MenuItem key={item._id} value={item} onClick={() => setDeposit(item)}>
+                        <MenuItem
+                          key={item._id}
+                          value={item}
+                          onClick={() => setDeposit(item)}
+                        >
                           {item}
                         </MenuItem>
                       );
@@ -665,10 +746,10 @@ export default function LoadYourWallet() {
                   value={Amount}
                   onChange={(e) => setAmount(e.target.value)}
                 />
-                {deposit == 'CASH' && Amount ? (
-                  <Typography variant="body2" color={'red'}>
+                {deposit == "CASH" && Amount ? (
+                  <Typography variant="body2" color={"red"}>
                     Rs. {(Amount * charge) / 100} total charge (@Rs. {charge}
-                    /1000) are applicable. Your wallet will be loaded with Rs.{' '}
+                    /1000) are applicable. Your wallet will be loaded with Rs.{" "}
                     {Amount - (Amount * charge) / 100}.
                   </Typography>
                 ) : null}
@@ -685,9 +766,9 @@ export default function LoadYourWallet() {
                 />
                 <Stack>
                   <Stack>
-                    {deposit == 'CASH'
-                      ? 'Choose Receipt upload'
-                      : 'Choose Screenshot / receipt(Optional)'}{' '}
+                    {deposit == "CASH"
+                      ? "Choose Receipt upload"
+                      : "Choose Screenshot / receipt(Optional)"}{" "}
                   </Stack>
                   <Upload
                     file={uploadFile}
@@ -695,23 +776,29 @@ export default function LoadYourWallet() {
                     onDelete={() => setUploadFile(null)}
                   />
                   <Stack
-                    flexDirection={'row'}
+                    flexDirection={"row"}
                     mt={2}
                     style={
-                      uploadFile != null ? { visibility: 'visible' } : { visibility: 'hidden' }
+                      uploadFile != null
+                        ? { visibility: "visible" }
+                        : { visibility: "hidden" }
                     }
                   >
-                    {success == 'upload' ? (
+                    {success == "upload" ? (
                       <LoadingButton
                         variant="contained"
                         component="span"
-                        style={{ width: 'fit-content' }}
+                        style={{ width: "fit-content" }}
                         onClick={() => uploadDoc()}
                       >
                         Upload File
                       </LoadingButton>
-                    ) : success == 'wait' ? (
-                      <LoadingButton variant="contained" loading component="span">
+                    ) : success == "wait" ? (
+                      <LoadingButton
+                        variant="contained"
+                        loading
+                        component="span"
+                      >
                         success
                       </LoadingButton>
                     ) : (
@@ -722,11 +809,12 @@ export default function LoadYourWallet() {
                   </Stack>
                 </Stack>
               </Grid>
-              <Stack flexDirection={'row'} sx={{ my: 2 }}>
-                <Checkbox {...label} defaultChecked sx={{ color: '#2065D1' }} />
-                <Typography sx={{ fontSize: '14px' }}>
-                  I have transfered funds from my own account and UPI/VPA ID held in my name and
-                  verified. These funds have been acquired by me through legitimate sources.
+              <Stack flexDirection={"row"} sx={{ my: 2 }}>
+                <Checkbox {...label} defaultChecked sx={{ color: "#2065D1" }} />
+                <Typography sx={{ fontSize: "14px" }}>
+                  I have transfered funds from my own account and UPI/VPA ID
+                  held in my name and verified. These funds have been acquired
+                  by me through legitimate sources.
                 </Typography>
               </Stack>
               <LoadingButton

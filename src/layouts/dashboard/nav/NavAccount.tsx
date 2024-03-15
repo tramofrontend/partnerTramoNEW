@@ -5,6 +5,7 @@ import { Box, Typography } from '@mui/material';
 import { useAuthContext } from '../../../auth/useAuthContext';
 // components
 import { CustomAvatar } from '../../../components/custom-avatar';
+import { sentenceCase } from "change-case";
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +33,12 @@ export default function NavAccount() {
 
         <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
           {user?.role}
+        </Typography>
+        <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
+          {sentenceCase(user?.firstName + " " + user?.lastName)}
+        </Typography>
+        <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
+          {user?.userCode}
         </Typography>
       </Box>
     </StyledRoot>
