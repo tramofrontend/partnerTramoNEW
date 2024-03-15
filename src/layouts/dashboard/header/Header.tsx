@@ -100,8 +100,10 @@ export default function Header({ onOpenNav }: Props) {
         ...(isDesktop && {
           width: `calc(100% - ${NAV.W_DASHBOARD + 1}px)`,
           height: HEADER.H_DASHBOARD_DESKTOP,
+          borderBottom: (theme) => ` dashed 2px ${theme.palette.divider}`,
           ...(isOffset && {
             height: HEADER.H_DASHBOARD_DESKTOP_OFFSET,
+           
           }),
           ...(isNavHorizontal && {
             width: 1,
