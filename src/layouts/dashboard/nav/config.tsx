@@ -31,16 +31,16 @@ const navConfig = [
 
       {
         title: 'Transactions',
-        path: PATH_DASHBOARD.transaction.root,
+        path: PATH_DASHBOARD.transactions.root,
         icon: ICONS.user,
         children: [
           {
             title: 'My Transactions',
-            path: PATH_DASHBOARD.transaction.Mytransactions,
+            path: PATH_DASHBOARD.transactions.mytransactions,
           },
           {
             title: 'Wallet Ladger',
-            path: PATH_DASHBOARD.transaction.Walletladger,
+            path: PATH_DASHBOARD.transactions.mywalletladger,
           },
         ],
       },

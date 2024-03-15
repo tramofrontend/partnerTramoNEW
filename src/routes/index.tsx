@@ -72,11 +72,11 @@ export default function Router() {
           path: 'transactions',
           children: [
             {
-              element: <Navigate to="/auth/transaction/mytransaction" replace />,
+              element: <Navigate to="/auth/transactions/mytransactions" replace />,
               index: true,
             },
             { path: 'mytransactions', element: <MyTransactions /> },
-            { path: 'Mywalletlaser', element: <WalletLadgerEntry /> },
+            { path: 'mywalletladger', element: <WalletLadgerEntry /> },
           ],
         },
 

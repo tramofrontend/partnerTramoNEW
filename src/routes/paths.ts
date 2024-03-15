@@ -25,16 +25,16 @@ export const PATH_DASHBOARD = {
 
   //Trasaction & walletlaser
 
-  transaction: {
-    root: path(ROOTS_DASHBOARD, "/transactions/mytransactions"),
-    Mytransactions: path(ROOTS_DASHBOARD, "/transactions/mytransactions"),
-    Walletladger: path(ROOTS_DASHBOARD, "/transactions/Mywalletlaser"),
+  transactions: {
+    root: path(ROOTS_DASHBOARD, "/transactions"),
+    mytransactions: path(ROOTS_DASHBOARD, "/transactions/mytransactions"),
+    mywalletladger: path(ROOTS_DASHBOARD, "/transactions/mywalletladger"),
   },
 
   //Services 
 
   myservices: {
-    root: path(ROOTS_DASHBOARD, '/myservices/MyActiveServices'),
+    root: path(ROOTS_DASHBOARD, '/myservices'),
     MyActiveServices: path(ROOTS_DASHBOARD, '/myservices/MyActiveServices'),
     MyScheme: path(ROOTS_DASHBOARD, '/myservices/MyScheme'),
     BBPSSchemePage: path(ROOTS_DASHBOARD, '/myservices/BBPSSchemePage'),
@@ -44,7 +44,7 @@ export const PATH_DASHBOARD = {
   //Fund request
 
   fundmanagement: {
-    root: path(ROOTS_DASHBOARD, "/fundmanagement/myfunddeposit"),
+    root: path(ROOTS_DASHBOARD, "/fundmanagement"),
     myfunddeposit: path(ROOTS_DASHBOARD, "/fundmanagement/myfunddeposit"),
     bankDetail: path(ROOTS_DASHBOARD, "/fundmanagement/bankDetail"),
     aepssettlement: path(ROOTS_DASHBOARD, "/fundmanagement/aepssettlement"),

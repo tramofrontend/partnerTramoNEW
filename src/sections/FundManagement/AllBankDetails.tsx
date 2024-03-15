@@ -370,34 +370,30 @@ export default function AllBankDetails() {
   };
 
   const uploadDoc = () => {
-    setSuccess("wait");
+    setSuccess('wait');
     let doc = uploadFile;
-    console.log("===file", uploadFile);
-    let token = localStorage.getItem("token");
+    console.log('===file', uploadFile);
+    let token = localStorage.getItem('token');
     let formData = new FormData();
-    formData.append("document", doc);
-    formData.append("directoryName", "others");
-    UploadFile(`upload/upload_agent_doc`, formData, token).then(
-      (Response: any) => {
-        // console.log("=====token===aadharFront===", token)
-        console.log(
-          "=====uploadAadharfrontResponse========>" + JSON.stringify(Response)
-        );
-        if (Response.status == 200) {
-          if (Response.data.status == "success") {
-            enqueueSnackbar("successfully file uploaded");
-            setDocUrl(Response.data.filePath);
-            console.log("===200=aadharFront====", Response.data.filePath);
-            setSuccess("success");
-          } else {
-            enqueueSnackbar("Server didn`t response", { variant: "error" });
-            console.log("=====404=aadharFront===", Response.data.message);
-          }
+    formData.append('document', doc);
+    formData.append('directoryName', 'others');
+    UploadFile(`upload/upload_agent_doc`, formData, token).then((Response: any) => {
+      // console.log("=====token===aadharFront===", token)
+      console.log('=====uploadAadharfrontResponse========>' + JSON.stringify(Response));
+      if (Response.status == 200) {
+        if (Response.data.status == 'success') {
+          enqueueSnackbar('successfully file uploaded');
+          setDocUrl(Response.data.filePath);
+          console.log('===200=aadharFront====', Response.data.filePath);
+          setSuccess('success');
         } else {
-          enqueueSnackbar("file must be less then 1mb", { variant: "error" });
+          enqueueSnackbar('Server didn`t response', { variant: 'error' });
+          console.log('=====404=aadharFront===', Response.data.message);
         }
+      } else {
+        enqueueSnackbar('file must be less then 1mb', { variant: 'error' });
       }
-    );
+    });
   };
 
   return (

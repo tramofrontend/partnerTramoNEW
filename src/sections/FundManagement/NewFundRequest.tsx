@@ -283,7 +283,7 @@ import {
         transactionSlip: data.filePath,
       };
   
-      Api(`agent/fundManagement/raiseRequest`, "POST", body, token).then(
+      Api(`apiBox/fundManagement/raiseRequest`, "POST", body, token).then(
         (Response: any) => {
           if (Response.status == 200) {
             if (Response.data.code == 200) {
