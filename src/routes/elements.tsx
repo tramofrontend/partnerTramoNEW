@@ -57,5 +57,8 @@ export const BankDetail = Loadable(lazy(() => import('../sections/FundManagement
 export const AepsSettlement = Loadable(
   lazy(() => import('../sections/FundManagement/AEPSsettlement'))
 );
+export const MyFundRequest = Loadable(
+  lazy(() => import('../sections/FundManagement/MyFundRequest'))
+);
 
 export const Page404 = Loadable(lazy(() => import('../pages/Page404')));

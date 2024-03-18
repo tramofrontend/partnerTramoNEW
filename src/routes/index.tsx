@@ -25,6 +25,7 @@ import {
   BankDetail,
   AepsSettlement,
 } from './elements';
+import MyFundRequest from 'src/sections/FundManagement/MyFundRequest';
 
 // ----------------------------------------------------------------------
 
@@ -102,6 +103,7 @@ export default function Router() {
             { path: 'myfunddeposit', element: <MyFundDeposit /> },
             { path: 'bankDetail', element: <BankDetail /> },
             { path: 'aepssettlement', element: <AepsSettlement /> },
+            {path:'myfundrequest',element:<MyFundRequest/>},
           ],
         },
       ],

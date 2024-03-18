@@ -72,6 +72,10 @@ const navConfig = [
             title: 'AEPS Settlement',
             path: PATH_DASHBOARD.fundmanagement.aepssettlement,
           },
+          {
+            title: 'MY Fund Requests',
+            path: PATH_DASHBOARD.fundmanagement.myfundrequest,
+          },
         ],
       },
 

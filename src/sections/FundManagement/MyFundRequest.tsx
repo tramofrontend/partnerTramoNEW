@@ -115,7 +115,7 @@ export default function (props: any) {
   return (
     <>
       <Helmet>
-        <title> Transactions |{process.env.REACT_APP_COMPANY_NAME}</title>
+        <title> Transactions |{process.env.React_APP_COMPANYNAME}</title>
       </Helmet>
 
       <Stack flexDirection={"row"} justifyContent={"end"}>

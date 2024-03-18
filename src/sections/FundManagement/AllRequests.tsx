@@ -251,7 +251,7 @@ export default function (props: any) {
         currentPage: currentPage,
       },
     };
-    Api(`agent/fundManagement/getRaisedRequests`, 'POST', body, token).then((Response: any) => {
+    Api(`apiBox/fundManagement/getRaisedRequests`, 'POST', body, token).then((Response: any) => {
       if (Response.status == 200) {
         if (Response.data.code == 200) {
           enqueueSnackbar(Response.data.message);
@@ -320,7 +320,7 @@ export default function (props: any) {
       transactionSlip: data.transactionSlip ? data.transactionSlip : docUrl,
     };
 
-    Api(`agent/fundManagement/updateRaisedRequests/` + ReqData._id, 'POST', body, token).then(
+    Api(`apiBox/fundManagement/updateRaisedRequests/` + ReqData._id, 'POST', body, token).then(
       (Response: any) => {
         console.log('=========>Update request ==========>', Response);
         if (Response.status == 200) {
