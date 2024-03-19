@@ -26,6 +26,7 @@ import React from 'react';
 import { Api } from 'src/webservices';
 import { LoadingButton } from '@mui/lab';
 import { Icon } from '@iconify/react';
+import LogoBank from '../../assets/icons/Tramo.svg';
 
 // ----------------------------------------------------------------------
 type FormValuesProps = {
@@ -288,6 +289,11 @@ export default function BankDetail() {
             Add New Bank Account
           </LoadingButton>
         </Stack>
+        {userBankList.length === 0 && (
+          <Stack direction={'row'} justifyContent={'center'} alignContent={'center'} marginTop={10}>
+            <img src={LogoBank} alt="No bank data" style={{}} />
+          </Stack>
+        )}
 
         {category.map(
           (tab: any) =>

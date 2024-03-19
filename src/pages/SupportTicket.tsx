@@ -1,74 +1,67 @@
-import { Stack, Typography, Card } from '@mui/material';
-import EmailIcon from '@mui/icons-material/Email';
-import PhoneIcon from '@mui/icons-material/Phone';
+import { Card, Stack, Typography } from "@mui/material";
+import EmailIcon from "@mui/icons-material/Email";
+import PhoneIcon from "@mui/icons-material/Phone";
 
-function SupportTicket() {
-  const cardStyle = {
-    // display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '50vh',
-  };
+function HelpAndSupport() {
   return (
     <>
-      <Typography sx={{ m: 2 }} variant="h1">
-        Contacts
-      </Typography>
-
-      <Typography variant="h5" marginLeft={10}>
-        We are here to assist you and ensure that your experience with our platform is smooth and
-        enjoyable. If you have any questions, concerns, or need assistance, please don't hesitate to
-        reach out.
-      </Typography>
-      <Stack sx={{ m: 10 }} direction="row" justifyContent="space-between">
-        <Card sx={{ width: '200px' }}>
-          <Stack sx={{ ml: 2 }}>
-            <Typography
-              variant="h5"
-              sx={{
-                color: '#AAAAAA',
-              }}
-            >
-              Calling Support
-            </Typography>
-            <Typography variant="h6" sx={{ mt: '6px' }}>
-              <PhoneIcon /> {process.env.React_APP_COMPANYOTHERMOBILE}
-            </Typography>
-          </Stack>
-        </Card>
-        <Card sx={{ width: '200px' }}>
-          <Stack sx={{ ml: 2 }}>
-            <Typography
-              variant="h5"
-              sx={{
-                color: '#AAAAAA',
-              }}
-            >
-              Calling Support
-            </Typography>
-            <Typography variant="h6" sx={{ mt: '6px' }}>
-              <PhoneIcon /> {process.env.React_APP_COMPANYMOBILE}
-            </Typography>
-          </Stack>
-        </Card>
-        <Card sx={{ width: '200px' }}>
-          <Stack sx={{ ml: 2 }}>
-            <Typography
-              variant="h5"
-              sx={{
-                color: '#AAAAAA',
-              }}
-            >
-              Email Support
-            </Typography>
-            <Typography variant="h6" sx={{ mt: '6px' }}>
-              <EmailIcon /> {process.env.React_APP_COMPANYEMAIL}
-            </Typography>
-          </Stack>
-        </Card>
+      <Stack
+        sx={{ display: "flex", justifyItems: "center", alignItems: "center" }}
+      >
+        <Typography variant="h4" sx={{ color: "#FF3131", marginTop: "6vw" }}>
+          Need Help? Contact us at
+        </Typography>
       </Stack>
+      <Card
+        sx={{
+          top: "1vw",
+          left: "15vw",
+          width: "50vw",
+          bgcolor: "#F6E2E2",
+          height: "35vh",
+        }}
+      >
+        <Stack
+          sx={{
+            justifyItems: "center",
+            alignItems: "center",
+            marginTop: "3vw",
+          }}
+        >
+          <Typography
+            sx={{
+              margin: "16px",
+              color: "#00000",
+              "& a": { textDecoration: "none" },
+            }}
+          >
+            <EmailIcon /> E-mail :
+            <a href={`mailto:${process.env.React_APP_COMPANYEMAIL}`}>
+              {process.env.React_APP_COMPANYEMAIL}
+            </a>
+          </Typography>
+        </Stack>
+        <Stack sx={{ justifyItems: "center", alignItems: "center" }}>
+          <Typography
+            sx={{
+              margin: "16px",
+              color: "#00000",
+              "& a": { textDecoration: "none" },
+            }}
+          >
+            <PhoneIcon /> Phone Number :{" "}
+            <a href={`tel:${process.env.React_APP_COMPANYMOBILE}`}>
+              {process.env.React_APP_COMPANYMOBILE}
+            </a>
+            ,
+            <a href={`tel:${process.env.React_APP_COMPANYOTHERMOBILE}`}>
+              {process.env.React_APP_COMPANYOTHERMOBILE}
+            </a>
+          </Typography>
+        </Stack>
+      </Card>
     </>
   );
 }
 
-export default SupportTicket;
+export default HelpAndSupport;

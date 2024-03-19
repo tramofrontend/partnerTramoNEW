@@ -660,14 +660,25 @@ export default function MyTransactions() {
               </Scrollbar>
             )}
             {!Loading && (
-               <CustomPagination
-               pageSize={pageSize}
-               onChange={(event: React.ChangeEvent<unknown>, value: number) => {
-                 setCurrentPage(value);
-               }}
-               page={currentPage}
-               Count={pageCount}
-             />
+                  <CustomPagination
+                  page={currentPage - 1}
+                  count={pageCount}
+                  onPageChange={(
+                    event: React.MouseEvent<HTMLButtonElement> | null,
+                    newPage: number
+                  ) => {
+                    setCurrentPage(newPage + 1);
+                  }}
+                  rowsPerPage={pageSize}
+                  onRowsPerPageChange={(
+                    event: React.ChangeEvent<
+                      HTMLInputElement | HTMLTextAreaElement
+                    >
+                  ) => {
+                    setPageSize(parseInt(event.target.value));
+                    setCurrentPage(1);
+                  }}
+                />
             )}
           </>
         </Grid>

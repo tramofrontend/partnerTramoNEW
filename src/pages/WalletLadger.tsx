@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Card, Stack, Grid, TableHead, Modal, Button } from '@mui/material';
+import { Card, Stack, Grid, TableHead, Modal, Button, TextField, styled, TableCell, TableRow, tableCellClasses } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
 import { useSnackbar } from 'notistack';
 import DateRangePicker, { useDateRangePicker } from 'src/components/date-range-picker';
 import {
   Table,
-  TableRow,
   TableBody,
-  TableCell,
   CardProps,
   Typography,
   TableContainer,
@@ -22,9 +20,9 @@ import CustomPagination from '../components/customFunctions/CustomPagination';
 import ApiDataLoading from '../components/customFunctions/ApiDataLoading';
 import * as XLSX from 'xlsx';
 import FileFilterButton from '../sections/MyTransaction/FileFilterButton';
-import { fDate, fDateTime } from 'src/utils/formatTime';
+import { fDate, fDateFormatForApi, fDateTime } from 'src/utils/formatTime';
 import { useAuthContext } from 'src/auth/useAuthContext';
-import { LocalizationProvider } from '@mui/x-date-pickers';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -35,7 +33,8 @@ import { LoadingButton } from '@mui/lab';
 
 // ----------------------------------------------------------------------
 type FormValuesProps = {
-  date: string;
+  startDate: Date | null;
+  endDate: Date | null;
   clientRefId: string;
 };
 
@@ -50,6 +49,7 @@ type RowProps = {
   maxComm: number;
   status: string;
 };
+
 interface Props extends CardProps {
   title?: string;
   subheader?: string;
@@ -101,7 +101,8 @@ export default function WalletLadger() {
 
   const FilterSchema = Yup.object().shape({});
   const defaultValues = {
-    date: "",
+    startDate: null,
+    endDate: null,
     clientRefId: "",
   };
   const methods = useForm<FormValuesProps>({
@@ -145,8 +146,8 @@ export default function WalletLadger() {
         currentPage: currentPage,
       },
       clientRefId: getValues("clientRefId") || "",
-      startDate: startDate || "",
-      endDate: endDate || "",
+      startDate: fDateFormatForApi(getValues("startDate")),
+      endDate: fDateFormatForApi(getValues("endDate")),
     };
     Api(`agent/walletLedger`, 'POST', body, token).then((Response: any) => {
       console.log('======Transaction==response=====>' + Response);
@@ -250,13 +251,43 @@ export default function WalletLadger() {
   //     }
   //   });
   // };
+  const style = {
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: { xs: "90%", sm: 720 },
+    bgcolor: "#ffffff",
+    borderRadius: 2,
+  };
+
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 12,
+      padding: 6,
+    },
+  }));
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(even)": {
+      backgroundColor: theme.palette.grey[300],
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
 
   return (
     <>
       <Helmet>
         <title>Wallet Ladger | </title>
       </Helmet>
-      <Stack sx={{ maxHeight: window.innerHeight - 220 }}>
+      <Stack>
         <FormProvider
           methods={methods}
           onSubmit={handleSubmit(getTransactional)}
@@ -265,29 +296,33 @@ export default function WalletLadger() {
             <RHFTextField
               name="clientRefId"
               placeholder={"Client Ref Id"}
+              size='small'
               sx={{ width: 300 }}
             />
             <Stack flexDirection={"row"} gap={1}>
-              <FileFilterButton
-                isSelected={!!isSelectedValuePicker}
-                startIcon={<Iconify icon="eva:calendar-fill" />}
-                onClick={onOpenPicker}
-              >
-                {isSelectedValuePicker ? shortLabel : "Select Date"}
-              </FileFilterButton>
-              <DateRangePicker
-                variant="input"
-                title="Choose Maximum 31 Days"
-                startDate={startDate}
-                endDate={endDate}
-                onChangeStartDate={onChangeStartDate}
-                onChangeEndDate={onChangeEndDate}
-                open={openPicker}
-                onClose={onClosePicker}
-                isSelected={isSelectedValuePicker}
-                isError={isError}
-                // additionalFunction={ExportData}
-              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label="Start date"
+                      inputFormat="DD/MM/YYYY"
+                      value={watch("startDate")}
+                      maxDate={new Date()}
+                      onChange={(newValue: any) => setValue("startDate", newValue)}
+                      renderInput={(params: any) => (
+                        <TextField {...params} size={"small"} sx={{ width: 150 }} />
+                      )}
+                    />
+                    <DatePicker
+                      label="End date"
+                      inputFormat="DD/MM/YYYY"
+                      value={watch("endDate")}
+                      minDate={watch("startDate")}
+                      maxDate={new Date()}
+                      onChange={(newValue: any) => setValue("endDate", newValue)}
+                      renderInput={(params: any) => (
+                        <TextField {...params} size={"small"} sx={{ width: 150 }} />
+                      )}
+                    />
+                  </LocalizationProvider>
             </Stack>
             <LoadingButton
               variant="contained"
@@ -346,13 +381,24 @@ export default function WalletLadger() {
       </Stack>
 
       <CustomPagination
-        pageSize={pageSize}
-        onChange={(event: React.ChangeEvent<unknown>, value: number) => {
-          setCurrentPage(value);
-        }}
-        page={currentPage}
-        Count={WalletCount}
-      />
+                  page={currentPage - 1}
+                  count={WalletCount}
+                  onPageChange={(
+                    event: React.MouseEvent<HTMLButtonElement> | null,
+                    newPage: number
+                  ) => {
+                    setCurrentPage(newPage + 1);
+                  }}
+                  rowsPerPage={pageSize}
+                  onRowsPerPageChange={(
+                    event: React.ChangeEvent<
+                      HTMLInputElement | HTMLTextAreaElement
+                    >
+                  ) => {
+                    setPageSize(parseInt(event.target.value));
+                    setCurrentPage(1);
+                  }}
+                />
     </>
   );
 }
@@ -408,32 +454,53 @@ const LadgerRow = ({ row }: any) => {
   };
 
   const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '90%',
-    bgcolor: '#ffffff',
-    boxShadow: 24,
-    p: 4,
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: { xs: "90%", sm: 720 },
+    bgcolor: "#ffffff",
+    borderRadius: 2,
   };
+
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 12,
+      padding: 6,
+    },
+  }));
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(even)": {
+      backgroundColor: theme.palette.grey[300],
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
+
 
   return (
     <>
-      <TableRow
+      <StyledTableRow
         key={row._id}
         hover
         role="checkbox"
         tabIndex={-1}
         sx={{ borderBottom: '1px solid #dadada' }}
       >
-        <TableCell>
+        <StyledTableCell>
           <Typography variant="body2" sx={{ color: 'text.secondary', cursor: 'pointer' }}>
             {row?.createdAt ? fDateTime(row?.createdAt) : fDateTime(row?.transaction?.createdAt)}
           </Typography>
           <Typography variant="body2">{row?.walletId}</Typography>
-        </TableCell>
-        <TableCell>
+        </StyledTableCell>
+        <StyledTableCell>
           <Typography variant="body1" sx={{ color: 'text.secondary' }}>
             {user?._id === row?.to?.id?._id ? (
               <>
@@ -459,8 +526,8 @@ const LadgerRow = ({ row }: any) => {
               </>
             )}
           </Typography>
-        </TableCell>
-        <TableCell>
+        </StyledTableCell>
+        <StyledTableCell>
           <Typography variant="body1" sx={{ color: 'text.secondary' }}>
             {user?._id === row?.to?.id?._id ? (
               <>
@@ -476,8 +543,8 @@ const LadgerRow = ({ row }: any) => {
               </>
             )}
           </Typography>
-        </TableCell>
-        <TableCell>
+        </StyledTableCell>
+        <StyledTableCell>
           <Typography variant="body1" sx={{ color: 'text.secondary' }}>
             {user?._id === row?.to?.id?._id ? (
               <>
@@ -513,9 +580,9 @@ const LadgerRow = ({ row }: any) => {
               </>
             )}
           </Typography>
-        </TableCell>
+        </StyledTableCell>
 
-        <TableCell>
+        <StyledTableCell>
           {row?.transaction?.productName && (
             <Stack direction="row" gap={0.5}>
               <Typography variant="subtitle2">Product :</Typography>
@@ -527,9 +594,9 @@ const LadgerRow = ({ row }: any) => {
             <Typography variant="subtitle2">Transaction Type : </Typography>
             <Typography variant="body2">{row?.transaction?.transactionType}</Typography>
           </Stack>
-        </TableCell>
+        </StyledTableCell>
 
-        <TableCell>
+        <StyledTableCell>
           <Typography variant="body1" sx={{ color: 'text.secondary' }}>
             {user?._id === row?.to?.id?._id ? (
               <>
@@ -563,24 +630,24 @@ const LadgerRow = ({ row }: any) => {
               </>
             )}
           </Typography>
-        </TableCell>
+        </StyledTableCell>
 
-        <TableCell>
+        <StyledTableCell>
           <Typography variant="body1" sx={{ color: 'text.secondary' }}>
             {parseFloat(row?.reason) || '-'}
           </Typography>
-        </TableCell>
+        </StyledTableCell>
 
         {row?.transaction?.clientRefId ? (
-          <TableCell onClick={() => openEditModal(row)}>
+          <StyledTableCell onClick={() => openEditModal(row)}>
             <Typography variant="body1" sx={{ color: 'blue', textDecoration: 'underline' }}>
               {row?.transaction?.clientRefId || '-'}
             </Typography>
-          </TableCell>
+          </StyledTableCell>
         ) : (
           'No Trasaction'
         )}
-      </TableRow>
+      </StyledTableRow>
 
       <Modal
         open={open}
@@ -603,22 +670,22 @@ const LadgerRow = ({ row }: any) => {
             <TableContainer style={{ margin: '0 auto', maxHeight: '300px' }}>
               <Table>
                 <TableHead>
-                  <TableRow>
+                  <StyledTableRow>
                     {tableLabelsTO.map((column: any) => (
-                      <TableCell key={column.id}>{column.label}</TableCell>
+                      <StyledTableCell key={column.id}>{column.label}</StyledTableCell>
                     ))}
-                  </TableRow>
+                  </StyledTableRow>
                 </TableHead>
 
                 <TableBody>
-                  <TableRow
+                  <StyledTableRow
                     key={ToFromData._id}
                     hover
                     role="checkbox"
                     tabIndex={-1}
                     sx={{ borderBottom: '1px solid #dadada' }}
                   >
-                    <TableCell>
+                    <StyledTableCell>
                       {row?.transaction?.productName && (
                         <Stack direction="row" gap={0.5}>
                           <Typography variant="subtitle2">Product:</Typography>
@@ -632,11 +699,11 @@ const LadgerRow = ({ row }: any) => {
                         <Typography variant="subtitle2">Transaction Type:</Typography>
                         <Typography variant="body2">{row?.transaction?.transactionType}</Typography>
                       </Stack>
-                    </TableCell>
+                    </StyledTableCell>
 
                     {user?.role == 'agent' ? (
                       <>
-                        <TableCell>
+                        <StyledTableCell>
                           <Stack gap={0.5} direction="row">
                             <Typography variant="subtitle2">Opening:</Typography>
                             <Typography variant="body2">
@@ -654,9 +721,9 @@ const LadgerRow = ({ row }: any) => {
                               )}
                             </Typography>
                           </Stack>
-                        </TableCell>
+                        </StyledTableCell>
 
-                        <TableCell>
+                        <StyledTableCell>
                           <Stack gap={0.5} direction="row">
                             <Typography variant="subtitle2">Comm:</Typography>
                             <Typography variant="body2">
@@ -677,11 +744,11 @@ const LadgerRow = ({ row }: any) => {
                               {ToFromData?.transaction?.agentDetails?.TDSAmount?.toFixed(2)}
                             </Typography>
                           </Stack>
-                        </TableCell>
+                        </StyledTableCell>
                       </>
                     ) : user?.role == 'distributor' ? (
                       <>
-                        <TableCell>
+                        <StyledTableCell>
                           <Stack gap={0.5} direction="row">
                             <Typography variant="subtitle2">Opening:</Typography>
                             <Typography variant="body2">
@@ -699,9 +766,9 @@ const LadgerRow = ({ row }: any) => {
                               )}
                             </Typography>
                           </Stack>
-                        </TableCell>
+                        </StyledTableCell>
 
-                        <TableCell>
+                        <StyledTableCell>
                           <Stack gap={0.5} direction="row">
                             <Typography variant="subtitle2">Comm:</Typography>
                             <Typography variant="body2">
@@ -722,11 +789,11 @@ const LadgerRow = ({ row }: any) => {
                               {ToFromData?.transaction?.distributorDetails?.TDSAmount}
                             </Typography>
                           </Stack>
-                        </TableCell>
+                        </StyledTableCell>
                       </>
                     ) : (
                       <>
-                        <TableCell>
+                        <StyledTableCell>
                           <Stack gap={0.5} direction="row">
                             <Typography variant="subtitle2">Opening:</Typography>
                             <Typography variant="body2">
@@ -744,9 +811,9 @@ const LadgerRow = ({ row }: any) => {
                               )}
                             </Typography>
                           </Stack>
-                        </TableCell>
+                        </StyledTableCell>
 
-                        <TableCell>
+                        <StyledTableCell>
                           <Stack gap={0.5} direction="row">
                             <Typography variant="subtitle2">Comm:</Typography>
                             <Typography variant="body2">
@@ -773,11 +840,11 @@ const LadgerRow = ({ row }: any) => {
                               )}
                             </Typography>
                           </Stack>
-                        </TableCell>
+                        </StyledTableCell>
                       </>
                     )}
 
-                    <TableCell>
+                    <StyledTableCell>
                       <Stack gap={0.5} direction="row">
                         <Typography variant="subtitle2">Credit:</Typography>
                         <Typography variant="body2">
@@ -791,9 +858,9 @@ const LadgerRow = ({ row }: any) => {
                           {ToFromData?.transaction?.debit?.toFixed(2)}
                         </Typography>
                       </Stack>
-                    </TableCell>
+                    </StyledTableCell>
 
-                    <TableCell>
+                    <StyledTableCell>
                       <Stack gap={0.5} direction="row">
                         <Typography variant="subtitle2">TDS:</Typography>
                         <Typography variant="body2">
@@ -806,16 +873,16 @@ const LadgerRow = ({ row }: any) => {
                           {ToFromData?.transaction?.GST?.toFixed(2)}
                         </Typography>
                       </Stack>
-                    </TableCell>
+                    </StyledTableCell>
 
-                    <TableCell>
+                    <StyledTableCell>
                       <Stack gap={0.5} direction="row">
                         <Typography variant="subtitle2">Status:</Typography>
                         <Typography variant="body2">{ToFromData?.transaction?.status}</Typography>
                       </Stack>
-                    </TableCell>
+                    </StyledTableCell>
 
-                    <TableCell>
+                    <StyledTableCell>
                       <Stack gap={0.5} direction="row">
                         <Typography variant="subtitle2">Bank:</Typography>
                         <Typography variant="body2">
@@ -843,8 +910,8 @@ const LadgerRow = ({ row }: any) => {
                           {ToFromData?.transaction?.moneyTransferBeneficiaryDetails?.ifsc}
                         </Typography>
                       </Stack>
-                    </TableCell>
-                    <TableCell>
+                    </StyledTableCell>
+                    <StyledTableCell>
                       <Stack gap={0.5} direction="row">
                         <Typography variant="subtitle2">Bank:</Typography>
                         <Typography variant="body2">
@@ -865,11 +932,11 @@ const LadgerRow = ({ row }: any) => {
                           {ToFromData?.transaction?.operator?.key3}
                         </Typography>
                       </Stack>
-                    </TableCell>
-                    <TableCell>
+                    </StyledTableCell>
+                    <StyledTableCell>
                       <Typography>{ToFromData?.transaction?.mobileNumber}</Typography>
-                    </TableCell>
-                  </TableRow>
+                    </StyledTableCell>
+                  </StyledTableRow>
                 </TableBody>
               </Table>
             </TableContainer>

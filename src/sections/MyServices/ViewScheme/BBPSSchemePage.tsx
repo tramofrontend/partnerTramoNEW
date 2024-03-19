@@ -199,14 +199,25 @@ export default function BBPSSchemePage() {
           </Table>
         </TableContainer>
       )}
-      <CustomPagination
-        pageSize={pageSize}
-        onChange={(event: React.ChangeEvent<unknown>, value: number) => {
-          setCurrentPage(value);
-        }}
-        page={currentPage}
-        Count={(isFilter ? searchData : tableData).length}
-      />
+       <CustomPagination
+                  page={currentPage - 1}
+                  count={(isFilter ? searchData : tableData).length}
+                  onPageChange={(
+                    event: React.MouseEvent<HTMLButtonElement> | null,
+                    newPage: number
+                  ) => {
+                    setCurrentPage(newPage + 1);
+                  }}
+                  rowsPerPage={pageSize}
+                  onRowsPerPageChange={(
+                    event: React.ChangeEvent<
+                      HTMLInputElement | HTMLTextAreaElement
+                    >
+                  ) => {
+                    setPageSize(parseInt(event.target.value));
+                    setCurrentPage(1);
+                  }}
+                />
     </>
   );
 }
