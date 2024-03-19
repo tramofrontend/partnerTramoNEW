@@ -8,12 +8,14 @@ import {
   Table,
   TableRow,
   TableBody,
-  TableCell,
   TextField,
   Button,
   Typography,
   Pagination,
   MenuItem,
+  TableCell,
+  styled,
+  tableCellClasses,
 } from "@mui/material";
 
 import { Helmet } from "react-helmet-async";
@@ -231,6 +233,37 @@ export default function (props: any) {
     reset(defaultValues);
   };
 
+  const style = {
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: { xs: "90%", sm: 720 },
+    bgcolor: "#ffffff",
+    borderRadius: 2,
+  };
+
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 12,
+      padding: 6,
+    },
+  }));
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(even)": {
+      backgroundColor: theme.palette.grey[300],
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
+
   return (
     <>
       <Helmet>
@@ -274,6 +307,7 @@ export default function (props: any) {
               <RHFSelect
                 name="Paymentmode"
                 label="Mode Of Payment"
+                size="small"
                 SelectProps={{
                   native: false,
                   sx: { textTransform: "capitalize" },
@@ -294,6 +328,7 @@ export default function (props: any) {
               <RHFSelect
                 name="status"
                 label="Status"
+                size="small"
                 SelectProps={{
                   native: false,
                   sx: { textTransform: "capitalize" },
@@ -338,60 +373,60 @@ export default function (props: any) {
 
               <TableBody>
                 {sdata.map((row: any) => (
-                  <TableRow
+                  <StyledTableRow
                     key={row._id}
                     role="checkbox"
                     tabIndex={-1}
                     sx={{ borderBottom: "1px solid #dadada" }}
                   >
-                    <TableCell>
+                    <StyledTableCell>
                       <Typography variant="body1">
                         {fDateTime(row?.createdAt)}
                       </Typography>
-                    </TableCell>
+                    </StyledTableCell>
 
-                    <TableCell>
+                    <StyledTableCell>
                       <Typography variant="body1">Rs. {row?.amount}</Typography>
-                    </TableCell>
-                    <TableCell>
+                    </StyledTableCell>
+                    <StyledTableCell>
                       <Typography variant="body1">
                         {row?.modeId?.transfer_mode_name}
                       </Typography>
-                    </TableCell>
+                    </StyledTableCell>
 
-                    <TableCell>
+                    <StyledTableCell>
                       <Typography variant="body1" textAlign={"center"}>
                         {!isNaN(row?.Charge) ? "Rs. " + row?.Charge : "-"}
                       </Typography>
-                    </TableCell>
+                    </StyledTableCell>
 
-                    <TableCell>
+                    <StyledTableCell>
                       <Typography variant="body1" textAlign={"center"}>
                         {!isNaN(row?.Commission)
                           ? "Rs. " + fIndianCurrency(row?.Commission || "0")
                           : "-"}
                       </Typography>
-                    </TableCell>
+                    </StyledTableCell>
 
-                    <TableCell>
+                    <StyledTableCell>
                       <Typography variant="body1">
                         {row?.deposit_type}
                       </Typography>
-                    </TableCell>
+                    </StyledTableCell>
 
-                    <TableCell>
+                    <StyledTableCell>
                       <Typography variant="body1">
                         {row?.transactional_details?.mobile}
                       </Typography>
-                    </TableCell>
+                    </StyledTableCell>
 
-                    <TableCell>
+                    <StyledTableCell>
                       <Typography variant="body1">
                         {row?.transactional_details?.branch}
                       </Typography>
-                    </TableCell>
+                    </StyledTableCell>
 
-                    <TableCell
+                    <StyledTableCell
                       sx={{
                         textTransform: "lowercase",
                         fontWeight: 600,
@@ -413,21 +448,32 @@ export default function (props: any) {
                           ? sentenceCase(row.status.toLowerCase())
                           : ""}
                       </Label>
-                    </TableCell>
-                  </TableRow>
+                    </StyledTableCell>
+                  </StyledTableRow>
                 ))}
               </TableBody>
             </Table>
           </Scrollbar>
 
           <CustomPagination
-               pageSize={pageSize}
-               onChange={(event: React.ChangeEvent<unknown>, value: number) => {
-                 setCurrentPage(value);
-               }}
-               page={currentPage}
-               Count={pageCount}
-             />
+                  page={currentPage - 1}
+                  count={pageCount}
+                  onPageChange={(
+                    event: React.MouseEvent<HTMLButtonElement> | null,
+                    newPage: number
+                  ) => {
+                    setCurrentPage(newPage + 1);
+                  }}
+                  rowsPerPage={pageSize}
+                  onRowsPerPageChange={(
+                    event: React.ChangeEvent<
+                      HTMLInputElement | HTMLTextAreaElement
+                    >
+                  ) => {
+                    setPageSize(parseInt(event.target.value));
+                    setCurrentPage(1);
+                  }}
+                />
 
           {/* <CustomPagination /> */}
         </Grid>

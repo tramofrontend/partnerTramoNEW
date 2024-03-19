@@ -74,7 +74,7 @@ export default function Header({ onOpenNav }: Props) {
             <Label variant="soft" color={'warning'} sx={walletStyle}>
               {`AEPS wallet = ${fCurrency(user?.AEPS_wallet_amount) || 0}`}
             </Label>
-            <NotificationsPopover />
+            {/* <NotificationsPopover /> */}
 
             <AccountPopover />
           </>

@@ -7,7 +7,7 @@ import TramoLoading from "../JsonAnimations/Tramo Loader.json";
 function ApiDataLoading() {
   const theme = useTheme();
   return (
-    <Stack flexDirection={"row"} justifyContent={"center"} my={2}>
+    <Stack flexDirection={"row"} justifyContent={"center"} my={2} mt={30}>
       <m.div variants={varFade().in}>
         <Lottie animationData={TramoLoading} />
       </m.div>

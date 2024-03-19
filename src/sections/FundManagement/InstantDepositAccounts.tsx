@@ -116,7 +116,7 @@ function InstantDepositAccounts() {
   };
 
   return (
-    <Card sx={{ p: 2, bgcolor: "primary.lighter" }}>
+    <Card sx={{ p: 2, bgcolor: "#ff30300d" }}>
       <Typography variant="subtitle1" color={"primary"}>
         Instant Deposit Account
       </Typography>
