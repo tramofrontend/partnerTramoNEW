@@ -390,7 +390,14 @@ const SettlementToMainWallet = ({ userBankList }: childProps) => {
                     NPIN
                   </Typography>
                 </Stack>
-                <RHFCodes keyName="otp" inputs={['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6']} />
+                <RHFCodes
+                  keyName="otp"
+                  inputProps={{
+                    maxLength: 1,
+                    type: 'password',
+                  }}
+                  inputs={['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6']}
+                />
                 {(!!errors.otp1 ||
                   !!errors.otp2 ||
                   !!errors.otp3 ||

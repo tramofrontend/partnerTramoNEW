@@ -150,7 +150,7 @@ export default function AuthNewPasswordForm() {
           InputLabelProps={{ shrink: true }}
         />
 
-        <RHFCodes keyName="code" inputs={['code1', 'code2', 'code3', 'code4', 'code5', 'code6']} />
+        <RHFCodes keyName="code" type='password' inputs={['code1', 'code2', 'code3', 'code4', 'code5', 'code6']} />
 
         {(!!errors.code1 ||
           !!errors.code2 ||

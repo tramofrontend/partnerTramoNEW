@@ -113,16 +113,18 @@ export default function ViewAllScheme() {
             sx={{ background: '#F4F6F8', padding: '0 20px', height: '48px' }}
             onChange={(event, newValue) => setSuperCurrentTab(newValue)}
           >
-            {categoryList.map((tab: any) => (
-              <Tab
-                style={{ fontSize: '20px' }}
-                key={tab._id}
-                sx={{ mx: 3 }}
-                label={<h5 style={{ marginBlockStart: '10px' }}>{tab.category_name}</h5>}
-                value={tab.category_name}
-                onClick={() => getSchemeDetail(tab._id)}
-              />
-            ))}
+            {categoryList
+              .filter((tab:any) => tab.category_name.toLowerCase() !== 'bill payment')
+              .map((tab: any) => (
+                <Tab
+                  style={{ fontSize: '20px' }}
+                  key={tab._id}
+                  sx={{ mx: 3 }}
+                  label={<h5 style={{ marginBlockStart: '10px' }}>{tab.category_name}</h5>}
+                  value={tab.category_name}
+                  onClick={() => getSchemeDetail(tab._id)}
+                />
+              ))}
           </Tabs>
         </Box>
       </Box>
@@ -164,8 +166,6 @@ export default function ViewAllScheme() {
             <ViewAepsTable comData={com} tableData={sdata} />
           ) : superCurrentTab.toLowerCase() == 'recharges' ? (
             <ViewRechargeTable comData={com} tableData={sdata} />
-          ) : superCurrentTab.toLowerCase() == 'bill payment' ? (
-            <ViewBBPSTable comData={com} tableData={sdata} />
           ) : superCurrentTab.toLowerCase() == 'money transfer' ? (
             <ViewMoneyTransferTable comData={com} tableData={sdata} />
           ) : superCurrentTab.toLowerCase() == 'aadhaar pay' ? (

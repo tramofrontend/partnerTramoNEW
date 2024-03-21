@@ -21,6 +21,7 @@ type RowProps = {
   maxSlab: string;
   TransactionType: string;
   apiUserCommission: string;
+  commissionType: string;
 };
 
 interface Props extends CardProps {
@@ -33,7 +34,8 @@ export default function ViewMatmTable({ title, subheader, tableData, comData, ..
   const tableLabels = [
     { id: 'min', label: 'Min. Slab' },
     { id: 'max', label: 'Max. Slab' },
-    { id: 'txn', label: 'Transaction Type' },
+    { id: 'txn', label: 'Transaction Type',align:"left"},
+    { id: 'commissionType', label: 'Commission Type' ,align:"left"},
     { id: 'Agent', label: 'Api User Commission' },
   ];
 
@@ -70,6 +72,7 @@ function VendorRow({ row }: vendorRowProps) {
         <TableCell>{row.minSlab ? 'Rs. ' + row.minSlab : '-'}</TableCell>
         <TableCell>{row.maxSlab ? 'Rs. ' + row.maxSlab : '-'}</TableCell>
         <TableCell>{row.TransactionType || '-'}</TableCell>
+        <TableCell>{row.commissionType == 'flat' ? 'Rs.' :'%'}</TableCell>
         <TableCell>{row.apiUserCommission || '-'}</TableCell>
       </TableRow>
     </>
