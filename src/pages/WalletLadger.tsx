@@ -295,7 +295,7 @@ export default function WalletLadger() {
           <Stack flexDirection={"row"} m={1} gap={1}>
             <RHFTextField
               name="clientRefId"
-              placeholder={"Client Ref Id"}
+              placeholder={"Transaction ID "}
               size='small'
               sx={{ width: 300 }}
             />

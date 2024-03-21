@@ -79,6 +79,7 @@ export default function RHFCodes({ keyName = '', inputs = [], ...other }: Props)
                   '& input': { p: 0, textAlign: 'center' },
                 },
               }}
+              type="password"
               inputProps={{
                 maxLength: 1,
                 type: 'number',
