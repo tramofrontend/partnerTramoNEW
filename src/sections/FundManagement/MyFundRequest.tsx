@@ -381,7 +381,10 @@ export default function (props: any) {
                   >
                     <StyledTableCell>
                       <Typography variant="body1">
-                        {fDateTime(row?.createdAt)}
+                      createdAt: {fDateTime(row?.createdAt)}
+                      </Typography>
+                      <Typography variant="body1">
+                      UpdatedAt: {fDateTime(row?.actionDate)}
                       </Typography>
                     </StyledTableCell>
 
