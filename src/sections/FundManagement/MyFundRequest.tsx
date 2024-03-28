@@ -436,7 +436,7 @@ export default function (props: any) {
                       <Label
                         variant="soft"
                         color={
-                          (row.status.toLowerCase() === "failed" && "error") ||
+                          (row.status.toLowerCase() === "rejected" && "error") ||
                           ((row.status.toLowerCase() === "pending" ||
                             row.status.toLowerCase() === "in_process") &&
                             "warning") ||
