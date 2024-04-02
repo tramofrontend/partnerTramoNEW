@@ -29,6 +29,7 @@ export const PATH_DASHBOARD = {
     root: path(ROOTS_DASHBOARD, "/transactions"),
     mytransactions: path(ROOTS_DASHBOARD, "/transactions/mytransactions"),
     mywalletladger: path(ROOTS_DASHBOARD, "/transactions/mywalletladger"),
+    reportexport: path(ROOTS_DASHBOARD, "/transactions/reportexport"),
   },
 
   //Services 

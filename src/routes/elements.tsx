@@ -22,6 +22,7 @@ export const Dashboard = Loadable(lazy(() => import('../pages/Dashboard')));
 export const MyTransactions = Loadable(lazy(() => import('../pages/MyTransaction')));
 // walletladger
 export const WalletLadgerEntry = Loadable(lazy(() => import('../pages/WalletLadger')));
+export const ReportExport = Loadable(lazy(() => import('../sections/ReportExport/Reportexport')));
 
 //MyActiveSecvices
 export const MyActiveSecvices = Loadable(
