@@ -22,6 +22,7 @@ import {
   ApiCredentials,
   MyScheme,
   BBPSSchemePage,
+  ReportExport,
   BankDetail,
   AepsSettlement,
 } from './elements';
@@ -78,6 +79,7 @@ export default function Router() {
             },
             { path: 'mytransactions', element: <MyTransactions /> },
             { path: 'mywalletladger', element: <WalletLadgerEntry /> },
+            { path: 'reportexport', element: <ReportExport /> },
           ],
         },
 
@@ -103,7 +105,7 @@ export default function Router() {
             { path: 'myfunddeposit', element: <MyFundDeposit /> },
             { path: 'bankDetail', element: <BankDetail /> },
             { path: 'aepssettlement', element: <AepsSettlement /> },
-            {path:'myfundrequest',element:<MyFundRequest/>},
+            { path: 'myfundrequest', element: <MyFundRequest /> },
           ],
         },
       ],
