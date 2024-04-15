@@ -74,7 +74,7 @@ export default function WalletLadger() {
     { id: 'walletType', label: 'WalletType ' },
     { id: 'reason', label: 'reason ' },
 
-    { id: 'walletId', label: 'Wallet Id' },
+    { id: 'walletId', label: 'Transaction Id' },
   ];
   const distributortableLabels = [
     { id: 'date/LadgerID', label: 'Date/LadgerID' },
@@ -85,7 +85,7 @@ export default function WalletLadger() {
     { id: 'walletType', label: 'WalletType ' },
     { id: 'reason', label: 'reason ' },
 
-    { id: 'walletId', label: 'Wallet Id' },
+    { id: 'walletId', label: 'Transaction Id' },
   ];
   const MDtableLabels = [
     { id: 'date/LadgerID', label: 'Date/LadgerID' },
@@ -96,7 +96,7 @@ export default function WalletLadger() {
     { id: 'walletType', label: 'WalletType ' },
     { id: 'reason', label: 'reason ' },
     // { id: "remarks", label: "remarks" },
-    { id: 'walletId', label: 'Wallet Id' },
+    { id: 'walletId', label: 'Transaction Id' },
   ];
 
   const FilterSchema = Yup.object().shape({});
