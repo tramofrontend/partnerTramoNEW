@@ -27,6 +27,7 @@ import { Api } from 'src/webservices';
 import { LoadingButton } from '@mui/lab';
 import { Icon } from '@iconify/react';
 import LogoBank from '../../assets/icons/Tramo.svg';
+import NoBankAccount from 'src/assets/icons/NoBankAccount';
 
 // ----------------------------------------------------------------------
 type FormValuesProps = {
@@ -291,7 +292,7 @@ export default function BankDetail() {
         </Stack>
         {userBankList.length === 0 && (
           <Stack direction={'row'} justifyContent={'center'} alignContent={'center'} marginTop={10}>
-            <img src={LogoBank} alt="No bank data" style={{}} />
+            <NoBankAccount />
           </Stack>
         )}
 
