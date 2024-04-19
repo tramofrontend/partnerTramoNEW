@@ -37,6 +37,7 @@ import FormProvider from 'src/components/hook-form/FormProvider';
 import { RHFTextField } from 'src/components/hook-form';
 import { LoadingButton } from '@mui/lab';
 import useResponsive from 'src/hooks/useResponsive';
+import MotionModal from 'src/components/animate/MotionModal';
 
 // ----------------------------------------------------------------------
 type FormValuesProps = {
@@ -71,6 +72,9 @@ export default function WalletLadger() {
   const [currentPage, setCurrentPage] = useState<any>(1);
   const [sendLoding, setSendLoading] = useState(false);
   const [WalletCount, setWalletCount] = useState(0);
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const agenttableLabels = [
     { id: 'date/LadgerID', label: 'Date/LadgerID' },
@@ -164,9 +168,11 @@ export default function WalletLadger() {
           setWalletCount(Response.data.data.totalNumberOfRecords);
           enqueueSnackbar(Response.data.message);
           setSendLoading(false);
+          setOpen(false);
         } else {
           enqueueSnackbar(Response.data.message);
           setSendLoading(false);
+          setOpen(false);
         }
       }
     });
@@ -289,61 +295,79 @@ export default function WalletLadger() {
     },
   }));
 
+  const handleReset = () => {
+    reset(defaultValues);
+    setLadgerData([]);
+    getTransactional();
+  };
+
   return (
     <>
       <Helmet>
         <title>Wallet Ladger | </title>
       </Helmet>
+      <Stack flexDirection={'row'} gap={1} mb={1} justifyContent={'right'}>
+        <Button variant="contained" onClick={handleReset}>
+          <Iconify icon="bx:reset" color={'common.white'} mr={1} />
+          Reset
+        </Button>
+        <Button variant="contained" onClick={handleOpen}>
+          <Iconify icon="icon-park-outline:filter" color={'common.white'} mr={1} /> Filter
+        </Button>
+      </Stack>
       <Stack>
-        <FormProvider methods={methods} onSubmit={handleSubmit(getTransactional)}>
-          <Stack flexDirection={'row'} mb={1} gap={1}>
-            <RHFTextField
-              name="clientRefId"
-              placeholder={'Transaction ID '}
-              size="small"
-              sx={{ width: 300 }}
-            />
-            <Stack flexDirection={'row'} gap={1}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="Start date"
-                  inputFormat="DD/MM/YYYY"
-                  value={watch('startDate')}
-                  maxDate={new Date()}
-                  onChange={(newValue: any) => setValue('startDate', newValue)}
-                  renderInput={(params: any) => (
-                    <TextField {...params} size={'small'} sx={{ minWidth: 150 }} />
-                  )}
+        <MotionModal open={open} onClose={handleClose} width={{ xs: '95%', sm: 500 }}>
+          {/* <Box> */}
+          <Stack mb={1}>
+            <FormProvider methods={methods} onSubmit={handleSubmit(getTransactional)}>
+              <Stack gap={1} m={1}>
+                <RHFTextField
+                  name="clientRefId"
+                  placeholder={'Transaction ID '}
+                  size="small"
+                  fullWidth
                 />
-                <DatePicker
-                  label="End date"
-                  inputFormat="DD/MM/YYYY"
-                  value={watch('endDate')}
-                  minDate={watch('startDate')}
-                  maxDate={new Date()}
-                  onChange={(newValue: any) => setValue('endDate', newValue)}
-                  renderInput={(params: any) => (
-                    <TextField {...params} size={'small'} sx={{ minWidth: 150 }} />
-                  )}
-                />
-              </LocalizationProvider>
-            </Stack>
-            <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
-              Search
-            </LoadingButton>
-            <LoadingButton
-              variant="contained"
-              onClick={() => {
-                reset(defaultValues);
-                getTransactional();
-                onChangeEndDate(null);
-                onChangeStartDate(null);
-              }}
-            >
-              Clear
-            </LoadingButton>
+                <Stack flexDirection={'row'} gap={1}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label="Start date"
+                      inputFormat="DD/MM/YYYY"
+                      value={watch('startDate')}
+                      maxDate={new Date()}
+                      onChange={(newValue: any) => setValue('startDate', newValue)}
+                      renderInput={(params: any) => (
+                        <TextField {...params} size={'small'} sx={{ width: 250 }} />
+                      )}
+                    />
+                    <DatePicker
+                      label="End date"
+                      inputFormat="DD/MM/YYYY"
+                      value={watch('endDate')}
+                      minDate={watch('startDate')}
+                      maxDate={new Date()}
+                      onChange={(newValue: any) => setValue('endDate', newValue)}
+                      renderInput={(params: any) => (
+                        <TextField {...params} size={'small'} sx={{ width: 250 }} />
+                      )}
+                    />
+                  </LocalizationProvider>
+                </Stack>
+                <Stack flexDirection={'row'} gap={1}>
+                  <LoadingButton variant="contained" onClick={handleClose}>
+                    Cancel
+                  </LoadingButton>
+                  <LoadingButton variant="contained" onClick={handleReset}>
+                    <Iconify icon="bx:reset" color={'common.white'} mr={1} /> Reset
+                  </LoadingButton>
+                  <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
+                    Apply
+                  </LoadingButton>
+                </Stack>
+              </Stack>
+            </FormProvider>
           </Stack>
-        </FormProvider>
+          {/* </Box> */}
+        </MotionModal>
 
         {sendLoding ? (
           <ApiDataLoading />

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // @mui
 import {
   Stack,
@@ -34,7 +34,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useDateRangePicker } from 'src/components/date-range-picker';
 import FileFilterButton from '../MyTransaction/FileFilterButton';
 import Iconify from 'src/components/iconify';
-import { DateRangePicker } from '@mui/lab';
+import { DateRangePicker, LoadingButton } from '@mui/lab';
 import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import Scrollbar from 'src/components/scrollbar';
 import { TableHeadCustom } from 'src/components/table';
@@ -42,6 +42,7 @@ import { fIndianCurrency } from 'src/utils/formatNumber';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import useResponsive from 'src/hooks/useResponsive';
+import MotionModal from 'src/components/animate/MotionModal';
 // ----------------------------------------------------------------------
 
 export default function (props: any) {
@@ -54,6 +55,9 @@ export default function (props: any) {
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   // const [fundRequestCreatedAt, setFundRequestCreatedAt] = useState('');
 
@@ -207,17 +211,20 @@ export default function (props: any) {
           enqueueSnackbar(Response.data.message);
           setPageCount(Response.data.count);
           setSdata(Response.data.data);
+          setOpen(false);
         } else {
           console.log('======getRaisedRequests=======>' + Response);
           enqueueSnackbar(Response.data.message);
         }
         setIsLoading(false);
+        setOpen(false);
       } else {
         setIsLoading(false);
       }
     });
   };
-  const handdleClear = () => {
+
+  const handleReset = () => {
     getFundReq();
     onChangeEndDate(null);
     onChangeStartDate(null);
@@ -260,90 +267,109 @@ export default function (props: any) {
       <Helmet>
         <title> Transactions |{process.env.React_APP_COMPANYNAME}</title>
       </Helmet>
+      <Stack flexDirection={'row'} gap={1} mb={1} justifyContent={'right'}>
+        <Button variant="contained" onClick={handleReset}>
+          <Iconify icon="bx:reset" color={'common.white'} mr={1} />
+          Reset
+        </Button>
+        <Button variant="contained" onClick={handleOpen}>
+          <Iconify icon="icon-park-outline:filter" color={'common.white'} mr={1} /> Filter
+        </Button>
+      </Stack>
 
-      <Stack flexDirection={'row'} justifyContent={'end'}></Stack>
       {isLoading ? (
         <ApiDataLoading />
       ) : (
         <Grid item xs={16} md={12} lg={12}>
-          <FormProvider methods={methods} onSubmit={handleSubmit(SearchData)}>
-            <Stack direction="row" gap={2} mt={2} mb={2}>
-              <Stack>
-                <Stack flexDirection={'row'} gap={1}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label="Start date"
-                      inputFormat="DD/MM/YYYY"
-                      value={watch('startDate')}
-                      maxDate={new Date()}
-                      onChange={(newValue: any) => setValue('startDate', newValue)}
-                      renderInput={(params: any) => (
-                        <TextField {...params} size={'small'} sx={{ width: 150 }} />
-                      )}
+          <MotionModal open={open} onClose={handleClose} width={{ xs: '95%', sm: 500 }}>
+            {/* <Box> */}
+            <Stack mb={1}>
+              <FormProvider methods={methods} onSubmit={handleSubmit(SearchData)}>
+                <Stack gap={2} mt={2} mb={2}>
+                  <Stack>
+                    <Stack flexDirection={'row'} gap={1}>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          label="Start date"
+                          inputFormat="DD/MM/YYYY"
+                          value={watch('startDate')}
+                          maxDate={new Date()}
+                          onChange={(newValue: any) => setValue('startDate', newValue)}
+                          renderInput={(params: any) => (
+                            <TextField {...params} size={'small'} sx={{ width: 250 }} />
+                          )}
+                        />
+                        <DatePicker
+                          label="End date"
+                          inputFormat="DD/MM/YYYY"
+                          value={watch('endDate')}
+                          minDate={watch('startDate')}
+                          maxDate={new Date()}
+                          onChange={(newValue: any) => setValue('endDate', newValue)}
+                          renderInput={(params: any) => (
+                            <TextField {...params} size={'small'} sx={{ width: 250 }} />
+                          )}
+                        />
+                      </LocalizationProvider>
+                    </Stack>
+                  </Stack>
+                  <RHFSelect
+                    name="Paymentmode"
+                    label="Mode Of Payment"
+                    size="small"
+                    SelectProps={{
+                      native: false,
+                      sx: { textTransform: 'capitalize' },
+                    }}
+                  >
+                    <MenuItem value="NEFT">NEFT</MenuItem>
+                    <MenuItem value="RTGS">RTGS</MenuItem>
+                    <MenuItem value="IMPS">IMPS</MenuItem>
+                    <MenuItem value="Cash deposit at CDM">Cash deposit at CDM</MenuItem>
+                    <MenuItem value="Fund Transfer">Fund Transfer</MenuItem>
+                    <MenuItem value="Cash deposit at branch">Cash deposit at branch</MenuItem>
+                  </RHFSelect>
+
+                  <RHFSelect
+                    name="status"
+                    label="Status"
+                    size="small"
+                    SelectProps={{
+                      native: false,
+                      sx: { textTransform: 'capitalize' },
+                    }}
+                  >
+                    <MenuItem value="Approved">Approved</MenuItem>
+                    <MenuItem value="Pending">Pending</MenuItem>
+                    <MenuItem value="Rejected">Rejected</MenuItem>
+                  </RHFSelect>
+
+                  {
+                    <RHFTextField
+                      name="phoneNumber"
+                      label=" Mobile"
+                      placeholder="Mobile"
+                      size="small"
                     />
-                    <DatePicker
-                      label="End date"
-                      inputFormat="DD/MM/YYYY"
-                      value={watch('endDate')}
-                      minDate={watch('startDate')}
-                      maxDate={new Date()}
-                      onChange={(newValue: any) => setValue('endDate', newValue)}
-                      renderInput={(params: any) => (
-                        <TextField {...params} size={'small'} sx={{ width: 150 }} />
-                      )}
-                    />
-                  </LocalizationProvider>
+                  }
+                  <RHFTextField name="amount" label="amount" placeholder="amount" size="small" />
+
+                  <Stack flexDirection={'row'} gap={1}>
+                    <LoadingButton variant="contained" onClick={handleClose}>
+                      Cancel
+                    </LoadingButton>
+                    <LoadingButton variant="contained" onClick={handleReset}>
+                      <Iconify icon="bx:reset" color={'common.white'} mr={1} /> Reset
+                    </LoadingButton>
+                    <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
+                      Apply
+                    </LoadingButton>
+                  </Stack>
                 </Stack>
-              </Stack>
-              <RHFSelect
-                name="Paymentmode"
-                label="Mode Of Payment"
-                size="small"
-                SelectProps={{
-                  native: false,
-                  sx: { textTransform: 'capitalize' },
-                }}
-              >
-                <MenuItem value="NEFT">NEFT</MenuItem>
-                <MenuItem value="RTGS">RTGS</MenuItem>
-                <MenuItem value="IMPS">IMPS</MenuItem>
-                <MenuItem value="Cash deposit at CDM">Cash deposit at CDM</MenuItem>
-                <MenuItem value="Fund Transfer">Fund Transfer</MenuItem>
-                <MenuItem value="Cash deposit at branch">Cash deposit at branch</MenuItem>
-              </RHFSelect>
-
-              <RHFSelect
-                name="status"
-                label="Status"
-                size="small"
-                SelectProps={{
-                  native: false,
-                  sx: { textTransform: 'capitalize' },
-                }}
-              >
-                <MenuItem value="Approved">Approved</MenuItem>
-                <MenuItem value="Pending">Pending</MenuItem>
-                <MenuItem value="Rejected">Rejected</MenuItem>
-              </RHFSelect>
-
-              {
-                <RHFTextField
-                  name="phoneNumber"
-                  label=" Mobile"
-                  placeholder="Mobile"
-                  size="small"
-                />
-              }
-              <RHFTextField name="amount" label="amount" placeholder="amount" size="small" />
-
-              <Button variant="contained" type="submit">
-                Search
-              </Button>
-              <Button variant="contained" onClick={handdleClear}>
-                Clear
-              </Button>
+              </FormProvider>
             </Stack>
-          </FormProvider>
+            {/* </Box> */}
+          </MotionModal>
 
           <Scrollbar
             sx={
