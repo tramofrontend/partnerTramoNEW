@@ -318,7 +318,7 @@ function NewFundRequest({ getRaisedRequest }: props) {
   };
 
   return (
-    <Card sx={{ p: 2, bgcolor: '#ff30300d', height: '100%' }}>
+    <Card sx={{ p: 1, bgcolor: '#ff30300d', height: '100%' }}>
       <Typography variant="subtitle1">New Fund Request</Typography>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Stack justifyContent={'space-between'} gap={2} mt={2}>

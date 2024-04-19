@@ -1,31 +1,23 @@
-import React, { useContext, useEffect, useState } from "react";
-import { BankAccountContext } from "./MyFundDeposites";
-import {
-  Button,
-  Card,
-  IconButton,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { bankAccountProps } from "./Types";
-import ICICIBank from "src/assets/icons/Bankicons/IciciBank";
-import { DemoBank } from "src/assets/icons/Bankicons/DemoBank";
-import useCopyToClipboard from "src/hooks/useCopyToClipboard";
-import Iconify from "src/components/iconify/Iconify";
-import { useSnackbar } from "notistack";
+import React, { useContext, useEffect, useState } from 'react';
+import { BankAccountContext } from './MyFundDeposites';
+import { Button, Card, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import { bankAccountProps } from './Types';
+import ICICIBank from 'src/assets/icons/Bankicons/IciciBank';
+import { DemoBank } from 'src/assets/icons/Bankicons/DemoBank';
+import useCopyToClipboard from 'src/hooks/useCopyToClipboard';
+import Iconify from 'src/components/iconify/Iconify';
+import { useSnackbar } from 'notistack';
 
 function CompanyBankAccounts() {
   const { copy } = useCopyToClipboard();
   const { enqueueSnackbar } = useSnackbar();
-  const bankListContext: bankAccountProps | any =
-    useContext(BankAccountContext);
+  const bankListContext: bankAccountProps | any = useContext(BankAccountContext);
   const [activeBank, setActiveBank] = useState({
-    ifsc: "",
-    account_number: "",
-    bank_name: "",
-    branch_name: "",
-    address: "",
+    ifsc: '',
+    account_number: '',
+    bank_name: '',
+    branch_name: '',
+    address: '',
   });
 
   useEffect(() => {
@@ -34,24 +26,22 @@ function CompanyBankAccounts() {
 
   const onCopy = (text: string) => {
     if (text) {
-      enqueueSnackbar("Copied!");
+      enqueueSnackbar('Copied!');
       copy(text);
     }
   };
 
   return (
-    <Card sx={{ p: 2, bgcolor: "#ff30300d" }}>
-      <Typography variant="subtitle1" color={"primary"}>
+    <Card sx={{ p: 1, bgcolor: '#ff30300d' }}>
+      <Typography variant="subtitle1" color={'primary'}>
         Company Bank Account
       </Typography>
 
-      <Stack m={1} flexDirection={"row"} alignItems={"center"} gap={2}>
+      <Stack m={1} flexDirection={'row'} alignItems={'center'} gap={2}>
         {bankListContext.map((item: bankAccountProps) => {
-          return item.bank_details.bank_name == "ICICI BANK" ? (
+          return item.bank_details.bank_name == 'ICICI BANK' ? (
             <ICICIBank
-              active={
-                item.bank_details.account_number === activeBank.account_number
-              }
+              active={item.bank_details.account_number === activeBank.account_number}
               onClick={() => setActiveBank(item.bank_details)}
             />
           ) : (
@@ -60,82 +50,60 @@ function CompanyBankAccounts() {
         })}
       </Stack>
 
-      <Stack width={{ sm: "100%", md: "50%" }} gap={1}>
-        <Stack flexDirection={"row"} justifyContent={"space-between"}>
+      <Stack width={{ sm: '100%', md: '50%' }} gap={1}>
+        <Stack flexDirection={'row'} justifyContent={'space-between'}>
           <Typography variant="subtitle2">Beneficiary Name</Typography>
           <Typography variant="body2">
-            {process.env.REACT_APP_COMPANY_LEGAL_NAME}{" "}
+            {process.env.REACT_APP_COMPANY_LEGAL_NAME}{' '}
             <Tooltip title="Copy" placement="top">
               <IconButton
-                onClick={() =>
-                  onCopy(process.env.REACT_APP_COMPANY_LEGAL_NAME as string)
-                }
+                onClick={() => onCopy(process.env.REACT_APP_COMPANY_LEGAL_NAME as string)}
               >
-                <Iconify
-                  icon="eva:copy-fill"
-                  width={20}
-                  color={"primary.main"}
-                />
+                <Iconify icon="eva:copy-fill" width={20} color={'primary.main'} />
               </IconButton>
             </Tooltip>
           </Typography>
         </Stack>
-        <Stack flexDirection={"row"} justifyContent={"space-between"}>
+        <Stack flexDirection={'row'} justifyContent={'space-between'}>
           <Typography variant="subtitle2">Bank Name</Typography>
           <Typography variant="body2">
-            {activeBank.bank_name}{" "}
+            {activeBank.bank_name}{' '}
             <Tooltip title="Copy" placement="top">
               <IconButton onClick={() => onCopy(activeBank.bank_name)}>
-                <Iconify
-                  icon="eva:copy-fill"
-                  width={20}
-                  color={"primary.main"}
-                />
+                <Iconify icon="eva:copy-fill" width={20} color={'primary.main'} />
               </IconButton>
             </Tooltip>
           </Typography>
         </Stack>
-        <Stack flexDirection={"row"} justifyContent={"space-between"}>
+        <Stack flexDirection={'row'} justifyContent={'space-between'}>
           <Typography variant="subtitle2">Account Number</Typography>
           <Typography variant="body2">
             {activeBank.account_number}
             <Tooltip title="Copy" placement="top">
               <IconButton onClick={() => onCopy(activeBank.account_number)}>
-                <Iconify
-                  icon="eva:copy-fill"
-                  width={20}
-                  color={"primary.main"}
-                />
+                <Iconify icon="eva:copy-fill" width={20} color={'primary.main'} />
               </IconButton>
             </Tooltip>
           </Typography>
         </Stack>
-        <Stack flexDirection={"row"} justifyContent={"space-between"}>
+        <Stack flexDirection={'row'} justifyContent={'space-between'}>
           <Typography variant="subtitle2">IFSC</Typography>
           <Typography variant="body2">
             {activeBank.ifsc}
             <Tooltip title="Copy" placement="top">
               <IconButton onClick={() => onCopy(activeBank.ifsc)}>
-                <Iconify
-                  icon="eva:copy-fill"
-                  width={20}
-                  color={"primary.main"}
-                />
+                <Iconify icon="eva:copy-fill" width={20} color={'primary.main'} />
               </IconButton>
             </Tooltip>
           </Typography>
         </Stack>
-        <Stack flexDirection={"row"} justifyContent={"space-between"}>
+        <Stack flexDirection={'row'} justifyContent={'space-between'}>
           <Typography variant="subtitle2">Account Type</Typography>
           <Typography variant="body2">
             Current
             <Tooltip title="Copy" placement="top">
-              <IconButton onClick={() => onCopy("Current")}>
-                <Iconify
-                  icon="eva:copy-fill"
-                  width={20}
-                  color={"primary.main"}
-                />
+              <IconButton onClick={() => onCopy('Current')}>
+                <Iconify icon="eva:copy-fill" width={20} color={'primary.main'} />
               </IconButton>
             </Tooltip>
           </Typography>
