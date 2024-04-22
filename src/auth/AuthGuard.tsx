@@ -5,6 +5,7 @@ import LoadingScreen from '../components/loading-screen';
 //
 import Login from '../pages/auth/LoginPage';
 import { useAuthContext } from './useAuthContext';
+import LocationInstruction from 'src/components/customFunctions/LocationInstruction';
 
 // ----------------------------------------------------------------------
 
@@ -13,7 +14,7 @@ type AuthGuardProps = {
 };
 
 export default function AuthGuard({ children }: AuthGuardProps) {
-  const { isAuthenticated, isInitialized } = useAuthContext();
+  const { isAuthenticated, isInitialized, location } = useAuthContext();
 
   const { pathname } = useLocation();
 
@@ -21,6 +22,10 @@ export default function AuthGuard({ children }: AuthGuardProps) {
 
   if (!isInitialized) {
     return <LoadingScreen />;
+  }
+
+  if (!location) {
+    return <LocationInstruction />;
   }
 
   if (!isAuthenticated) {
