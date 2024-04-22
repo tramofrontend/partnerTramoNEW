@@ -1,4 +1,4 @@
-import { createContext, useEffect, useReducer, useCallback } from 'react';
+import { createContext, useEffect, useReducer, useCallback, useState } from 'react';
 // utils
 import axios from '../utils/axios';
 //
@@ -100,7 +100,7 @@ type AuthProviderProps = {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
-
+  const [location, setLocation] = useState<boolean | null>(true);
   const initialize = useCallback(async () => {
     try {
       const accessToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
@@ -154,6 +154,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
         },
       });
     }
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }: any) => {
+        localStorage.setItem('lat', coords.latitude);
+        localStorage.setItem('long', coords.longitude);
+      },
+      (error) => {
+        setLocation(false);
+      }
+    );
+    fetch('https://api.ipify.org?format=json')
+      .then((response) => response.json())
+      .then((data) => localStorage.setItem('ip', data.ip));
   }, []);
 
   useEffect(() => {
@@ -215,6 +227,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       value={{
         ...state,
         method: 'jwt',
+        location,
         login,
         loginWithGoogle: () => {},
         loginWithGithub: () => {},
