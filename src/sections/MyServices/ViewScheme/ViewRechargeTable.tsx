@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import Scrollbar from 'src/components/scrollbar/Scrollbar';
 import { TableHeadCustom } from 'src/components/table';
+import useResponsive from 'src/hooks/useResponsive';
 // ----------------------------------------------------------------------
 
 type RowProps = {
@@ -24,6 +25,7 @@ interface Props extends CardProps {
 }
 
 export default function ViewRechargeTable({ tableData, comData, ...other }: Props) {
+  const isMobile = useResponsive('up', 'sm');
   const tableLabels = [
     { id: 'ProductDetail', label: 'Product Deatil' },
     { id: 'Agent', label: 'Api User Commission(in %)' },
@@ -32,7 +34,13 @@ export default function ViewRechargeTable({ tableData, comData, ...other }: Prop
     <Card {...other}>
       {comData.length ? (
         <TableContainer sx={{ overflow: 'unset' }}>
-          <Scrollbar>
+          <Scrollbar
+            sx={
+              isMobile
+                ? { maxHeight: window.innerHeight - 250 }
+                : { maxHeight: window.innerHeight - 154 }
+            }
+          >
             <Table sx={{ minWidth: 720 }}>
               <TableHeadCustom headLabel={tableLabels} />
 

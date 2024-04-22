@@ -382,14 +382,19 @@ function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
             {paymentModes.map((item: paymentModesProps) => {
               return (
                 <MenuItem
-                  key={item._id}
+                  key={item?._id}
                   value={item.modeId}
                   onClick={() => {
                     setValue('modesDetail', item);
                     setValue('amount', 0);
                   }}
                 >
-                  {item.modeName}
+                  {item.modeName +
+                    item.transactionFeeType +
+                    ' ' +
+                    (item.transactionFeeOption?.for_API_user == 'flat' ? 'Rs.' : '') +
+                    item.transactionFeeValue?.for_API_user +
+                    (item.transactionFeeOption?.for_API_user == 'flat' ? '' : '%')}
                 </MenuItem>
               );
             })}

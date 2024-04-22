@@ -27,6 +27,7 @@ export default function Main({ children, sx, ...other }: BoxProps) {
         sx={{
           pt: `${HEADER.H_MOBILE + SPACING}px`,
           pb: `${HEADER.H_MOBILE + SPACING}px`,
+          px: 1,
           ...(isDesktop && {
             px: 2,
             pt: `${HEADER.H_DASHBOARD_DESKTOP + 80}px`,
@@ -45,6 +46,7 @@ export default function Main({ children, sx, ...other }: BoxProps) {
       sx={{
         flexGrow: 1,
         py: `${HEADER.H_MOBILE + SPACING}px`,
+        px: 1,
         ...(isDesktop && {
           px: 2,
           py: `${HEADER.H_DASHBOARD_DESKTOP + SPACING}px`,

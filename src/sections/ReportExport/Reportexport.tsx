@@ -24,7 +24,6 @@ import { useAuthContext } from 'src/auth/useAuthContext';
 import React, { useEffect } from 'react';
 import { LoadingButton } from '@mui/lab';
 import * as Yup from 'yup';
-import { DatePicker } from '@mui/x-date-pickers';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Scrollbar from 'src/components/scrollbar/Scrollbar';
@@ -47,6 +46,7 @@ import CustomPagination from 'src/components/customFunctions/CustomPagination';
 import ApiDataLoading from 'src/components/customFunctions/ApiDataLoading';
 import { TableNoData } from 'src/components/table';
 import CheckStatusIcon from './CheckStatusIcon';
+import useResponsive from 'src/hooks/useResponsive';
 //aws
 AWS.config.update({
   accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
@@ -56,6 +56,7 @@ AWS.config.update({
 
 function Reportexport() {
   const { copy } = useCopyToClipboard();
+  const isMobile = useResponsive('up', 'sm');
   const [sdata, setSdata] = React.useState('transactionRecords');
   const [verifyLoding, setVerifyLoading] = React.useState(false);
   const [currentPage, setCurrentPage] = React.useState<any>(1);
@@ -350,37 +351,51 @@ function Reportexport() {
 
   return (
     <>
-      <Stack flexDirection={'row'} justifyContent={'space-between'} m={2}>
+      <Stack flexDirection={'row'} justifyContent={'space-between'}>
         <Tabs value={sdata} onChange={handleChange} aria-label="wrapped label tabs example">
-          <Tab value="transactionRecords" label=" Transaction Report" sx={{ fontSize: 18 }} />
-          <Tab value="fundRequest" label="Fund Request" sx={{ fontSize: 18 }} />
-          {/* <Tab value="fundFlow" label="Fund Flow" sx={{ fontSize: 18 }} /> */}
-          {/* <Tab value="AdminP&L" label="Admin P&L " sx={{ fontSize: 18 }} /> */}
-          <Tab value="walletLedger" label=" Wallet Ledger" sx={{ fontSize: 18 }} />
-          <Tab value="GST & TDS Report" label=" GST/TDS" sx={{ fontSize: 18 }} disabled />
+          <Tab
+            value="transactionRecords"
+            label=" Transaction Report"
+            sx={{ fontSize: { xs: 16, md: 20 } }}
+          />
+          <Tab value="fundRequest" label="Fund Request" sx={{ fontSize: { xs: 16, md: 20 } }} />
+          {/* <Tab value="fundFlow" label="Fund Flow" sx={{ fontSize: {xs: 16, md:20} }} /> */}
+          {/* <Tab value="AdminP&L" label="Admin P&L " sx={{ fontSize: {xs: 16, md:20} }} /> */}
+          <Tab value="walletLedger" label=" Wallet Ledger" sx={{ fontSize: { xs: 16, md: 20 } }} />
+          <Tab
+            value="GST & TDS Report"
+            label=" GST/TDS"
+            sx={{ fontSize: { xs: 16, md: 20 } }}
+            disabled
+          />
           <Tab
             value="Admin Main Wallet Summary Report "
             label=" Main Wallet Summary"
-            sx={{ fontSize: 18 }}
+            sx={{ fontSize: { xs: 16, md: 20 } }}
             disabled
           />
           <Tab
             value="Admin AEPS Wallet Summary Report "
             label=" AEPS Wallet Summary"
-            sx={{ fontSize: 18 }}
+            sx={{ fontSize: { xs: 16, md: 20 } }}
             disabled
           />
-          <Tab value="memberExport" label=" Member Export" sx={{ fontSize: 18 }} disabled />
+          <Tab
+            value="memberExport"
+            label=" Member Export"
+            sx={{ fontSize: { xs: 16, md: 20 } }}
+            disabled
+          />
           <Tab
             value="closingBalance"
             label=" Closing Balance Report"
-            sx={{ fontSize: 18 }}
+            sx={{ fontSize: { xs: 16, md: 20 } }}
             disabled
           />{' '}
         </Tabs>
       </Stack>
       <Stack direction="row" spacing={2} m={1} justifyContent="flex-end">
-        {tableData.find((row: any) => row.report_generator_data.status !== 'Pending') && (
+        {tableData.find((row: any) => row?.report_generator_data?.status == 'Pending') && (
           <>
             <Tooltip title="Refresh" placement="top">
               <IconButton
@@ -399,8 +414,14 @@ function Reportexport() {
       </Stack>
       <Grid item xs={12} md={6} lg={8} sx={{ width: '100%' }}>
         <TableContainer component={Paper}>
-          <Scrollbar sx={{ height: 'fit-content' }}>
-            <Table stickyHeader aria-label="sticky table" sx={{ minWidth: 720 }}>
+          <Scrollbar
+            sx={
+              isMobile
+                ? { maxHeight: window.innerHeight - 272 }
+                : { maxHeight: window.innerHeight - 204 }
+            }
+          >
+            <Table stickyHeader aria-label="sticky table" size="small" sx={{ minWidth: 720 }}>
               <TableHead>
                 <TableRow>
                   {tableLabels.map((column: any) => (

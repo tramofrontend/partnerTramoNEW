@@ -13,7 +13,12 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import FormProvider, { RHFTextField, RHFCodes, RHFSelect } from 'src/components/hook-form';
+import FormProvider, {
+  RHFTextField,
+  RHFCodes,
+  RHFSelect,
+  RHFSecureCodes,
+} from 'src/components/hook-form';
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -25,6 +30,7 @@ import { LoadingButton } from '@mui/lab';
 import { PATH_DASHBOARD } from 'src/routes/paths';
 import { useNavigate } from 'react-router';
 import { useAuthContext } from 'src/auth/useAuthContext';
+import { DialogAnimate } from 'src/components/animate';
 
 type FormValuesProps = {
   amount: string;
@@ -284,8 +290,17 @@ type childProps = {
 
 const SettlementToMainWallet = ({ userBankList }: childProps) => {
   const { enqueueSnackbar } = useSnackbar();
-  const { user, UpdateUserDetail } = useAuthContext();
+  // const { initialize } = useAuthContext();
   const [eligibleSettlementAmount, setEligibleSettlementAmount] = useState('');
+  const [resetNpin, setResetNpin] = useState(false);
+  const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
+
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setOpen(false);
+    reset(defaultValues);
+  };
 
   const FilterSchema = Yup.object().shape({
     amount: Yup.number()
@@ -310,13 +325,16 @@ const SettlementToMainWallet = ({ userBankList }: childProps) => {
     otp5: '',
     otp6: '',
   };
+
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(FilterSchema),
     defaultValues,
+    mode: 'all',
   });
   const {
     reset,
-    setError,
+    getValues,
+    watch,
     handleSubmit,
     formState: { errors, isSubmitting, isValid },
   } = methods;
@@ -331,33 +349,40 @@ const SettlementToMainWallet = ({ userBankList }: childProps) => {
       if (Response.status == 200) {
         if (Response.data.code == 200) {
           setEligibleSettlementAmount(Response.data.data);
-          // enqueueSnackbar(Response.data.message);
         } else {
-          enqueueSnackbar(Response.data.message);
+          enqueueSnackbar(Response.data.message, { variant: 'error' });
         }
       }
     });
   };
 
-  const settleToMainWallet = (data: FormValuesProps) => {
+  const settleToMainWallet = () => {
+    setIsSubmitLoading(true);
     let token = localStorage.getItem('token');
     let body = {
-      amount: String(data.amount),
-      nPin: data.otp1 + data.otp2 + data.otp3 + data.otp4 + data.otp5 + data.otp6,
+      amount: String(getValues('amount')),
+      nPin:
+        getValues('otp1') +
+        getValues('otp2') +
+        getValues('otp3') +
+        getValues('otp4') +
+        getValues('otp5') +
+        getValues('otp6'),
     };
 
     Api(`settlement/to_main_wallet`, 'POST', body, token).then((Response: any) => {
       if (Response.status == 200) {
         if (Response.data.code == 200) {
-          UpdateUserDetail({
-            main_wallet_amount: user?.main_wallet_amount + Number(data.amount),
-            AEPS_wallet_amount: user?.AEPS_wallet_amount - Number(data.amount),
-          });
-
+          // initialize();
+          handleClose();
           enqueueSnackbar(Response.data.message);
         } else {
-          enqueueSnackbar(Response.data.message);
+          enqueueSnackbar(Response.data.message, { variant: 'error' });
         }
+        setIsSubmitLoading(false);
+      } else {
+        enqueueSnackbar('Failed', { variant: 'error' });
+        setIsSubmitLoading(false);
       }
     });
   };
@@ -376,45 +401,55 @@ const SettlementToMainWallet = ({ userBankList }: childProps) => {
               // sm: 'repeat(2, 1fr)'
             }}
           >
-            <Typography variant="subtitle1" textAlign={'center'}>
-              Maximum Eligible Settlement Amount for Main wallet is {eligibleSettlementAmount}
+            <Typography variant="subtitle1" textAlign="center">
+              Maximum Eligible Settlement Amount for Main Wallet is
+              {Number(eligibleSettlementAmount)}
             </Typography>
+
+            {Number(eligibleSettlementAmount) < 500 && (
+              <Typography variant="caption" textAlign="center" color="red">
+                Minimum amount for AEPS settlement is 500
+              </Typography>
+            )}
 
             <Stack gap={2}>
               <Stack sx={{ width: 250, alignSelf: 'center' }} gap={1}>
-                <RHFTextField name="amount" label="Amount" placeholder="Amount" />
+                <RHFTextField name="amount" label="Amount" placeholder="Amount" type="number" />
               </Stack>
-              <Stack alignSelf={'center'}>
-                <Stack flexDirection={'row'} justifyContent={'space-between'}>
-                  <Typography variant="h5" textAlign={'center'}>
-                    NPIN
-                  </Typography>
-                </Stack>
-                <RHFCodes
-                  keyName="otp"
-                  inputProps={{
-                    maxLength: 1,
-                    type: 'password',
-                  }}
-                  inputs={['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6']}
-                />
-                {(!!errors.otp1 ||
-                  !!errors.otp2 ||
-                  !!errors.otp3 ||
-                  !!errors.otp4 ||
-                  !!errors.otp5 ||
-                  !!errors.otp6) && (
-                  <FormHelperText error sx={{ px: 2 }}>
-                    Code is required
-                  </FormHelperText>
-                )}
-              </Stack>
+
+              {watch('amount') && (
+                <>
+                  <Stack alignSelf="center">
+                    <Stack flexDirection="row" justifyContent="space-between">
+                      <Typography variant="h5" textAlign="center">
+                        NPIN
+                      </Typography>
+                      {/* Add your reset NPIN button here if needed */}
+                    </Stack>
+
+                    <RHFSecureCodes
+                      keyName="otp"
+                      inputs={['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6']}
+                    />
+
+                    {(!!errors.otp1 ||
+                      !!errors.otp2 ||
+                      !!errors.otp3 ||
+                      !!errors.otp4 ||
+                      !!errors.otp5 ||
+                      !!errors.otp6) && (
+                      <FormHelperText error sx={{ px: 2 }}>
+                        Code is required
+                      </FormHelperText>
+                    )}
+                  </Stack>
+                </>
+              )}
 
               <LoadingButton
                 variant="contained"
-                type="submit"
-                // disabled={!isValid}
-                loading={isSubmitting}
+                onClick={handleOpen}
+                disabled={!isValid}
                 sx={{ width: 'fit-content', alignSelf: 'center' }}
               >
                 Settle amount to Main Wallet
@@ -422,6 +457,25 @@ const SettlementToMainWallet = ({ userBankList }: childProps) => {
             </Stack>
           </Grid>
         </Scrollbar>
+        <DialogAnimate open={open}>
+          <Stack sx={{ p: 4 }} gap={1}>
+            <Typography variant="h6">Confirmation</Typography>
+            <Typography>Are you sure to settle Rs. {getValues('amount')} to main wallet</Typography>
+            <Stack flexDirection={'row'} gap={1} justifyContent={'end'} mt={3}>
+              <LoadingButton onClick={handleClose} loading={isSubmitLoading}>
+                cancel
+              </LoadingButton>
+              <LoadingButton
+                type="submit"
+                variant="contained"
+                loading={isSubmitLoading}
+                onClick={settleToMainWallet}
+              >
+                Sure
+              </LoadingButton>
+            </Stack>
+          </Stack>
+        </DialogAnimate>
       </FormProvider>
     </Box>
   );

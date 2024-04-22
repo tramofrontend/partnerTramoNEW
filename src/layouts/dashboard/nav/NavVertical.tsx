@@ -14,6 +14,9 @@ import { NavSectionVertical } from '../../../components/nav-section';
 import navConfig from './config';
 import NavDocs from './NavDocs';
 import NavAccount from './NavAccount';
+import Label from 'src/components/label/Label';
+import { fCurrency } from 'src/utils/formatNumber';
+import { useAuthContext } from 'src/auth/useAuthContext';
 
 // ----------------------------------------------------------------------
 
@@ -24,7 +27,7 @@ type Props = {
 
 export default function NavVertical({ openNav, onCloseNav }: Props) {
   const { pathname } = useLocation();
-
+  const { user } = useAuthContext();
   const isDesktop = useResponsive('up', 'lg');
 
   useEffect(() => {
@@ -32,6 +35,14 @@ export default function NavVertical({ openNav, onCloseNav }: Props) {
       onCloseNav();
     }
   }, [pathname]);
+
+  const walletStyle = {
+    textTransform: 'capitalize',
+    borderColor: 'primary',
+    borderRadius: 8,
+    borderWidth: '2px',
+    borderStyle: 'solid',
+  };
 
   const renderContent = (
     <Scrollbar
@@ -56,6 +67,16 @@ export default function NavVertical({ openNav, onCloseNav }: Props) {
         <Logo />
 
         <NavAccount />
+        {!isDesktop && (
+          <>
+            <Label variant="soft" color={'primary'} sx={walletStyle}>
+              {`main wallet = ${fCurrency(user?.main_wallet_amount) || 0}`}
+            </Label>
+            <Label variant="soft" color={'warning'} sx={walletStyle}>
+              {`AEPS wallet = ${fCurrency(user?.AEPS_wallet_amount) || 0}`}
+            </Label>
+          </>
+        )}
       </Stack>
 
       <NavSectionVertical data={navConfig} />

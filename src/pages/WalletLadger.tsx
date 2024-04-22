@@ -1,15 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Card, Stack, Grid, TableHead, Modal, Button, TextField, styled, TableCell, TableRow, tableCellClasses } from '@mui/material';
+import {
+  Card,
+  Stack,
+  Grid,
+  TableHead,
+  Modal,
+  Button,
+  TextField,
+  styled,
+  TableCell,
+  TableRow,
+  tableCellClasses,
+} from '@mui/material';
 import { Helmet } from 'react-helmet-async';
 import { useSnackbar } from 'notistack';
 import DateRangePicker, { useDateRangePicker } from 'src/components/date-range-picker';
-import {
-  Table,
-  TableBody,
-  CardProps,
-  Typography,
-  TableContainer,
-} from '@mui/material';
+import { Table, TableBody, CardProps, Typography, TableContainer } from '@mui/material';
 import Label from 'src/components/label/Label';
 import { TableHeadCustom } from 'src/components/table';
 import React from 'react';
@@ -26,10 +32,12 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from "yup";
+import * as Yup from 'yup';
 import FormProvider from 'src/components/hook-form/FormProvider';
 import { RHFTextField } from 'src/components/hook-form';
 import { LoadingButton } from '@mui/lab';
+import useResponsive from 'src/hooks/useResponsive';
+import MotionModal from 'src/components/animate/MotionModal';
 
 // ----------------------------------------------------------------------
 type FormValuesProps = {
@@ -37,7 +45,6 @@ type FormValuesProps = {
   endDate: Date | null;
   clientRefId: string;
 };
-
 
 type RowProps = {
   id: string;
@@ -58,12 +65,16 @@ interface Props extends CardProps {
 }
 export default function WalletLadger() {
   const { user } = useAuthContext();
+  const isMobile = useResponsive('up', 'sm');
   const { enqueueSnackbar } = useSnackbar();
   const [ladgerData, setLadgerData] = useState([]);
   const [pageSize, setPageSize] = useState<any>(20);
   const [currentPage, setCurrentPage] = useState<any>(1);
   const [sendLoding, setSendLoading] = useState(false);
   const [WalletCount, setWalletCount] = useState(0);
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const agenttableLabels = [
     { id: 'date/LadgerID', label: 'Date/LadgerID' },
@@ -74,7 +85,7 @@ export default function WalletLadger() {
     { id: 'walletType', label: 'WalletType ' },
     { id: 'reason', label: 'reason ' },
 
-    { id: 'walletId', label: 'Wallet Id' },
+    { id: 'walletId', label: 'Transaction Id' },
   ];
   const distributortableLabels = [
     { id: 'date/LadgerID', label: 'Date/LadgerID' },
@@ -85,7 +96,7 @@ export default function WalletLadger() {
     { id: 'walletType', label: 'WalletType ' },
     { id: 'reason', label: 'reason ' },
 
-    { id: 'walletId', label: 'Wallet Id' },
+    { id: 'walletId', label: 'Transaction Id' },
   ];
   const MDtableLabels = [
     { id: 'date/LadgerID', label: 'Date/LadgerID' },
@@ -96,14 +107,14 @@ export default function WalletLadger() {
     { id: 'walletType', label: 'WalletType ' },
     { id: 'reason', label: 'reason ' },
     // { id: "remarks", label: "remarks" },
-    { id: 'walletId', label: 'Wallet Id' },
+    { id: 'walletId', label: 'Transaction Id' },
   ];
 
   const FilterSchema = Yup.object().shape({});
   const defaultValues = {
     startDate: null,
     endDate: null,
-    clientRefId: "",
+    clientRefId: '',
   };
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(FilterSchema),
@@ -145,9 +156,9 @@ export default function WalletLadger() {
         pageSize: pageSize,
         currentPage: currentPage,
       },
-      clientRefId: getValues("clientRefId") || "",
-      startDate: fDateFormatForApi(getValues("startDate")),
-      endDate: fDateFormatForApi(getValues("endDate")),
+      clientRefId: getValues('clientRefId') || '',
+      startDate: fDateFormatForApi(getValues('startDate')),
+      endDate: fDateFormatForApi(getValues('endDate')),
     };
     Api(`agent/walletLedger`, 'POST', body, token).then((Response: any) => {
       console.log('======Transaction==response=====>' + Response);
@@ -157,9 +168,11 @@ export default function WalletLadger() {
           setWalletCount(Response.data.data.totalNumberOfRecords);
           enqueueSnackbar(Response.data.message);
           setSendLoading(false);
+          setOpen(false);
         } else {
           enqueueSnackbar(Response.data.message);
           setSendLoading(false);
+          setOpen(false);
         }
       }
     });
@@ -252,12 +265,12 @@ export default function WalletLadger() {
   //   });
   // };
   const style = {
-    position: "absolute" as "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: { xs: "90%", sm: 720 },
-    bgcolor: "#ffffff",
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: { xs: '90%', sm: 720 },
+    bgcolor: '#ffffff',
     borderRadius: 2,
   };
 
@@ -273,84 +286,101 @@ export default function WalletLadger() {
   }));
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    "&:nth-of-type(even)": {
+    '&:nth-of-type(even)': {
       backgroundColor: theme.palette.grey[300],
     },
     // hide last border
-    "&:last-child td, &:last-child th": {
+    '&:last-child td, &:last-child th': {
       border: 0,
     },
   }));
+
+  const handleReset = () => {
+    reset(defaultValues);
+    setLadgerData([]);
+    getTransactional();
+  };
 
   return (
     <>
       <Helmet>
         <title>Wallet Ladger | </title>
       </Helmet>
+      <Stack flexDirection={'row'} gap={1} mb={1} justifyContent={'right'}>
+        <Button variant="contained" onClick={handleReset}>
+          <Iconify icon="bx:reset" color={'common.white'} mr={1} />
+          Reset
+        </Button>
+        <Button variant="contained" onClick={handleOpen}>
+          <Iconify icon="icon-park-outline:filter" color={'common.white'} mr={1} /> Filter
+        </Button>
+      </Stack>
       <Stack>
-        <FormProvider
-          methods={methods}
-          onSubmit={handleSubmit(getTransactional)}
-        >
-          <Stack flexDirection={"row"} m={1} gap={1}>
-            <RHFTextField
-              name="clientRefId"
-              placeholder={"Transaction ID "}
-              size='small'
-              sx={{ width: 300 }}
-            />
-            <Stack flexDirection={"row"} gap={1}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <MotionModal open={open} onClose={handleClose} width={{ xs: '95%', sm: 500 }}>
+          {/* <Box> */}
+          <Stack mb={1}>
+            <FormProvider methods={methods} onSubmit={handleSubmit(getTransactional)}>
+              <Stack gap={1} m={1}>
+                <RHFTextField
+                  name="clientRefId"
+                  placeholder={'Transaction ID '}
+                  size="small"
+                  fullWidth
+                />
+                <Stack flexDirection={'row'} gap={1}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                       label="Start date"
                       inputFormat="DD/MM/YYYY"
-                      value={watch("startDate")}
+                      value={watch('startDate')}
                       maxDate={new Date()}
-                      onChange={(newValue: any) => setValue("startDate", newValue)}
+                      onChange={(newValue: any) => setValue('startDate', newValue)}
                       renderInput={(params: any) => (
-                        <TextField {...params} size={"small"} sx={{ width: 150 }} />
+                        <TextField {...params} size={'small'} sx={{ width: 250 }} />
                       )}
                     />
                     <DatePicker
                       label="End date"
                       inputFormat="DD/MM/YYYY"
-                      value={watch("endDate")}
-                      minDate={watch("startDate")}
+                      value={watch('endDate')}
+                      minDate={watch('startDate')}
                       maxDate={new Date()}
-                      onChange={(newValue: any) => setValue("endDate", newValue)}
+                      onChange={(newValue: any) => setValue('endDate', newValue)}
                       renderInput={(params: any) => (
-                        <TextField {...params} size={"small"} sx={{ width: 150 }} />
+                        <TextField {...params} size={'small'} sx={{ width: 250 }} />
                       )}
                     />
                   </LocalizationProvider>
-            </Stack>
-            <LoadingButton
-              variant="contained"
-              type="submit"
-              loading={isSubmitting}
-            >
-              Search
-            </LoadingButton>
-            <LoadingButton
-              variant="contained"
-              onClick={() => {
-                reset(defaultValues);
-                getTransactional();
-                onChangeEndDate(null);
-                onChangeStartDate(null);
-              }}
-            >
-              Clear
-            </LoadingButton>
+                </Stack>
+                <Stack flexDirection={'row'} gap={1}>
+                  <LoadingButton variant="contained" onClick={handleClose}>
+                    Cancel
+                  </LoadingButton>
+                  <LoadingButton variant="contained" onClick={handleReset}>
+                    <Iconify icon="bx:reset" color={'common.white'} mr={1} /> Reset
+                  </LoadingButton>
+                  <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
+                    Apply
+                  </LoadingButton>
+                </Stack>
+              </Stack>
+            </FormProvider>
           </Stack>
-        </FormProvider>
+          {/* </Box> */}
+        </MotionModal>
 
         {sendLoding ? (
           <ApiDataLoading />
         ) : (
           <Grid item xs={12} md={6} lg={8}>
             <TableContainer>
-              <Scrollbar sx={{ maxHeight: window.innerHeight - 200 }}>
+              <Scrollbar
+                sx={
+                  isMobile
+                    ? { maxHeight: window.innerHeight - 200 }
+                    : { maxHeight: window.innerHeight - 154 }
+                }
+              >
                 <Table
                   sx={{ minWidth: 720 }}
                   aria-label="customized table"
@@ -359,9 +389,9 @@ export default function WalletLadger() {
                 >
                   <TableHeadCustom
                     headLabel={
-                      user?.role == "m_distributor"
+                      user?.role == 'm_distributor'
                         ? MDtableLabels
-                        : user?.role == "distributor"
+                        : user?.role == 'distributor'
                         ? distributortableLabels
                         : agenttableLabels
                     }
@@ -369,9 +399,7 @@ export default function WalletLadger() {
 
                   <TableBody>
                     {Array.isArray(ladgerData) &&
-                      ladgerData.map((row: any) => (
-                        <LadgerRow key={row._id} row={row} />
-                      ))}
+                      ladgerData.map((row: any) => <LadgerRow key={row._id} row={row} />)}
                   </TableBody>
                 </Table>
               </Scrollbar>
@@ -379,26 +407,18 @@ export default function WalletLadger() {
           </Grid>
         )}
       </Stack>
-
       <CustomPagination
-                  page={currentPage - 1}
-                  count={WalletCount}
-                  onPageChange={(
-                    event: React.MouseEvent<HTMLButtonElement> | null,
-                    newPage: number
-                  ) => {
-                    setCurrentPage(newPage + 1);
-                  }}
-                  rowsPerPage={pageSize}
-                  onRowsPerPageChange={(
-                    event: React.ChangeEvent<
-                      HTMLInputElement | HTMLTextAreaElement
-                    >
-                  ) => {
-                    setPageSize(parseInt(event.target.value));
-                    setCurrentPage(1);
-                  }}
-                />
+        page={currentPage - 1}
+        count={WalletCount}
+        onPageChange={(event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+          setCurrentPage(newPage + 1);
+        }}
+        rowsPerPage={pageSize}
+        onRowsPerPageChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+          setPageSize(parseInt(event.target.value));
+          setCurrentPage(1);
+        }}
+      />
     </>
   );
 }
@@ -454,12 +474,12 @@ const LadgerRow = ({ row }: any) => {
   };
 
   const style = {
-    position: "absolute" as "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: { xs: "90%", sm: 720 },
-    bgcolor: "#ffffff",
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: { xs: '90%', sm: 720 },
+    bgcolor: '#ffffff',
     borderRadius: 2,
   };
 
@@ -475,15 +495,14 @@ const LadgerRow = ({ row }: any) => {
   }));
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    "&:nth-of-type(even)": {
+    '&:nth-of-type(even)': {
       backgroundColor: theme.palette.grey[300],
     },
     // hide last border
-    "&:last-child td, &:last-child th": {
+    '&:last-child td, &:last-child th': {
       border: 0,
     },
   }));
-
 
   return (
     <>

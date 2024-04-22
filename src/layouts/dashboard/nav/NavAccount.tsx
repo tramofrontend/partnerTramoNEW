@@ -5,7 +5,7 @@ import { Box, Typography } from '@mui/material';
 import { useAuthContext } from '../../../auth/useAuthContext';
 // components
 import { CustomAvatar } from '../../../components/custom-avatar';
-import { sentenceCase } from "change-case";
+import { sentenceCase } from 'change-case';
 
 // ----------------------------------------------------------------------
 
@@ -24,22 +24,22 @@ export default function NavAccount() {
 
   return (
     <StyledRoot>
-      <CustomAvatar src={user?.photoURL} alt={user?.displayName} name={user?.displayName} />
+      <CustomAvatar
+        src={user?.selfie[0]}
+        alt={user?.firstName + ' ' + user?.lastName}
+        name={user?.firstName}
+      />
 
-      <Box sx={{ ml: 2, minWidth: 0 }}>
+      <Box sx={{ ml: 1 }}>
+        <Typography variant="subtitle2" sx={{ textOverflow: 'ellipsis' }}>
+          {sentenceCase(user?.firstName + ' ' + user?.lastName)}
+        </Typography>
         <Typography variant="subtitle2" noWrap>
-          {user?.displayName}
+          {sentenceCase(user?.role)}
         </Typography>
-
-        <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
-          {user?.role}
-        </Typography>
-        <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
-          {sentenceCase(user?.firstName + " " + user?.lastName)}
-        </Typography>
-        <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           {user?.userCode}
-        </Typography>
+        </Typography>{' '}
       </Box>
     </StyledRoot>
   );

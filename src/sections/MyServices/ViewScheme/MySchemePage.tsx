@@ -104,23 +104,20 @@ export default function ViewAllScheme() {
           <Typography variant="h5">Scheme Name: {schemeInfo.schemeName}</Typography>
           <Typography variant="body1"> ({schemeInfo.schemeDescription})</Typography>
         </Stack> */}
-        <Box
-          sx={{ borderBottom: 1, borderColor: 'divider', marginBottom: '20px', fontSize: '20px' }}
-        >
+        <Box sx={{ mb: 1, borderColor: 'divider' }}>
           <Tabs
             value={superCurrentTab}
             aria-label="basic tabs example"
-            sx={{ background: '#F4F6F8', padding: '0 20px', height: '48px' }}
+            sx={{ background: '#F4F6F8', height: '48px' }}
             onChange={(event, newValue) => setSuperCurrentTab(newValue)}
           >
             {categoryList
-              .filter((tab:any) => tab.category_name.toLowerCase() !== 'bill payment')
+              .filter((tab: any) => tab.category_name.toLowerCase() !== 'bill payment')
               .map((tab: any) => (
                 <Tab
-                  style={{ fontSize: '20px' }}
                   key={tab._id}
-                  sx={{ mx: 3 }}
-                  label={<h5 style={{ marginBlockStart: '10px' }}>{tab.category_name}</h5>}
+                  sx={{ mx: 1, fontSize: { xs: 16, md: 20 } }}
+                  label={<h5 style={{ marginBlockStart: '12px' }}>{tab.category_name}</h5>}
                   value={tab.category_name}
                   onClick={() => getSchemeDetail(tab._id)}
                 />

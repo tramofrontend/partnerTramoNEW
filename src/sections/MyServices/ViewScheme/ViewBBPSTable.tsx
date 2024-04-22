@@ -15,6 +15,7 @@ import {
 import { useEffect, useState } from 'react';
 import Scrollbar from 'src/components/scrollbar/Scrollbar';
 import { TableHeadCustom } from 'src/components/table';
+import useResponsive from 'src/hooks/useResponsive';
 import { Api } from 'src/webservices';
 
 // ----------------------------------------------------------------------
@@ -34,6 +35,7 @@ interface Props extends CardProps {
   comData: any;
 }
 export default function ViewBBPSTable({ title, subheader, tableData, comData, ...other }: Props) {
+  const isMobile = useResponsive('up', 'sm');
   const [currentTab, setCurrentTab] = useState('');
   const [subCateData, setSubCateData] = useState([]);
   const [localScheme, setLocalScheme] = useState([]);
@@ -78,9 +80,8 @@ export default function ViewBBPSTable({ title, subheader, tableData, comData, ..
       >
         {subCateData.map((tab: any) => (
           <Tab
-            style={{ fontSize: '20px' }}
             key={tab._id}
-            sx={{ mx: 3 }}
+            sx={{ mx: 1, fontSize: { xs: 16, md: 20 } }}
             label={<h5 style={{ marginBlockStart: '6px' }}>{tab.sub_category_name}</h5>}
             value={tab._id}
           />
@@ -88,8 +89,14 @@ export default function ViewBBPSTable({ title, subheader, tableData, comData, ..
       </Tabs>
       <Card {...other}>
         {comData.length ? (
-          <TableContainer sx={{ overflow: 'unset' }}>
-            <Scrollbar>
+          <TableContainer>
+            <Scrollbar
+              sx={
+                isMobile
+                  ? { maxHeight: window.innerHeight - 250 }
+                  : { maxHeight: window.innerHeight - 154 }
+              }
+            >
               <Table sx={{ minWidth: 720 }}>
                 <TableHeadCustom headLabel={tableLabels} />
                 <TableBody>

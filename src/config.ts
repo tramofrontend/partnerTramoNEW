@@ -35,9 +35,9 @@ export const PATH_AFTER_LOGIN = PATH_DASHBOARD.dashboard;
 // ----------------------------------------------------------------------
 
 export const HEADER = {
-  H_MOBILE: 64,
-  H_MAIN_DESKTOP: 88,
-  H_DASHBOARD_DESKTOP: 92,
+  H_MOBILE: 44,
+  H_MAIN_DESKTOP: 40,
+  H_DASHBOARD_DESKTOP: 82,
   H_DASHBOARD_DESKTOP_OFFSET: 92 - 32,
 };
 
@@ -46,10 +46,10 @@ export const NAV = {
   W_DASHBOARD: 280,
   W_DASHBOARD_MINI: 88,
   //
-  H_DASHBOARD_ITEM: 48,
+  H_DASHBOARD_ITEM: 40,
   H_DASHBOARD_ITEM_SUB: 36,
   //
-  H_DASHBOARD_ITEM_HORIZONTAL: 32,
+  H_DASHBOARD_ITEM_HORIZONTAL: 22,
 };
 
 export const ICON = {
