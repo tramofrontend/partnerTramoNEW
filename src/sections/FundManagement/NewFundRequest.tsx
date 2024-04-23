@@ -127,6 +127,14 @@ function NewFundRequest({ getRaisedRequest }: props) {
     amount: Yup.number()
       .typeError("That doesn't look like an Amount")
       .positive("An Amount can't start with a minus")
+      .test((value: any, context: any) => {
+        return value &&
+          value >= 1 &&
+          context.originalValue &&
+          context.originalValue.startsWith("0")
+          ? false
+          : true;
+      })
       .min(
         +amountMinMaxValidation.min,
         `Please enter minimum ${fIndianCurrency(amountMinMaxValidation.min)}`
@@ -429,16 +437,20 @@ function NewFundRequest({ getRaisedRequest }: props) {
               onChange={(newValue: any) => setValue('date', newValue)}
               renderInput={(params: any) => (
                 <RHFTextField
-                  name="date"
-                  type="date"
-                  size="small"
-                  autoComplete="off"
-                  onPaste={(e: any) => {
-                    e.preventDefault();
-                    return false;
-                  }}
-                  {...params}
-                />
+                name="date"
+                type="date"
+                size="small"
+                autoComplete="off"
+                onKeyDown={(e: any) => {
+                  e.preventDefault();
+                  return false;
+                }}  
+                onPaste={(e: any) => {
+                  e.preventDefault();
+                  return false;
+                }}  
+                {...params}
+              />
               )}
             />
           </LocalizationProvider>
