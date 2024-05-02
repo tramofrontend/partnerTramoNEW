@@ -80,7 +80,7 @@ export default function CallBackUrl() {
       <Helmet>
         <title>CallBack URL | Tramo</title>
       </Helmet>
-      <Box sx={{ m: 2, width: '50%' }}>
+      <Box sx={{ m: 1, width: { xs: '100%', md: '50%' } }}>
         <Stack justifyContent={'space-between'}>
           <Typography variant="h4">BBPS Callback URL</Typography>
           <Stack flexDirection={'row'} gap={3} marginTop={3}>

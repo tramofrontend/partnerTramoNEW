@@ -24,6 +24,8 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormProvider, { RHFCodes, RHFSelect, RHFTextField } from '../../../components/hook-form';
 import { useAuthContext } from 'src/auth/useAuthContext';
+import Scrollbar from 'src/components/scrollbar/Scrollbar';
+import useResponsive from 'src/hooks/useResponsive';
 // ----------------------------------------------------------------------
 
 type FormValuesProps = { subcategoryList: string[]; subcategory: string; product: string };
@@ -31,6 +33,7 @@ type FormValuesProps = { subcategoryList: string[]; subcategory: string; product
 export default function BBPSSchemePage() {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
+  const isMobile = useResponsive('up', 'sm');
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
   const [isLoading, setIsLoading] = useState(false);
@@ -181,43 +184,44 @@ export default function BBPSSchemePage() {
         <ApiDataLoading />
       ) : (
         <TableContainer sx={{ overflow: 'unset' }}>
-          <Table sx={{ minWidth: 720 }}>
-            <TableHeadCustom headLabel={tableLabels} />
+          <Scrollbar
+            sx={
+              isMobile
+                ? { maxHeight: window.innerHeight - 250 }
+                : { maxHeight: window.innerHeight - 154 }
+            }
+          >
+            <Table sx={{ minWidth: 720 }}>
+              <TableHeadCustom headLabel={tableLabels} />
 
-            <TableBody sx={{ overflow: 'auto' }}>
-              {tempTableData.map((row: any) => {
-                return (
-                  <SchemeRow
-                    key={row._id}
-                    row={row}
-                    bbpsVendor={bbpsVendor}
-                    rowDetail={user?.role}
-                  />
-                );
-              })}
-            </TableBody>
-          </Table>
+              <TableBody sx={{ overflow: 'auto' }}>
+                {tempTableData.map((row: any) => {
+                  return (
+                    <SchemeRow
+                      key={row._id}
+                      row={row}
+                      bbpsVendor={bbpsVendor}
+                      rowDetail={user?.role}
+                    />
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </Scrollbar>
         </TableContainer>
       )}
-       <CustomPagination
-                  page={currentPage - 1}
-                  count={(isFilter ? searchData : tableData).length}
-                  onPageChange={(
-                    event: React.MouseEvent<HTMLButtonElement> | null,
-                    newPage: number
-                  ) => {
-                    setCurrentPage(newPage + 1);
-                  }}
-                  rowsPerPage={pageSize}
-                  onRowsPerPageChange={(
-                    event: React.ChangeEvent<
-                      HTMLInputElement | HTMLTextAreaElement
-                    >
-                  ) => {
-                    setPageSize(parseInt(event.target.value));
-                    setCurrentPage(1);
-                  }}
-                />
+      <CustomPagination
+        page={currentPage - 1}
+        count={(isFilter ? searchData : tableData).length}
+        onPageChange={(event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+          setCurrentPage(newPage + 1);
+        }}
+        rowsPerPage={pageSize}
+        onRowsPerPageChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+          setPageSize(parseInt(event.target.value));
+          setCurrentPage(1);
+        }}
+      />
     </>
   );
 }

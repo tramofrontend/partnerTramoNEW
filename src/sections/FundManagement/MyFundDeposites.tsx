@@ -1,21 +1,16 @@
-import { Box, Grid, Paper, styled } from "@mui/material";
-import React, { createContext, useEffect, useState } from "react";
+import { Box, Grid, Paper, styled } from '@mui/material';
+import React, { createContext, useEffect, useState } from 'react';
 import {
   CompanyBankAccounts,
   FundDepositeTable,
   InstantDepositAccounts,
   NewFundRequest,
-} from "../FundManagement/Index";
-import { Api } from "src/webservices";
-import Scrollbar from "src/components/scrollbar/Scrollbar";
-import { m, AnimatePresence } from "framer-motion";
-import {
-  MotionContainer,
-  varBounce,
-  varFade,
-  varSlide,
-} from "src/components/animate";
-import { fundRequestProps } from "../FundManagement/Types";
+} from '../FundManagement/Index';
+import { Api } from 'src/webservices';
+import Scrollbar from 'src/components/scrollbar/Scrollbar';
+import { m, AnimatePresence } from 'framer-motion';
+import { MotionContainer, varBounce, varFade, varSlide } from 'src/components/animate';
+import { fundRequestProps } from '../FundManagement/Types';
 
 export const BankAccountContext = createContext([]);
 
@@ -29,53 +24,49 @@ export default function MyFundDeposite() {
   }, []);
 
   const getBankDeatails = () => {
-    let token = localStorage.getItem("token");
-    Api(`apiBox/fundManagement/getAdminBank`, "GET", "", token).then(
-      (Response: any) => {
-        if (Response.status == 200) {
-          if (Response.data.code == 200) {
-            setBankList(Response.data.data);
-          } else {
-            console.log("======BankList=======>" + Response);
-          }
+    let token = localStorage.getItem('token');
+    Api(`apiBox/fundManagement/getAdminBank`, 'GET', '', token).then((Response: any) => {
+      if (Response.status == 200) {
+        if (Response.data.code == 200) {
+          setBankList(Response.data.data);
+        } else {
+          console.log('======BankList=======>' + Response);
         }
       }
-    );
+    });
   };
 
   const getFundReq = () => {
-    let token = localStorage.getItem("token");
+    let token = localStorage.getItem('token');
     let body = {
       pageInitData: {
         pageSize: 5,
         currentPage: 1,
       },
     };
-    Api(`apiBox/fundManagement/getRaisedRequests`, "POST", body, token).then(
-      (Response: any) => {
-        if (Response.status == 200) {
-          if (Response.data.code == 200) {
-            setTableData(
-              Response.data.data.map((item: fundRequestProps) => {
-                return {
-                  ...item,
-                  requestEditTime: Response.data.MS_to_permanent,
-                };
-              })
-            );
-          }
+    Api(`apiBox/fundManagement/getRaisedRequests`, 'POST', body, token).then((Response: any) => {
+      if (Response.status == 200) {
+        if (Response.data.code == 200) {
+          setTableData(
+            Response.data.data.map((item: fundRequestProps) => {
+              return {
+                ...item,
+                requestEditTime: Response.data.MS_to_permanent,
+              };
+            })
+          );
         }
       }
-    );
+    });
   };
 
   return (
     <MotionContainer>
       <BankAccountContext.Provider value={bankList}>
-        <Scrollbar sx={{ maxHeight: window.innerHeight - 120, p: 2 }}>
+        <Scrollbar sx={{ maxHeight: window.innerHeight - 120, p: 1 }}>
           <Grid container spacing={2} p={1}>
             <Grid item sm={12} md={4}>
-              <m.div variants={varFade().inLeft} style={{ height: "100%" }}>
+              <m.div variants={varFade().inLeft} style={{ height: '100%' }}>
                 <NewFundRequest getRaisedRequest={getFundReq} />
               </m.div>
             </Grid>
@@ -93,10 +84,7 @@ export default function MyFundDeposite() {
             </Grid>
             <Grid item xs={12}>
               <m.div variants={varFade().inUp}>
-                <FundDepositeTable
-                  tableData={tableData}
-                  getRaisedRequest={getFundReq}
-                />
+                <FundDepositeTable tableData={tableData} getRaisedRequest={getFundReq} />
               </m.div>
             </Grid>
           </Grid>

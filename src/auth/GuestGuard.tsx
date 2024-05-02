@@ -4,6 +4,7 @@ import { Navigate } from 'react-router-dom';
 import LoadingScreen from '../components/loading-screen';
 //
 import { useAuthContext } from './useAuthContext';
+import LocationInstruction from 'src/components/customFunctions/LocationInstruction';
 
 // ----------------------------------------------------------------------
 
@@ -12,10 +13,14 @@ type GuestGuardProps = {
 };
 
 export default function GuestGuard({ children }: GuestGuardProps) {
-  const { isAuthenticated, isInitialized } = useAuthContext();
+  const { isAuthenticated, isInitialized, location } = useAuthContext();
+
+  if (!location) {
+    return <LocationInstruction />;
+  }
 
   if (isAuthenticated) {
-    return <Navigate to="/auth/dashboard" />;
+    return <Navigate to="/auth" />;
   }
 
   if (!isInitialized) {
