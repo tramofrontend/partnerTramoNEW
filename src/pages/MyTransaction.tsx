@@ -65,6 +65,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { fDateFormatForApi } from 'src/utils/formatTime';
+import MotionModal from 'src/components/animate/MotionModal';
 
 // ----------------------------------------------------------------------
 
@@ -460,38 +461,15 @@ export default function MyTransactions() {
         </Stack>
       </Stack>
       <Stack>
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          {/* <Box> */}
-          <FormProvider methods={methods} onSubmit={handleSubmit(filterTransaction)}>
-            <Stack
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: { xs: '100%', md: '50%' },
-                bgcolor: '#ffffff',
-                borderRadius: 2,
-                p: 4,
-              }}
-            >
-              <Stack
-                rowGap={2}
-                columnGap={2}
-                display="grid"
-                gridTemplateColumns={{
-                  xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(2, 1fr)',
-                }}
-              >
+        <MotionModal open={open} onClose={handleClose} width={{ xs: '95%', sm: 500 }}>
+          <Stack>
+            {/* <Box> */}
+            <FormProvider methods={methods} onSubmit={handleSubmit(filterTransaction)}>
+              <Stack gap={1} m={1}>
                 <RHFSelect
                   name="category"
                   label="Category"
+                  size="small"
                   SelectProps={{
                     native: false,
                     sx: { textTransform: 'capitalize' },
@@ -513,6 +491,7 @@ export default function MyTransactions() {
                 <RHFSelect
                   name="product"
                   label="Product"
+                  size="small"
                   SelectProps={{
                     native: false,
                     sx: { textTransform: 'capitalize' },
@@ -530,6 +509,7 @@ export default function MyTransactions() {
                 <RHFSelect
                   name="status"
                   label="Status"
+                  size="small"
                   SelectProps={{
                     native: false,
                     sx: { textTransform: 'capitalize' },
@@ -543,9 +523,9 @@ export default function MyTransactions() {
                   <MenuItem value="hold">Hold</MenuItem>
                   <MenuItem value="initiated">Initiated</MenuItem>
                 </RHFSelect>
-                <RHFTextField name="clientRefId" label="Transaction Id" />
-                <RHFTextField name="accountNumber" label="AccountNumber" />
-                <RHFTextField name="mobileNumber" label="MobileNumber" />
+                <RHFTextField size="small" name="clientRefId" label="Transaction Id" />
+                <RHFTextField size="small" name="accountNumber" label="AccountNumber" />
+                <RHFTextField size="small" name="mobileNumber" label="MobileNumber" />
                 <Stack direction={'row'} gap={1}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
@@ -570,26 +550,26 @@ export default function MyTransactions() {
                       )}
                     />
                   </LocalizationProvider>
-                  <Stack flexDirection={'row'} flexBasis={{ xs: '100%', sm: '50%' }} gap={1}>
-                    <LoadingButton variant="contained" onClick={handleClose}>
-                      Cancel
-                    </LoadingButton>
-                    <LoadingButton variant="contained" onClick={handleReset}>
-                      <Iconify icon="bx:reset" color={'common.white'} mr={1} /> Reset
-                    </LoadingButton>
-                    <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
-                      Apply
-                    </LoadingButton>
-                    <Button variant="contained" onClick={ExportData}>
-                      Export
-                    </Button>
-                  </Stack>
+                </Stack>
+                <Stack flexDirection={'row'} flexBasis={{ xs: '100%', sm: '50%' }} gap={1}>
+                  <LoadingButton variant="contained" onClick={handleClose}>
+                    Cancel
+                  </LoadingButton>
+                  <LoadingButton variant="contained" onClick={handleReset}>
+                    <Iconify icon="bx:reset" color={'common.white'} mr={1} /> Reset
+                  </LoadingButton>
+                  <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
+                    Apply
+                  </LoadingButton>
+                  <Button variant="contained" onClick={ExportData}>
+                    Export
+                  </Button>
                 </Stack>
               </Stack>
-            </Stack>
-          </FormProvider>
+            </FormProvider>
+          </Stack>
           {/* </Box> */}
-        </Modal>
+        </MotionModal>
 
         <Grid item xs={12} md={6} lg={8}>
           <>
