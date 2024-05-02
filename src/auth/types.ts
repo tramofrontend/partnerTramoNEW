@@ -24,8 +24,8 @@ export type AuthStateType = {
 export type JWTContextType = {
   method: 'jwt';
   isAuthenticated: boolean;
-  isInitialized: boolean;
   location: boolean | null;
+  isInitialized: boolean;
   user: AuthUserType;
   UpdateUserDetail: (val: any) => Promise<void>;
 

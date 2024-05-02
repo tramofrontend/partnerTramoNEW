@@ -20,8 +20,26 @@ export default function AuthGuard({ children }: AuthGuardProps) {
 
   const [requestedLocation, setRequestedLocation] = useState<string | null>(null);
 
+  if (location == null) {
+    return <LoadingScreen />;
+  }
   if (!isInitialized) {
     return <LoadingScreen />;
+  }
+  if (!location) {
+    return <LocationInstruction />;
+  }
+
+  if (!location) {
+    return <LocationInstruction />;
+  }
+
+  if (!location) {
+    return <LocationInstruction />;
+  }
+
+  if (!location) {
+    return <LocationInstruction />;
   }
 
   if (!location) {

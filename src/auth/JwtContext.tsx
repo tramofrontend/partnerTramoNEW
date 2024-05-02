@@ -100,7 +100,7 @@ type AuthProviderProps = {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [location, setLocation] = useState<boolean | null>(null);
+  const [location, setLocation] = useState<boolean | null>(true);
   const initialize = useCallback(async () => {
     navigator.geolocation.getCurrentPosition(
       ({ coords }: any) => {
@@ -117,29 +117,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
         Api('agent/get_AgentDetail', 'GET', '', accessToken).then((resp: any) => {
           if (resp.status == 200) {
             if (resp.data.code == 200) {
-              dispatch({
-                type: Types.INITIAL,
-                payload: {
-                  isAuthenticated: true,
-                  user: resp.data.data,
-                },
-              });
+              if ((resp.data.data.role = 'API_User')) {
+                localStorage.removeItem('token');
+                dispatch({
+                  type: Types.LOGOUT,
+                });
+              }
             } else {
+              localStorage.removeItem('token');
               dispatch({
-                type: Types.INITIAL,
-                payload: {
-                  isAuthenticated: false,
-                  user: null,
-                },
+                type: Types.LOGOUT,
               });
             }
           } else {
+            localStorage.removeItem('token');
             dispatch({
-              type: Types.INITIAL,
-              payload: {
-                isAuthenticated: false,
-                user: null,
-              },
+              type: Types.LOGOUT,
             });
           }
         });
@@ -153,13 +146,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         });
       }
     } catch (error) {
-      console.error(error);
       dispatch({
-        type: Types.INITIAL,
-        payload: {
-          isAuthenticated: false,
-          user: null,
-        },
+        type: Types.LOGOUT,
       });
     }
   }, []);
@@ -171,6 +159,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // LOGIN
   const login = async (token: string, user: any) => {
     localStorage.setItem('token', token);
+    localStorage.setItem('authentication', 'true');
     // setSession(token);
     dispatch({
       type: Types.LOGIN,

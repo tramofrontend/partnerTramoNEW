@@ -1,9 +1,13 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
+package-lock.json
 /node_modules
 /.pnp
 .pnp.js
+.env.development
+.env.production
+.env.neo.production
 
 #  build / generate output
 .nuxt
@@ -16,11 +20,6 @@ build_dev_partner_tramo
 # testing
 /coverage
 
-
-
-/.env.development
-/.env.neo.production
-/.env.production
 
 # misc
 .DS_Store
