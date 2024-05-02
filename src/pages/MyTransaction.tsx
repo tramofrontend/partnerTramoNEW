@@ -36,7 +36,7 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import { Api } from 'src/webservices';
 import Scrollbar from 'src/components/scrollbar';
-import { TableHeadCustom } from 'src/components/table';
+import { TableHeadCustom, TableNoData } from 'src/components/table';
 import receipt_long from '../assets/icons/receipt_long.svg';
 import Group from '../assets/icons/Group.svg';
 import autorenew from '../assets/icons/autorenew.svg';
@@ -89,7 +89,7 @@ export default function MyTransactions() {
   const isDesktop = useResponsive('up', 'sm');
   const { user } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
-  const [Loading, setLoading] = useState(false);
+  const [Loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<any>(1);
   const [pageCount, setPageCount] = useState<any>(0);
   const [categoryList, setCategoryList] = useState([]);
@@ -601,6 +601,7 @@ export default function MyTransactions() {
                     )
                   )}
                 </TableBody>
+                {!Loading && <TableNoData isNotFound={!filterdValue}/>}
               </Table>
             </Scrollbar>
 
