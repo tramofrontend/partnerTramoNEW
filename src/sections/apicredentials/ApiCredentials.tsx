@@ -57,11 +57,11 @@ function ApiCredential() {
               label={<h4> My Whilelisted IP</h4>}
               {...a11yProps(0)}
             />
-            <Tab
+            {/* <Tab
               style={{ fontSize: '18px', marginTop: '-20px' }}
               label={<h4>UAT Credentials</h4>}
               {...a11yProps(1)}
-            />
+            /> */}
             <Tab
               style={{ fontSize: '18px', marginTop: '-20px' }}
               label={<h4>Production Access</h4>}
@@ -78,13 +78,13 @@ function ApiCredential() {
       <TabPanel value={valueTabs} index={0}>
         <MyWhilelistedIp />
       </TabPanel>
-      <TabPanel value={valueTabs} index={1}>
+      {/* <TabPanel value={valueTabs} index={1}>
         <UatCredential />
-      </TabPanel>
-      <TabPanel value={valueTabs} index={2}>
+      </TabPanel> */}
+      <TabPanel value={valueTabs} index={1}>
         <ProductionAccess />
       </TabPanel>
-      <TabPanel value={valueTabs} index={3}>
+      <TabPanel value={valueTabs} index={2}>
         <CallBackUrl />
       </TabPanel>
     </>

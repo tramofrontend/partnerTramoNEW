@@ -17,7 +17,7 @@ import { useSnackbar } from 'notistack';
 import DateRangePicker, { useDateRangePicker } from 'src/components/date-range-picker';
 import { Table, TableBody, CardProps, Typography, TableContainer } from '@mui/material';
 import Label from 'src/components/label/Label';
-import { TableHeadCustom } from 'src/components/table';
+import { TableHeadCustom, TableNoData } from 'src/components/table';
 import React from 'react';
 import Iconify from 'src/components/iconify/Iconify';
 import { Api } from 'src/webservices';
@@ -38,6 +38,7 @@ import { RHFTextField } from 'src/components/hook-form';
 import { LoadingButton } from '@mui/lab';
 import useResponsive from 'src/hooks/useResponsive';
 import MotionModal from 'src/components/animate/MotionModal';
+import { WalletLadgerSkeleton } from 'src/components/Skeletons/WalletLadgerSkeleton';
 
 // ----------------------------------------------------------------------
 type FormValuesProps = {
@@ -70,7 +71,7 @@ export default function WalletLadger() {
   const [ladgerData, setLadgerData] = useState([]);
   const [pageSize, setPageSize] = useState<any>(20);
   const [currentPage, setCurrentPage] = useState<any>(1);
-  const [sendLoding, setSendLoading] = useState(false);
+  const [sendLoading, setSendLoading] = useState(false);
   const [WalletCount, setWalletCount] = useState(0);
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -369,43 +370,36 @@ export default function WalletLadger() {
           {/* </Box> */}
         </MotionModal>
 
-        {sendLoding ? (
-          <ApiDataLoading />
-        ) : (
-          <Grid item xs={12} md={6} lg={8}>
-            <TableContainer>
-              <Scrollbar
-                sx={
-                  isMobile
-                    ? { maxHeight: window.innerHeight - 200 }
-                    : { maxHeight: window.innerHeight - 154 }
-                }
-              >
-                <Table
-                  sx={{ minWidth: 720 }}
-                  aria-label="customized table"
-                  stickyHeader
-                  size="small"
-                >
-                  <TableHeadCustom
-                    headLabel={
-                      user?.role == 'm_distributor'
-                        ? MDtableLabels
-                        : user?.role == 'distributor'
-                        ? distributortableLabels
-                        : agenttableLabels
-                    }
-                  />
+        <Grid item xs={12} md={6} lg={8}>
+          <TableContainer>
+            <Scrollbar
+              sx={
+                isMobile
+                  ? { maxHeight: window.innerHeight - 200 }
+                  : { maxHeight: window.innerHeight - 154 }
+              }
+            >
+              <Table sx={{ minWidth: 720 }} aria-label="customized table" stickyHeader size="small">
+                <TableHeadCustom
+                  headLabel={
+                    user?.role == 'm_distributor'
+                      ? MDtableLabels
+                      : user?.role == 'distributor'
+                      ? distributortableLabels
+                      : agenttableLabels
+                  }
+                />
 
-                  <TableBody>
-                    {Array.isArray(ladgerData) &&
-                      ladgerData.map((row: any) => <LadgerRow key={row._id} row={row} />)}
-                  </TableBody>
-                </Table>
-              </Scrollbar>
-            </TableContainer>
-          </Grid>
-        )}
+                <TableBody>
+                  {(sendLoading ? [...Array(18)] : ladgerData).map((row: any) =>
+                    sendLoading ? <WalletLadgerSkeleton /> : <LadgerRow key={row._id} row={row} />
+                  )}
+                </TableBody>
+                {!sendLoading && <TableNoData isNotFound={!ladgerData?.length} />}
+              </Table>
+            </Scrollbar>
+          </TableContainer>
+        </Grid>
       </Stack>
       <CustomPagination
         page={currentPage - 1}
