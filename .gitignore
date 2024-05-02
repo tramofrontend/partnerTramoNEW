@@ -31,4 +31,6 @@ yarn-debug.log*
 yarn-error.log*
 
 .eslintcache
-node_modules
+.env.development
+.env.production
+.env.development

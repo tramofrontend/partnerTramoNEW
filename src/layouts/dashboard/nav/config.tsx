@@ -42,10 +42,10 @@ const navConfig = [
             title: 'Wallet Ladger',
             path: PATH_DASHBOARD.transactions.mywalletladger,
           },
-          {
-            title: 'Report Export',
-            path: PATH_DASHBOARD.transactions.reportexport,
-          },
+          // {
+          //   title: 'Report Export',
+          //   path: PATH_DASHBOARD.transactions.reportexport,
+          // },
         ],
       },
       {
@@ -88,11 +88,11 @@ const navConfig = [
         path: PATH_DASHBOARD.helpsupport,
         icon: ICONS.ecommerce,
       },
-      {
-        title: 'Billing',
-        path: PATH_DASHBOARD.partnerbilling,
-        icon: ICONS.ecommerce,
-      },
+      // {
+      //   title: 'Billing',
+      //   path: PATH_DASHBOARD.partnerbilling,
+      //   icon: ICONS.ecommerce,
+      // },
       {
         title: 'API Credentials',
         path: PATH_DASHBOARD.apicredentials,

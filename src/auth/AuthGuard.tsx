@@ -38,6 +38,10 @@ export default function AuthGuard({ children }: AuthGuardProps) {
     return <LocationInstruction />;
   }
 
+  if (!location) {
+    return <LocationInstruction />;
+  }
+
   if (!isAuthenticated) {
     if (pathname !== requestedLocation) {
       setRequestedLocation(pathname);

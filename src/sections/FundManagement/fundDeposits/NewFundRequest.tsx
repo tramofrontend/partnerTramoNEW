@@ -1,10 +1,12 @@
 import {
+  Box,
   Button,
   Card,
   FormHelperText,
   LinearProgress,
   MenuItem,
   Stack,
+  TextField,
   Typography,
   styled,
 } from '@mui/material';
@@ -13,10 +15,10 @@ import {
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import FormProvider, { RHFSelect, RHFTextField } from '../../components/hook-form';
+import FormProvider, { RHFSelect, RHFTextField } from '../../../components/hook-form';
 import { useContext, useEffect, useState } from 'react';
-import { BankAccountContext } from './MyFundDeposites';
-import { bankAccountProps, fundRequestProps, paymentModesProps } from './Types';
+import { BankAccountContext } from '../MyFundDeposite';
+import { bankAccountProps, paymentModesProps } from './types';
 import { LoadingButton } from '@mui/lab';
 
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -33,9 +35,10 @@ import { AwsDocSign } from 'src/components/customFunctions/AwsDocSign';
 import Image from 'src/components/image/Image';
 import AWS from 'aws-sdk';
 import React from 'react';
-import MotionModal from 'src/components/animate/MotionModal';
 import CloseIcon from 'src/assets/icons/CloseIcon';
+import MotionModal from 'src/components/animate/MotionModal';
 import { fIndianCurrency } from 'src/utils/formatNumber';
+import { fetchLocation } from 'src/utils/fetchLocation';
 
 AWS.config.update({
   accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
@@ -64,6 +67,7 @@ type FormValuesProps = {
     address: string;
     min_Deposit_Amount: string;
     max_Deposit_Amount: string;
+
     _id: string;
   };
   modesDetail: {
@@ -87,7 +91,7 @@ type FormValuesProps = {
   feeCalc: string;
   paymentModeId: string;
   amount: number;
-  date: Date | string | null;
+  date: Date | null;
   branchName: string;
   mobileNumber: string;
   txnId: string;
@@ -97,26 +101,24 @@ type FormValuesProps = {
 };
 
 type props = {
-  preData: fundRequestProps;
-  handleClose: VoidFunction;
   getRaisedRequest: VoidFunction;
 };
 
-function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
+function NewFundRequest({ getRaisedRequest }: props) {
   const bankListContext = useContext(BankAccountContext);
-  const { user } = useAuthContext();
   const [amountMinMaxValidation, setAmountMinMaxValidation] = useState({
-    min: preData.bankId.min_Deposit_Amount || 0,
-    max: preData.bankId.max_Deposit_Amount || 0,
+    min: 0,
+    max: 0,
   });
+  const { user } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
+  const [paymentModes, setPaymentModes] = useState<any>([]);
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
-  const [paymentModes, setPaymentModes] = useState<any>(preData.bankId.modes_of_transfer || []);
 
   //modal for preview image
-  const [openModal, setOpenModal] = useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const fundRequestSchema = Yup.object().shape({
     bank_details: Yup.object().shape({
@@ -126,6 +128,11 @@ function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
     amount: Yup.number()
       .typeError("That doesn't look like an Amount")
       .positive("An Amount can't start with a minus")
+      .test((value: any, context: any) => {
+        return value && value >= 1 && context.originalValue && context.originalValue.startsWith('0')
+          ? false
+          : true;
+      })
       .min(
         +amountMinMaxValidation.min,
         `Please enter minimum ${fIndianCurrency(amountMinMaxValidation.min)}`
@@ -135,7 +142,11 @@ function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
         `You can enter maximum ${fIndianCurrency(amountMinMaxValidation.max)}`
       )
       .required('Amount is required'),
-    date: Yup.date().typeError('please enter a valid date').required('Please select Date'),
+    date: Yup.date()
+      .typeError('please enter a valid date')
+      .required('Please select Date')
+      .min(dayjs(new Date()).subtract(5, 'day'), 'please enter valid date'),
+
     branchName: Yup.string().required('Branch Name is required'),
     mobileNumber: Yup.string()
       .required('Mobile number field is required')
@@ -158,6 +169,7 @@ function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
         is: 'Fund Transfer',
         then: Yup.string().required('Transaction ID is required'),
       }),
+
     filePath: Yup.string()
       .when('modesDetail.modeName', {
         is: 'Cash deposit at branch',
@@ -172,33 +184,25 @@ function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
 
   const defaultValues = {
     bank_details: {
-      ifsc: preData.bankId.bank_details.ifsc,
-      account_number: preData.bankId.bank_details.account_number,
-      bank_name: preData.bankId.bank_details.bank_name,
-      branch_name: preData.bankId.bank_details.branch_name,
-      address: preData.bankId.bank_details.address,
-      min_Deposit_Amount: preData.bankId.min_Deposit_Amount,
-      max_Deposit_Amount: preData.bankId.max_Deposit_Amount,
-      _id: preData.bankId._id,
+      ifsc: '',
+      account_number: '',
+      bank_name: '',
+      branch_name: '',
+      address: '',
+      min_Deposit_Amount: '',
+      max_Deposit_Amount: '',
+      _id: '',
     },
     feeCalc: '',
-    modesDetail: preData.bankId.modes_of_transfer.filter(
-      (item: any) => item.modeId == preData.modeId._id
-    )[0],
-    paymentModeId: (
-      preData.bankId.modes_of_transfer.filter(
-        (item: any) => item.modeId == preData.modeId._id
-      )[0] as any
-    ).modeId,
+    paymentModeId: '',
     transactionFeeType: '',
-    amount: +preData.amount,
-    date: preData.date_of_deposit,
-    branchName: preData.transactional_details.branch,
-    mobileNumber: preData.transactional_details.mobile,
-    txnId: preData.transactional_details.trxId,
-    filePath: preData.transactionSlip,
-    secureFilePath: AwsDocSign(preData.transactionSlip),
-    remarks: preData.remark,
+    amount: 0,
+    date: new Date(),
+    branchName: '',
+    mobileNumber: '',
+    txnId: '',
+    filePath: '',
+    remarks: '',
   };
 
   const methods = useForm<FormValuesProps>({
@@ -208,6 +212,7 @@ function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
   });
   const {
     reset,
+    trigger,
     watch,
     setValue,
     getValues,
@@ -215,21 +220,14 @@ function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
     formState: { errors, isSubmitting },
   } = methods;
 
-  useEffect(() => {
-    const s3 = new AWS.S3();
-    const params = {
-      Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
-      Key: preData.transactionSlip?.split('/').splice(4, 4).join('/'),
-      Expires: 600, // Expiration time in seconds
-    };
-
-    s3.getSignedUrl('getObject', params, (err: any, url: any) => {
-      setValue('secureFilePath', url);
-    });
-  }, []);
+  console.log(errors?.filePath?.type == 'required' && errors?.filePath?.message);
 
   //upload file
   const handleFile = (e: any) => {
+    if (e.target.files[0]?.size > Math.pow(1024, 5))
+      return enqueueSnackbar('File size should be less than 5MB', {
+        variant: 'error',
+      });
     setIsSubmitLoading(true);
     let token = localStorage.getItem('token');
     new Compressor(e.target.files[0], {
@@ -286,55 +284,48 @@ function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
       transactionSlip: data.filePath,
     };
 
-    Api(`agent/fundManagement/updateRaisedRequests/${preData._id}`, 'POST', body, token).then(
-      (Response: any) => {
-        if (Response.status == 200) {
-          if (Response.data.code == 200) {
-            reset(defaultValues);
-            getRaisedRequest();
-            enqueueSnackbar(Response.data.message);
-          } else {
-            enqueueSnackbar(Response.data.message);
-          }
-          handleClose();
+    await fetchLocation();
+    await Api(`apiBox/fundManagement/raiseRequest`, 'POST', body, token).then((Response: any) => {
+      if (Response.status == 200) {
+        if (Response.data.code == 200) {
+          console.log(Response.data.data);
+          reset(defaultValues);
+          getRaisedRequest();
+          enqueueSnackbar(Response.data.message);
+        } else {
+          enqueueSnackbar(Response.data.message, { variant: 'error' });
         }
       }
-    );
+    });
   };
 
   //calculate fee
   useEffect(() => {
-    if (user?.role == 'agent')
-      calculateFee(
-        getValues('modesDetail.transactionFeeType'),
-        getValues('modesDetail.transactionFeeValue.for_Agent'),
-        getValues('modesDetail.transactionFeeOption.for_Agent')
-      );
-    if (user?.role == 'distributor')
-      calculateFee(
-        getValues('modesDetail.transactionFeeType'),
-        getValues('modesDetail.transactionFeeValue.for_Distributor'),
-        getValues('modesDetail.transactionFeeOption.for_Distributor')
-      );
-    if (user?.role == 'm_distributor')
-      calculateFee(
-        getValues('modesDetail.transactionFeeType'),
-        getValues('modesDetail.transactionFeeValue.for_M_Distributor'),
-        getValues('modesDetail.transactionFeeOption.for_M_Distributor')
-      );
+    calculateFee(
+      getValues('modesDetail.transactionFeeType'),
+      getValues('modesDetail.transactionFeeValue.for_API_user'),
+      getValues('modesDetail.transactionFeeOption.for_API_user')
+    );
   }, [watch('amount')]);
 
   const calculateFee = (type: any, value: any, option: any) => {
+    console.log(value, option);
     let amount: any = getValues('amount');
+
     if (option == 'flat') setValue('feeCalc', value);
     if (option == 'percentage') setValue('feeCalc', String((Number(amount) * Number(value)) / 100));
   };
 
+  useEffect(() => {
+    setValue('mobileNumber', getValues('mobileNumber').slice(0, 10));
+    getValues('mobileNumber').length > 0 && trigger('mobileNumber');
+  }, [watch('mobileNumber')]);
+
   return (
-    <>
-      <Typography variant="subtitle1">Update Fund Request</Typography>
+    <Card sx={{ p: 2, bgcolor: 'primary.lighter', height: '100%' }}>
+      <Typography variant="subtitle1">New Fund Request</Typography>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Stack gap={2} mt={2}>
+        <Stack justifyContent={'space-between'} gap={2} mt={2}>
           <RHFSelect
             name="bank_details.bank_name"
             label="Select Bank Account"
@@ -362,11 +353,12 @@ function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
                     setPaymentModes(item.modes_of_transfer);
                   }}
                 >
-                  {`${
-                    item?.bank_details?.bank_name
-                  } (Ending with ${item.bank_details.account_number.slice(
-                    item.bank_details.account_number.length - 4
-                  )})`}
+                  {`${item?.bank_details?.bank_name} (Ending with ${
+                    '*'.repeat(item.bank_details.account_number.length - 4) +
+                    item.bank_details.account_number.slice(
+                      item.bank_details.account_number.length - 4
+                    )
+                  })`}
                 </MenuItem>
               );
             })}
@@ -382,25 +374,54 @@ function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
             {paymentModes.map((item: paymentModesProps) => {
               return (
                 <MenuItem
-                  key={item?._id}
+                  key={item._id}
                   value={item.modeId}
                   onClick={() => {
                     setValue('modesDetail', item);
                     setValue('amount', 0);
                   }}
                 >
-                  {item.modeName +
-                    item.transactionFeeType +
+                  {item.modeName} (
+                  {item.transactionFeeType +
                     ' ' +
-                    (item.transactionFeeOption?.for_API_user == 'flat' ? 'Rs.' : '') +
-                    item.transactionFeeValue?.for_API_user +
-                    (item.transactionFeeOption?.for_API_user == 'flat' ? '' : '%')}
+                    (item.transactionFeeOption?.[
+                      user?.role == 'agent'
+                        ? 'for_Agent'
+                        : user?.role == 'distributor'
+                        ? 'for_Distributor'
+                        : user?.role == 'm_distributor'
+                        ? 'for_M_Distributor'
+                        : 'for_API_user'
+                    ] == 'flat'
+                      ? 'Rs.'
+                      : '') +
+                    item.transactionFeeValue?.[
+                      user?.role == 'agent'
+                        ? 'for_Agent'
+                        : user?.role == 'distributor'
+                        ? 'for_Distributor'
+                        : user?.role == 'm_distributor'
+                        ? 'for_M_Distributor'
+                        : 'for_API_user'
+                    ] +
+                    (item.transactionFeeOption?.[
+                      user?.role == 'agent'
+                        ? 'for_Agent'
+                        : user?.role == 'distributor'
+                        ? 'for_Distributor'
+                        : user?.role == 'm_distributor'
+                        ? 'for_M_Distributor'
+                        : 'for_API_user'
+                    ] == 'flat'
+                      ? ''
+                      : '%')}
+                  )
                 </MenuItem>
               );
             })}
           </RHFSelect>
           <Stack>
-            <RHFTextField name="amount" label="Amount" type="number" />
+            <RHFTextField name="amount" label="Amount" type="number" autoComplete="off" />
             {watch('bank_details.min_Deposit_Amount') && watch('bank_details.max_Deposit_Amount') && (
               <>
                 <Typography variant="caption" ml={2}>
@@ -427,7 +448,8 @@ function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
                       : 'success.main',
                 }}
               >
-                {watch('feeCalc')} Rs {watch('modesDetail.transactionFeeType')} Applicable.
+                {fIndianCurrency(watch('feeCalc'))} Rs {watch('modesDetail.transactionFeeType')}{' '}
+                Applicable.
               </Typography>
             )}
           </Stack>
@@ -437,14 +459,18 @@ function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
               inputFormat="DD/MM/YYYY"
               value={dayjs(watch('date'))}
               maxDate={new Date()}
-              minDate={dayjs(new Date()).subtract(4, 'day') as any}
+              minDate={dayjs(new Date()).subtract(5, 'day') as any}
               onChange={(newValue: any) => setValue('date', newValue)}
               renderInput={(params: any) => (
                 <RHFTextField
                   name="date"
                   type="date"
                   size="small"
-                  disabled
+                  autoComplete="off"
+                  onKeyDown={(e: any) => {
+                    e.preventDefault();
+                    return false;
+                  }}
                   onPaste={(e: any) => {
                     e.preventDefault();
                     return false;
@@ -457,7 +483,8 @@ function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
           <RHFTextField name="mobileNumber" label="Enter Depositor Mobile Number" type="number" />
           <Stack flexDirection={'row'} gap={2}>
             <RHFTextField name="branchName" label="Deposit Branch" />
-            <RHFTextField name="txnId" label="TrxID/UTR" />
+
+            <RHFTextField name="txnId" label="TrxID/UTR" autoComplete="off" />
           </Stack>
 
           {/* file upload */}
@@ -514,7 +541,7 @@ function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
                 src={watch('secureFilePath')}
                 alt={'slip'}
                 sx={{ borderRadius: 1, cursor: 'zoom-in' }}
-                onClick={handleOpenModal}
+                onClick={handleOpen}
               />
               <CloseIcon
                 sx={{
@@ -537,24 +564,20 @@ function UpdateFundRequest({ preData, handleClose, getRaisedRequest }: props) {
           )}
 
           <RHFTextField name="remarks" label="Remarks" />
-          <Stack flexDirection={'row'} gap={1}>
-            <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
-              Update
-            </LoadingButton>
-            <LoadingButton variant="contained" onClick={handleClose}>
-              Cancel
-            </LoadingButton>
-          </Stack>
+
+          <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
+            Submit
+          </LoadingButton>
         </Stack>
       </FormProvider>
-      <MotionModal open={openModal} onClose={handleCloseModal}>
+      <MotionModal open={open} onClose={handleClose} sx={{ width: { sm: '100%', md: '80%' } }}>
         <Image src={watch('secureFilePath')} alt={'slip'} />
-        <Button onClick={handleCloseModal} variant="contained" sx={{ alignSelf: 'end', mt: 1 }}>
+        <Button onClick={handleClose} variant="contained" sx={{ alignSelf: 'end', mt: 1 }}>
           Close
         </Button>
       </MotionModal>
-    </>
+    </Card>
   );
 }
 
-export default React.memo(UpdateFundRequest);
+export default React.memo(NewFundRequest);
