@@ -233,7 +233,7 @@ function Reportexport() {
 
   const submitReport = (data: FormValuesProps) => {
     setApproveLoading(true);
-
+    setVerifyLoading(true);
     let body = {
       from_date: sdata !== 'GST & TDS Report' ? formattedStart : `${GSTTDSDate}`,
       to_date: sdata !== 'GST & TDS Report' ? formattedEndDate : `${GSTTDSDateEnd}`,
@@ -289,7 +289,7 @@ function Reportexport() {
 
   // All Transactions
   const getTransaction = () => {
-    setLoading(true);
+    setVerifyLoading(true);
     let token = localStorage.getItem('token');
     let body = {
       pageInitData: {
@@ -304,14 +304,16 @@ function Reportexport() {
         if (Response.status == 200) {
           if (Response.data.code == 200) {
             setTableData(Response.data.data.data);
-
+            setVerifyLoading(false);
             setPageCount(Response?.data?.data?.totalNumberOfRecords);
           } else {
             enqueueSnackbar(Response.data.message, { variant: 'error' });
+            setVerifyLoading(false);
           }
         } else {
           enqueueSnackbar('Failed', { variant: 'error' });
           setLoading(false);
+          setVerifyLoading(false);
         }
       }
     );
@@ -412,30 +414,31 @@ function Reportexport() {
           New Request
         </LoadingButton>
       </Stack>
-      <Grid item xs={12} md={6} lg={8} sx={{ width: '100%' }}>
-        <TableContainer component={Paper}>
-          <Scrollbar
-            sx={
-              isMobile
-                ? { maxHeight: window.innerHeight - 272 }
-                : { maxHeight: window.innerHeight - 204 }
-            }
-          >
-            <Table stickyHeader aria-label="sticky table" size="small" sx={{ minWidth: 720 }}>
-              <TableHead>
-                <TableRow>
-                  {tableLabels.map((column: any) => (
-                    <TableCell key={column.id}>{column.label}</TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              {verifyLoding ? (
-                <>
-                  <Stack>
-                    <ApiDataLoading />
-                  </Stack>
-                </>
-              ) : (
+      {verifyLoding ? (
+        <>
+          <Stack flexDirection="row" justifyContent="center">
+            <ApiDataLoading />
+          </Stack>
+        </>
+      ) : (
+        <Grid item xs={12} md={6} lg={8} sx={{ width: '100%' }}>
+          <TableContainer component={Paper}>
+            <Scrollbar
+              sx={
+                isMobile
+                  ? { maxHeight: window.innerHeight - 272 }
+                  : { maxHeight: window.innerHeight - 204 }
+              }
+            >
+              <Table stickyHeader aria-label="sticky table" size="small" sx={{ minWidth: 720 }}>
+                <TableHead>
+                  <TableRow>
+                    {tableLabels.map((column: any) => (
+                      <TableCell key={column.id}>{column.label}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+
                 <TableBody>
                   {tableData?.map((row: any) => (
                     <TableRow sx={{ display: 'table-row' }} key={row?.id}>
@@ -489,28 +492,31 @@ function Reportexport() {
                     </TableRow>
                   ))}
                 </TableBody>
-              )}
-              <TableNoData isNotFound={!tableData.length} />
-            </Table>
-          </Scrollbar>
 
-          <CustomPagination
-            page={currentPage - 1}
-            count={pageCount}
-            onPageChange={(event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
-              setCurrentPage(newPage + 1);
-            }}
-            rowsPerPage={pageSize}
-            onRowsPerPageChange={(
-              event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-            ) => {
-              setPageSize(parseInt(event.target.value));
-              setCurrentPage(1);
-            }}
-          />
-        </TableContainer>
-      </Grid>
+                <TableNoData isNotFound={!tableData.length} />
+              </Table>
+            </Scrollbar>
 
+            <CustomPagination
+              page={currentPage - 1}
+              count={pageCount}
+              onPageChange={(
+                event: React.MouseEvent<HTMLButtonElement> | null,
+                newPage: number
+              ) => {
+                setCurrentPage(newPage + 1);
+              }}
+              rowsPerPage={pageSize}
+              onRowsPerPageChange={(
+                event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+              ) => {
+                setPageSize(parseInt(event.target.value));
+                setCurrentPage(1);
+              }}
+            />
+          </TableContainer>
+        </Grid>
+      )}
       <Modal
         open={open}
         aria-labelledby="modal-modal-title"
