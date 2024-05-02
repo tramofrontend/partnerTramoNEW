@@ -7,6 +7,7 @@ import { _allProducts, _ecommerceBestSalesman } from 'src/_mock/arrays';
 import { Api } from 'src/webservices';
 import { useSnackbar } from 'notistack';
 import { LoadingButton } from '@mui/lab';
+import { CallBackSkeleton } from 'src/components/Skeletons/CallBackSkeleton';
 
 // import { Label } from '@mui/icons-material';
 
@@ -23,6 +24,7 @@ export default function CallBackUrl() {
   const [url1, setUrl1] = useState('');
   const [url2, setUrl2] = useState('');
   const [url3, setUrl3] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     getActiveCategory();
@@ -67,6 +69,7 @@ export default function CallBackUrl() {
       });
     }
   };
+
 
   const setMoneyurl = () => {
     if (!edit1) {
@@ -150,13 +153,18 @@ export default function CallBackUrl() {
           setUrl1(Response.data.data.partnerCallbackUrls.payout)
           setUrl2(Response.data.data.partnerCallbackUrls.recharge)
           setUrl3(Response.data.data.partnerCallbackUrls.aeps)
+          setIsLoading(false)
           console.log('======userProfileInfo==code 200=====>', Response.data.data);
         } else {
           console.log('======userProfileInfo_error=======>' + Response);
+          setIsLoading(false)
         }
       }
     });
-  };
+  }
+  if (isLoading) {
+    return <CallBackSkeleton />;
+  }
 
   return (
     <>
@@ -164,37 +172,29 @@ export default function CallBackUrl() {
         <title>CallBack URL | Tramo</title>
       </Helmet>
       <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
-    <Stack justifyContent={'space-between'}>
-      <Typography variant="h4">BBPS Callback URL</Typography>
-      <Stack flexDirection={'row'} gap={3} marginTop={3}>
-      {url ? (
-        <TextField
-          label="url"
-          placeholder="url"
-          value={url}
-          size="small"
-          disabled={!edit}
-          variant={edit ? 'outlined' : 'filled'}
-          onChange={(e) => setUrl(e.target.value)}
-        />
-      ) : (
-        <Skeleton variant='rounded' width="30%" height={40}/>
-      )}
-       {url ? (
-        <Button variant="contained" onClick={setBBPSUurl}>
-          {edit ? 'Save' : 'Edit'}
-        </Button>
-         ) : (
-          <Skeleton variant='rounded' width="10%" height={40} />
-        )}
-      </Stack>
-    </Stack>
+        <Stack justifyContent={'space-between'}>
+          <Typography variant="h4">BBPS Callback URL</Typography>
+          <Stack flexDirection={'row'} gap={3} marginTop={3}>
+            <TextField
+              label="url"
+              placeholder="url"
+              value={url}
+              size="small"
+              disabled={!edit}
+              variant={edit ? 'outlined' : 'filled'}
+              onChange={(e) => setUrl(e.target.value)}
+            />
+        
+            <Button variant="contained" onClick={setBBPSUurl}>
+              {edit ? 'Save' : 'Edit'}
+            </Button>
+          </Stack>
+        </Stack>
       </Box>
       <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
         <Stack justifyContent={'space-between'}>
           <Typography variant="h4">Money Transfer Callback URL</Typography>
           <Stack flexDirection={'row'} gap={3} marginTop={3}>
-          {url1 ? (
             <TextField
               label="Money Transfer url"
               placeholder=" Money Transfer url"
@@ -205,16 +205,9 @@ export default function CallBackUrl() {
               variant={edit1 ? 'outlined' : 'filled'}
               onChange={(e) => setUrl1(e.target.value)}
             />
-          ) : (
-            <Skeleton variant='rounded' width="30%" height={40}/>
-          )}
-          {url1 ? (
             <LoadingButton variant="contained" onClick={setMoneyurl}>
               {edit1 ? 'Save' : 'Edit'}
             </LoadingButton>
-              ) : (
-                <Skeleton variant='rounded' width="10%" height={40}/>
-              )}
           </Stack>
         </Stack>
       </Box>
@@ -222,7 +215,6 @@ export default function CallBackUrl() {
         <Stack justifyContent={'space-between'}>
           <Typography variant="h4">Recharge Callback URL</Typography>
           <Stack flexDirection={'row'} gap={3} marginTop={3}>
-          {url2 ? (
             <TextField
               label="Recharge url"
               placeholder="Recharge url"
@@ -233,16 +225,9 @@ export default function CallBackUrl() {
               variant={edit2 ? 'outlined' : 'filled'}
               onChange={(e) => setUrl2(e.target.value)}
             />
-          ) : (
-            <Skeleton variant='rounded' width="30%" height={40}/>
-          )}
-           {url2 ? (
             <LoadingButton variant="contained" onClick={setRechagurl}>
               {edit2 ? 'Save' : 'Edit'}
             </LoadingButton>
-               ) : (
-                <Skeleton variant='rounded' width="10%" height={40}/>
-              )}
           </Stack>
         </Stack>
       </Box>
@@ -250,7 +235,6 @@ export default function CallBackUrl() {
         <Stack justifyContent={'space-between'}>
           <Typography variant="h4">AEPS Callback URL</Typography>
           <Stack flexDirection={'row'} gap={3} marginTop={3}>
-          {url3 ? (
             <TextField
               label="AEPS url"
               placeholder="AEPS url"
@@ -261,16 +245,9 @@ export default function CallBackUrl() {
               variant={edit3 ? 'outlined' : 'filled'}
               onChange={(e) => setUrl3(e.target.value)}
             />
-          ) : (
-            <Skeleton variant='rounded' width="30%" height={40}/>
-          )}
-          {url3 ? (
             <LoadingButton variant="contained" onClick={setAEPSurl}>
               {edit3 ? 'Save' : 'Edit'}
             </LoadingButton>
-              ) : (
-                <Skeleton variant='rounded' width="10%" height={40}/>
-              )}
           </Stack>
         </Stack>
       </Box>

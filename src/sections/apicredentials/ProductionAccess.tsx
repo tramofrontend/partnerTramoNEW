@@ -53,6 +53,7 @@ import { ReadStream } from 'fs';
 
 import useCopyToClipboard from 'src/hooks/useCopyToClipboard';
 import { responsiveFontSizes } from 'src/theme/typography';
+import  {ProductionAccessSkeleton}  from 'src/components/Skeletons/ProductionAccessSkeleton';
 
 // import { Label } from '@mui/icons-material';
 
@@ -118,6 +119,7 @@ export default function ProductionAccess() {
   const [apiKey, setApiKey] = useState('');
   const [accessKey, setAccessKey] = useState('');
   const [secretKey, setSecretKey] = useState('');
+  const [isLoading, setIsLoading] = useState (true);
   const FilterSchema = Yup.object().shape({});
   const defaultValues = {
     MDBankAccount: '',
@@ -170,13 +172,18 @@ export default function ProductionAccess() {
           setApiKey(Response.data.data[0]?.APIKey);
           setAccessKey(Response.data.data[0]?.accessKey);
           setSecretKey(Response.data.data[0]?.secretKey);
+          setIsLoading(false)
           console.log('======productionCredential code 200====>', Response.data.data[0].setting);
         } else {
           console.log('======productionCredential=======>' + Response);
+          setIsLoading(false)
         }
       }
     });
   };
+  if (isLoading) {
+    return <ProductionAccessSkeleton />;
+  }
 
   return (
     <>
