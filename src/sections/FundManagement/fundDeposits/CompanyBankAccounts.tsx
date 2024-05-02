@@ -1,12 +1,22 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { BankAccountContext } from './MyFundDeposites';
-import { Button, Card, IconButton, Stack, Tooltip, Typography } from '@mui/material';
-import { bankAccountProps } from './Types';
-import ICICIBank from 'src/assets/icons/Bankicons/IciciBank';
-import { DemoBank } from 'src/assets/icons/Bankicons/DemoBank';
+import { BankAccountContext } from '../MyFundDeposite';
+import {
+  Button,
+  Card,
+  IconButton,
+  MenuItem,
+  Select,
+  Stack,
+  Tab,
+  Tabs,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import { bankAccountProps } from './types';
 import useCopyToClipboard from 'src/hooks/useCopyToClipboard';
 import Iconify from 'src/components/iconify/Iconify';
 import { useSnackbar } from 'notistack';
+import { RHFSelect } from 'src/components/hook-form';
 
 function CompanyBankAccounts() {
   const { copy } = useCopyToClipboard();
@@ -32,22 +42,30 @@ function CompanyBankAccounts() {
   };
 
   return (
-    <Card sx={{ p: 1, bgcolor: '#ff30300d' }}>
+    <Card sx={{ p: 2, bgcolor: 'primary.lighter' }}>
       <Typography variant="subtitle1" color={'primary'}>
-        Company Bank Account
+        View Company Bank Account
       </Typography>
 
       <Stack m={1} flexDirection={'row'} alignItems={'center'} gap={2}>
-        {bankListContext.map((item: bankAccountProps) => {
-          return item.bank_details.bank_name == 'ICICI BANK' ? (
-            <ICICIBank
-              active={item.bank_details.account_number === activeBank.account_number}
-              onClick={() => setActiveBank(item.bank_details)}
-            />
-          ) : (
-            <DemoBank onClick={() => setActiveBank(item.bank_details)} />
-          );
-        })}
+        <Select
+          value={activeBank.account_number}
+          onChange={(event: any) => {
+            const newValue = event.target.value;
+            const selectedBank = bankListContext.find(
+              (item: any) => item.bank_details.account_number === newValue
+            );
+            if (selectedBank) setActiveBank(selectedBank.bank_details);
+          }}
+          size="small"
+          sx={{ width: '210px' }}
+        >
+          {bankListContext.map((item: any) => (
+            <MenuItem key={item.bank_details.bank_name} value={item.bank_details.account_number}>
+              {item.bank_details.bank_name}
+            </MenuItem>
+          ))}
+        </Select>
       </Stack>
 
       <Stack width={{ sm: '100%', md: '50%' }} gap={1}>

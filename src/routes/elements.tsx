@@ -50,7 +50,7 @@ export const ApiCredentials = Loadable(
 export const Referenceapidocs = Loadable(lazy(() => import('../pages/Referenceapidocs')));
 //Fund Requests
 export const MyFundDeposit = Loadable(
-  lazy(() => import('../sections/FundManagement/MyFundDeposites'))
+  lazy(() => import('../sections/FundManagement/MyFundDeposite'))
 );
 
 export const BankDetail = Loadable(lazy(() => import('../sections/FundManagement/BankDetail')));

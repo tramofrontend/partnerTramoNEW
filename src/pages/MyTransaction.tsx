@@ -65,6 +65,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { fDateFormatForApi } from 'src/utils/formatTime';
+import { MasterTransactionSkeleton } from 'src/components/Skeletons/MasterTransactionSkeleton';
 
 // ----------------------------------------------------------------------
 
@@ -593,35 +594,36 @@ export default function MyTransactions() {
 
         <Grid item xs={12} md={6} lg={8}>
           <>
-            {Loading ? (
-              <ApiDataLoading />
-            ) : (
-              <Scrollbar
-                sx={
-                  isMobile
-                    ? { maxHeight: window.innerHeight - 200 }
-                    : { maxHeight: window.innerHeight - 154 }
-                }
-              >
-                <Table size="small" aria-label="customized table" stickyHeader>
-                  <TableHeadCustom
-                    headLabel={
-                      user?.role == 'm_distributor'
-                        ? tableLabels
-                        : user?.role == 'distributor'
-                        ? tableLabels1
-                        : tableLabels2
-                    }
-                  />
+            <Scrollbar
+              sx={
+                isMobile
+                  ? { maxHeight: window.innerHeight - 200 }
+                  : { maxHeight: window.innerHeight - 154 }
+              }
+            >
+              <Table size="small" aria-label="customized table" stickyHeader>
+                <TableHeadCustom
+                  headLabel={
+                    user?.role == 'm_distributor'
+                      ? tableLabels
+                      : user?.role == 'distributor'
+                      ? tableLabels1
+                      : tableLabels2
+                  }
+                />
 
-                  <TableBody>
-                    {filterdValue.map((row: any) => (
+                <TableBody>
+                  {(Loading ? [...Array(20)] : filterdValue).map((row: any) =>
+                    Loading ? (
+                      <MasterTransactionSkeleton />
+                    ) : (
                       <TransactionRow key={row._id} row={row} />
-                    ))}
-                  </TableBody>
-                </Table>
-              </Scrollbar>
-            )}
+                    )
+                  )}
+                </TableBody>
+              </Table>
+            </Scrollbar>
+
             {!Loading && (
               <CustomPagination
                 page={currentPage - 1}
