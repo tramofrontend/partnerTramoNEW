@@ -42,10 +42,10 @@ const navConfig = [
             title: 'Wallet Ladger',
             path: PATH_DASHBOARD.transactions.mywalletladger,
           },
-          // {
-          //   title: 'Report Export',
-          //   path: PATH_DASHBOARD.transactions.reportexport,
-          // },
+          {
+            title: 'Report Export',
+            path: PATH_DASHBOARD.transactions.reportexport,
+          },
         ],
       },
       {
