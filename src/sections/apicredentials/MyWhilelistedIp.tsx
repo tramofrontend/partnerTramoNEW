@@ -13,6 +13,7 @@ import { Api } from 'src/webservices';
 
 import { useSnackbar } from 'notistack';
 import { LoadingButton } from '@mui/lab';
+import { WhilekistedipSkeleton } from 'src/components/Skeletons/WhilekistedipSkeleton';
 
 // ----------------------------------------------------------------------
 type FormValuesProps = {
@@ -26,6 +27,7 @@ export default function MyWhilelistedIp() {
   const [ip, setIP] = React.useState('');
   const [edit, setEdit] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
  
 
   useEffect(() => {
@@ -39,10 +41,11 @@ export default function MyWhilelistedIp() {
       if (Response.status == 200) {
         if (Response.data.code == 200) {
           setIP(Response?.data?.data[0]?.myIp);
-
+          setIsLoading(false)
           console.log('======productionCredential code 200====>', Response.data.data[0].setting);
         } else {
           console.log('======productionCredential=======>' + Response);
+          setIsLoading(false)
         }
       }
     });
@@ -72,6 +75,9 @@ export default function MyWhilelistedIp() {
       }
     });
   };
+  if (isLoading) {
+    return <WhilekistedipSkeleton />;
+  }
 
   return (
     <>

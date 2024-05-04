@@ -10,7 +10,7 @@ import { ThemeSettings } from './components/settings';
 import { MotionLazyContainer } from './components/animate';
 
 // ----------------------------------------------------------------------
-
+// ======================================================================
 export default function App() {
   return (
     <MotionLazyContainer>
