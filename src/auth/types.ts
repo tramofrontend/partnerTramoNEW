@@ -35,4 +35,5 @@ export type JWTContextType = {
   loginWithGoogle?: () => void;
   loginWithGithub?: () => void;
   loginWithTwitter?: () => void;
+  initialize?: () => void;
 };

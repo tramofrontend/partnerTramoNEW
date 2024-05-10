@@ -1,9 +1,9 @@
 {
   "name": "@minimal/material-kit-react",
   "author": "Minimals UI",
-  "versiondev": "0.1.6",
-  "versionprod": "0.1.7",
-  "lastUpdated": "23/3/2024 14:7:22",
+  "versiondev": "0.1.7",
+  "versionprod": "0.1.8",
+  "lastUpdated": "4/4/2024 18:33:39",
   "description": "Simple React Scripts & Typescript",
   "private": true,
   "scripts": {
