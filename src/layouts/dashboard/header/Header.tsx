@@ -27,6 +27,7 @@ type Props = {
 
 export default function Header({ onOpenNav }: Props) {
   const theme = useTheme();
+  console.log('env.process', process.env);
 
   const { user } = useAuthContext();
 
@@ -103,7 +104,6 @@ export default function Header({ onOpenNav }: Props) {
           borderBottom: (theme) => ` dashed 2px ${theme.palette.divider}`,
           ...(isOffset && {
             height: HEADER.H_DASHBOARD_DESKTOP_OFFSET,
-           
           }),
           ...(isNavHorizontal && {
             width: 1,
