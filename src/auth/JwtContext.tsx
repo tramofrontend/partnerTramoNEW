@@ -5,7 +5,7 @@ import axios from '../utils/axios';
 import { isValidToken, setSession } from './utils';
 import { ActionMapType, AuthStateType, AuthUserType, JWTContextType } from './types';
 import { Api } from 'src/webservices';
-
+import { fetchLocation } from 'src/utils/fetchLocation';
 // ----------------------------------------------------------------------
 
 // NOTE:
@@ -102,14 +102,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [location, setLocation] = useState<boolean | null>(true);
   const initialize = useCallback(async () => {
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }: any) => {
-        setLocation(true);
-      },
-      (error) => {
-        setLocation(false);
-      }
-    );
+    // navigator.geolocation.getCurrentPosition(
+    //   ({ coords }: any) => {
+    //     setLocation(true);
+    //   },
+    //   (error) => {
+    //     false;
+    //   }
+    // );
+    await fetchLocation();
     try {
       const accessToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
 
@@ -118,21 +119,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
           if (resp.status == 200) {
             if (resp.data.code == 200) {
               if ((resp.data.data.role = 'API_User')) {
-                localStorage.removeItem('token');
+                // localStorage.removeItem('token');
                 dispatch({
-                  type: Types.LOGOUT,
+                  type: Types.INITIAL,
+                  payload: {
+                    isAuthenticated: true,
+                    user: resp.data.data,
+                  },
                 });
               }
             } else {
               localStorage.removeItem('token');
               dispatch({
-                type: Types.LOGOUT,
+                type: Types.INITIAL,
+                payload: {
+                  isAuthenticated: false,
+                  user: null,
+                },
               });
             }
           } else {
             localStorage.removeItem('token');
             dispatch({
-              type: Types.LOGOUT,
+              type: Types.INITIAL,
+              payload: {
+                isAuthenticated: false,
+                user: null,
+              },
             });
           }
         });
@@ -147,7 +160,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     } catch (error) {
       dispatch({
-        type: Types.LOGOUT,
+        type: Types.INITIAL,
+        payload: {
+          isAuthenticated: false,
+          user: null,
+        },
       });
     }
   }, []);
