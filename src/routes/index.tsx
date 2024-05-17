@@ -25,6 +25,7 @@ import {
   ReportExport,
   BankDetail,
   AepsSettlement,
+  ResetPage,
 } from './elements';
 import MyFundRequest from 'src/sections/FundManagement/MyFundRequest';
 
@@ -41,6 +42,14 @@ export default function Router() {
           element: (
             <GuestGuard>
               <LoginPage />
+            </GuestGuard>
+          ),
+        },
+        {
+          path: 'resetpassword',
+          element: (
+            <GuestGuard>
+              <ResetPage />
             </GuestGuard>
           ),
         },

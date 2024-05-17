@@ -1,19 +1,18 @@
-
 function path(root: string, sublink: string) {
   return `${root}${sublink}`;
 }
-const ROOTS_DASHBOARD = "/auth";
+const ROOTS_DASHBOARD = '/auth';
 
 export const PATH_AUTH = {
-  login: "/login",
-
+  login: '/login',
+  resetpassword: '/resetpassword',
 };
 
 export const PATH_DASHBOARD = {
   root: ROOTS_DASHBOARD,
-  dashboard: path(ROOTS_DASHBOARD, "/dashboard"),
+  dashboard: path(ROOTS_DASHBOARD, '/dashboard'),
   //Help and support
-  helpsupport: path(ROOTS_DASHBOARD, "/helpsupport"),
+  helpsupport: path(ROOTS_DASHBOARD, '/helpsupport'),
   //Partner Billing
   partnerbilling: path(ROOTS_DASHBOARD, '/partnerbilling'),
 
@@ -26,13 +25,13 @@ export const PATH_DASHBOARD = {
   //Trasaction & walletlaser
 
   transactions: {
-    root: path(ROOTS_DASHBOARD, "/transactions"),
-    mytransactions: path(ROOTS_DASHBOARD, "/transactions/mytransactions"),
-    mywalletladger: path(ROOTS_DASHBOARD, "/transactions/mywalletladger"),
-    reportexport: path(ROOTS_DASHBOARD, "/transactions/reportexport"),
+    root: path(ROOTS_DASHBOARD, '/transactions'),
+    mytransactions: path(ROOTS_DASHBOARD, '/transactions/mytransactions'),
+    mywalletladger: path(ROOTS_DASHBOARD, '/transactions/mywalletladger'),
+    reportexport: path(ROOTS_DASHBOARD, '/transactions/reportexport'),
   },
 
-  //Services 
+  //Services
 
   myservices: {
     root: path(ROOTS_DASHBOARD, '/myservices'),
@@ -41,21 +40,13 @@ export const PATH_DASHBOARD = {
     BBPSSchemePage: path(ROOTS_DASHBOARD, '/myservices/BBPSSchemePage'),
   },
 
-
   //Fund request
 
   fundmanagement: {
-    root: path(ROOTS_DASHBOARD, "/fundmanagement"),
-    myfunddeposit: path(ROOTS_DASHBOARD, "/fundmanagement/myfunddeposit"),
-    bankDetail: path(ROOTS_DASHBOARD, "/fundmanagement/bankDetail"),
-    aepssettlement: path(ROOTS_DASHBOARD, "/fundmanagement/aepssettlement"),
-    myfundrequest: path(ROOTS_DASHBOARD, "/fundmanagement/myfundrequest"),
+    root: path(ROOTS_DASHBOARD, '/fundmanagement'),
+    myfunddeposit: path(ROOTS_DASHBOARD, '/fundmanagement/myfunddeposit'),
+    bankDetail: path(ROOTS_DASHBOARD, '/fundmanagement/bankDetail'),
+    aepssettlement: path(ROOTS_DASHBOARD, '/fundmanagement/aepssettlement'),
+    myfundrequest: path(ROOTS_DASHBOARD, '/fundmanagement/myfundrequest'),
   },
-
-
-
-
-
-
-}
-
+};
