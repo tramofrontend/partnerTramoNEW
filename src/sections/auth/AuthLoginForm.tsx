@@ -112,14 +112,14 @@ export default function AuthLoginForm() {
       </Stack>
 
       <Stack alignItems="flex-end" sx={{ my: 2 }}>
-        {/* <Link
+        <Link
           color="inherit"
           variant="subtitle2"
-          sx={{ cursor: "pointer" }}
+          sx={{ cursor: 'pointer' }}
           onClick={() => navigate(PATH_AUTH.resetpassword)}
         >
           Forgot password?
-        </Link> */}
+        </Link>
       </Stack>
 
       <LoadingButton
