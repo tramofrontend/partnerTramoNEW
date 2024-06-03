@@ -72,7 +72,7 @@ import MotionModal from 'src/components/animate/MotionModal';
 
 type FormValuesProps = {
   status: string;
-  clientRefId: string;
+  partnerTransactionId: string;
   category: string;
   product: string;
   accountNumber: string;
@@ -181,7 +181,7 @@ export default function MyTransactions() {
         pageSize: pageSize,
         currentPage: currentPage,
       },
-      clientRefId: getValues('clientRefId'),
+      partnerTransactionId: getValues('partnerTransactionId'),
       accountNumber: getValues('accountNumber'),
       mobileNumber: getValues('mobileNumber'),
       status: getValues('status'),
@@ -192,7 +192,7 @@ export default function MyTransactions() {
       endDate: fDateFormatForApi(getValues('endDate')),
     };
 
-    Api(`transaction/transactionByUser`, 'POST', body, token).then((Response: any) => {
+    Api(`apiBox/Transactions/transactionByUser`, 'POST', body, token).then((Response: any) => {
       console.log('======Transaction==response=====>' + Response);
       if (Response.status == 200) {
         if (Response.data.code == 200) {
@@ -221,7 +221,7 @@ export default function MyTransactions() {
           pageSize: pageSize,
           currentPage: currentPage,
         },
-        clientRefId: data.clientRefId,
+        clientRefId: data.partnerTransactionId,
         status: data.status,
         transactionType: '',
         categoryId: data.category,
@@ -231,23 +231,25 @@ export default function MyTransactions() {
         startDate: fDateFormatForApi(getValues('startDate')),
         endDate: fDateFormatForApi(getValues('endDate')),
       };
-      await Api(`transaction/transactionByUser`, 'POST', body, token).then((Response: any) => {
-        console.log('======Transaction==response=====>' + Response);
-        if (Response.status == 200) {
-          if (Response.data.code == 200) {
-            setFilterdValue(Response.data.data.data);
-            setPageCount(Response.data.data.totalNumberOfRecords);
-            handleClose();
-            enqueueSnackbar(Response.data.message);
+      await Api(`apiBox/Transactions/transactionByUser`, 'POST', body, token).then(
+        (Response: any) => {
+          console.log('======Transaction==response=====>' + Response);
+          if (Response.status == 200) {
+            if (Response.data.code == 200) {
+              setFilterdValue(Response.data.data.data);
+              setPageCount(Response.data.data.totalNumberOfRecords);
+              handleClose();
+              enqueueSnackbar(Response.data.message);
+            } else {
+              enqueueSnackbar(Response.data.message, { variant: 'error' });
+            }
+            setLoading(false);
           } else {
-            enqueueSnackbar(Response.data.message, { variant: 'error' });
+            setLoading(false);
+            enqueueSnackbar('Failed', { variant: 'error' });
           }
-          setLoading(false);
-        } else {
-          setLoading(false);
-          enqueueSnackbar('Failed', { variant: 'error' });
         }
-      });
+      );
     } catch (err) {
       console.log(err);
     }
@@ -258,7 +260,7 @@ export default function MyTransactions() {
         return val != item.key;
       })
     );
-    if (val == 'clientRefId') resetField('clientRefId');
+    if (val == 'partnerTransactionId') resetField('partnerTransactionId');
     if (val == 'status') resetField('status');
     if (val == 'categoryName') {
       setValue('category', '');
@@ -331,7 +333,7 @@ export default function MyTransactions() {
         pageSize: '',
         currentPage: '',
       },
-      clientRefId: getValues('clientRefId'),
+      partnerTransactionId: getValues('partnerTransactionId'),
       accountNumber: getValues('accountNumber'),
       mobileNumber: getValues('mobileNumber'),
       status: getValues('status'),
@@ -524,7 +526,7 @@ export default function MyTransactions() {
                   <MenuItem value="hold">Hold</MenuItem>
                   <MenuItem value="initiated">Initiated</MenuItem>
                 </RHFSelect>
-                <RHFTextField size="small" name="clientRefId" label="Transaction Id" />
+                <RHFTextField size="small" name="partnerTransactionId" label="Transaction Id" />
                 <RHFTextField size="small" name="accountNumber" label="AccountNumber" />
                 <RHFTextField size="small" name="mobileNumber" label="MobileNumber" />
                 <Stack direction={'row'} gap={1}>
@@ -601,7 +603,7 @@ export default function MyTransactions() {
                     )
                   )}
                 </TableBody>
-                {!Loading && <TableNoData isNotFound={!filterdValue}/>}
+                {!Loading && <TableNoData isNotFound={!filterdValue} />}
               </Table>
             </Scrollbar>
 
@@ -728,9 +730,9 @@ function TransactionRow({ row }: childProps) {
         <StyledTableCell>
           <Typography variant="body2">{newRow?.transactionType}</Typography>
           <Typography variant="body2" whiteSpace={'nowrap'}>
-            {newRow?.clientRefId}{' '}
+            {newRow?.partnerTransactionId}{' '}
             <Tooltip title="Copy" placement="top">
-              <IconButton onClick={() => onCopy(newRow?.clientRefId)}>
+              <IconButton onClick={() => onCopy(newRow?.partnerTransactionId)}>
                 <Iconify icon="eva:copy-fill" width={20} />
               </IconButton>
             </Tooltip>
@@ -916,7 +918,7 @@ function TransactionRow({ row }: childProps) {
             <IconButton>
               <img src={Group} alt="Receipt Icon" />
             </IconButton>
-            {newRow.status !== 'success' && newRow.status !== 'failed' && (
+            {/* {newRow.status !== 'success' && newRow.status !== 'failed' && (
               <Tooltip title="Check Status" placement="top">
                 <IconButton
                   onClick={() => !loading && CheckTransactionStatus(newRow)}
@@ -926,7 +928,7 @@ function TransactionRow({ row }: childProps) {
                   <img src={autorenew} alt="Check Status" />
                 </IconButton>
               </Tooltip>
-            )}
+            )} */}
             {user?.role === 'agent' &&
               (newRow?.categoryName == 'MONEY TRANSFER' || newRow?.categoryName == 'DMT2') && (
                 <Tooltip title="View Receipt" placement="top">
