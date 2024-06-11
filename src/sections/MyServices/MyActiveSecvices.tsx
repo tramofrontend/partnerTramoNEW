@@ -58,6 +58,7 @@ import React from 'react';
 
 import { Api } from 'src/webservices';
 import { ReadStream } from 'fs';
+import ActivitySkeleton from 'src/components/Skeletons/ActivitysSkeleton';
 
 // import { Label } from '@mui/icons-material';
 
@@ -119,6 +120,7 @@ const IOSSwitch = styled((props: SwitchProps) => (
 
 export default function MyActiveServices() {
   const [value, setValue] = React.useState('one');
+  const [isLoading, setIsLoading] = React.useState(false);
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
@@ -146,6 +148,7 @@ export default function MyActiveServices() {
   }, []);
 
   const activeServices = () => {
+    setIsLoading(true);
     let token = localStorage.getItem('token');
     Api(`apiBox/dashboard/getActiveServices`, 'GET', '', token).then((Response: any) => {
       console.log('======Set_Limit==response=====>' + Response);
@@ -153,14 +156,20 @@ export default function MyActiveServices() {
         if (Response.data.code == 200) {
           if (Response.data.data) {
             setServices(Response.data.data);
+            setIsLoading(false)
           }
           console.log('======Set_Limit_code_200=======>' + Response.data.data);
         } else {
           console.log('======Set_Limit_error=======>' + Response);
+          setIsLoading(false);
         }
       }
     });
   };
+
+  if(isLoading){
+    return <ActivitySkeleton/>
+  }
 
   return (
     <>
@@ -192,6 +201,7 @@ export default function MyActiveServices() {
               Status
             </Typography>
           </Stack>
+          
           {services.map((item: any, index: any) => {
             return (
               <Stack

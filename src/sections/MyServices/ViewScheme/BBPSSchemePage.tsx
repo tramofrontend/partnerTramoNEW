@@ -26,6 +26,7 @@ import FormProvider, { RHFCodes, RHFSelect, RHFTextField } from '../../../compon
 import { useAuthContext } from 'src/auth/useAuthContext';
 import Scrollbar from 'src/components/scrollbar/Scrollbar';
 import useResponsive from 'src/hooks/useResponsive';
+import BbpsSkeleton from 'src/components/Skeletons/BbpsSkeleton';
 // ----------------------------------------------------------------------
 
 type FormValuesProps = { subcategoryList: string[]; subcategory: string; product: string };
@@ -118,6 +119,10 @@ export default function BBPSSchemePage() {
     );
   };
 
+  if(isLoading){
+    return <BbpsSkeleton/>
+  }
+
   const onSubmit = (data: FormValuesProps) => {
     setIsFilted(true);
     if (data.subcategory && !data.product) {
@@ -181,7 +186,8 @@ export default function BBPSSchemePage() {
         </Stack>
       </FormProvider>
       {isLoading ? (
-        <ApiDataLoading />
+        // <ApiDataLoading />
+        <></>
       ) : (
         <TableContainer sx={{ overflow: 'unset' }}>
           <Scrollbar
