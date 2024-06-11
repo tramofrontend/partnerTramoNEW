@@ -17,6 +17,7 @@ import ViewMatmTable from './ViewMatmTaable';
 import ViewBBPSTable from './ViewBBPSTable';
 
 import { useAuthContext } from 'src/auth/useAuthContext';
+import RechargeSkeleton from 'src/components/Skeletons/RechargeSkeleton';
 // ----------------------------------------------------------------------
 
 export default function ViewAllScheme() {
@@ -93,6 +94,9 @@ export default function ViewAllScheme() {
       }
     });
   };
+  {if(loading)
+    return <RechargeSkeleton/>
+  }
 
   return (
     <>
@@ -149,13 +153,13 @@ export default function ViewAllScheme() {
           </TextField>
         </Stack>
       )}
-      {loading ? (
+      {loading ?(
         <Stack
           sx={{ height: '70vh', width: '100%' }}
           justifyContent={'center'}
           alignItems={'center'}
         >
-          <CircularProgress sx={{ color: '#f82228' }} />
+          {/* <Recharge sx={{ color: '#f82228' }} /> */}
         </Stack>
       ) : (
         <Grid item xs={12} md={6} lg={8}>
