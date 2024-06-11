@@ -1,64 +1,17 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
 // @mui
-import {
-  Container,
-  Card,
-  Stack,
-  Grid,
-  InputAdornment,
-  Tabs,
-  Button,
-  Tab,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
-  Modal,
-  FormControlLabel,
-  styled,
-  SwitchProps,
-  Checkbox,
-  Switch,
-} from '@mui/material';
-// redux
-
-// routes
-
+import { Stack, styled, SwitchProps, Switch, Box, Typography } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
 // sections
 import { Icon } from '@iconify/react';
 import { _allProducts, _ecommerceBestSalesman } from 'src/_mock/arrays';
-
-import { useSnackbar } from 'src/components/snackbar';
 import * as Yup from 'yup';
-import { LoadingButton } from '@mui/lab';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
-import { Upload } from 'src/components/upload';
-
-import {
-  Box,
-  Table,
-  Avatar,
-  TableRow,
-  TableBody,
-  TableCell,
-  CardProps,
-  CardHeader,
-  Typography,
-  TableContainer,
-} from '@mui/material';
-import FormProvider, { RHFTextField, RHFSelect } from 'src/components/hook-form';
-import Iconify from 'src/components/iconify';
 import React from 'react';
-
 import { Api } from 'src/webservices';
-import { ReadStream } from 'fs';
-import ActivitySkeleton from 'src/components/Skeletons/ActivitysSkeleton';
+import ApiDataLoading from 'src/components/customFunctions/ApiDataLoading';
 
 // import { Label } from '@mui/icons-material';
 
@@ -68,63 +21,10 @@ type FormValuesProps = {
   DBankAccount: string;
   ABankAccount: string;
 };
-const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
-
-const IOSSwitch = styled((props: SwitchProps) => (
-  <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
-))(({ theme }) => ({
-  width: 62,
-  height: 26,
-  padding: 0,
-  '& .MuiSwitch-switchBase': {
-    padding: 0,
-    margin: 2,
-    transitionDuration: '300ms',
-    '&.Mui-checked': {
-      transform: 'translateX(32px)',
-      color: '#fff',
-      '& + .MuiSwitch-track': {
-        backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : '#65C466',
-        opacity: 1,
-        border: 0,
-      },
-      '&.Mui-disabled + .MuiSwitch-track': {
-        opacity: 0.5,
-      },
-    },
-    '&.Mui-focusVisible .MuiSwitch-thumb': {
-      color: '#33cf4d',
-      border: '6px solid #fff',
-    },
-    '&.Mui-disabled .MuiSwitch-thumb': {
-      color: theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.grey[600],
-    },
-    '&.Mui-disabled + .MuiSwitch-track': {
-      opacity: theme.palette.mode === 'light' ? 0.7 : 0.3,
-    },
-  },
-  '& .MuiSwitch-thumb': {
-    boxSizing: 'border-box',
-    width: 22,
-    height: 22,
-  },
-  '& .MuiSwitch-track': {
-    borderRadius: 26 / 2,
-    backgroundColor: theme.palette.mode === 'light' ? '#E9E9EA' : '#39393D',
-    opacity: 1,
-    transition: theme.transitions.create(['background-color'], {
-      duration: 500,
-    }),
-  },
-}));
 
 export default function MyActiveServices() {
-  const [value, setValue] = React.useState('one');
-  const [isLoading, setIsLoading] = React.useState(false);
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
-  };
   const [services, setServices] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const FilterSchema = Yup.object().shape({});
   const defaultValues = {
@@ -156,19 +56,20 @@ export default function MyActiveServices() {
         if (Response.data.code == 200) {
           if (Response.data.data) {
             setServices(Response.data.data);
-            setIsLoading(false)
+            setIsLoading(false);
           }
           console.log('======Set_Limit_code_200=======>' + Response.data.data);
         } else {
           console.log('======Set_Limit_error=======>' + Response);
           setIsLoading(false);
         }
+        setIsLoading(false);
       }
     });
   };
 
-  if(isLoading){
-    return <ActivitySkeleton/>
+  if (isLoading) {
+    return <ApiDataLoading />;
   }
 
   return (
@@ -201,7 +102,7 @@ export default function MyActiveServices() {
               Status
             </Typography>
           </Stack>
-          
+
           {services.map((item: any, index: any) => {
             return (
               <Stack
