@@ -62,5 +62,5 @@ export const AepsSettlement = Loadable(
 export const MyFundRequest = Loadable(
   lazy(() => import('../sections/FundManagement/MyFundRequest'))
 );
-
+export const NpinReset = Loadable(lazy(() => import('../sections/Setting/NpinReset')));
 export const Page404 = Loadable(lazy(() => import('../pages/Page404')));

@@ -103,6 +103,12 @@ const navConfig = [
         path: PATH_DASHBOARD.Referenceapidocs,
         icon: ICONS.ecommerce,
       },
+      {
+        title: 'Setting',
+        path: PATH_DASHBOARD.setting.root,
+        icon: ICONS.ecommerce,
+        children: [{ title: 'Tpon', path: PATH_DASHBOARD.setting.npinreset }],
+      },
     ],
   },
 ];
