@@ -526,7 +526,7 @@ export default function MyTransactions() {
                   <MenuItem value="hold">Hold</MenuItem>
                   <MenuItem value="initiated">Initiated</MenuItem>
                 </RHFSelect>
-                <RHFTextField size="small" name="partnerTransactionId" label="Transaction Id" />
+                <RHFTextField size="small" name="partnerTransactionId" label="ClientRefId" />
                 <RHFTextField size="small" name="accountNumber" label="AccountNumber" />
                 <RHFTextField size="small" name="mobileNumber" label="MobileNumber" />
                 <Stack direction={'row'} gap={1}>
@@ -730,7 +730,15 @@ function TransactionRow({ row }: childProps) {
         <StyledTableCell>
           <Typography variant="body2">{newRow?.transactionType}</Typography>
           <Typography variant="body2" whiteSpace={'nowrap'}>
-            {newRow?.partnerTransactionId}{' '}
+           Client Id : {newRow?.clientRefId}{' '}
+            <Tooltip title="Copy" placement="top">
+              <IconButton onClick={() => onCopy(newRow?.clientRefId)}>
+                <Iconify icon="eva:copy-fill" width={20} />
+              </IconButton>
+            </Tooltip>
+          </Typography>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+           Txn Id : {newRow?.partnerTransactionId}{' '}
             <Tooltip title="Copy" placement="top">
               <IconButton onClick={() => onCopy(newRow?.partnerTransactionId)}>
                 <Iconify icon="eva:copy-fill" width={20} />
