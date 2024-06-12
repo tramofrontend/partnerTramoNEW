@@ -47,6 +47,8 @@ import ApiDataLoading from 'src/components/customFunctions/ApiDataLoading';
 import { TableNoData } from 'src/components/table';
 import CheckStatusIcon from './CheckStatusIcon';
 import useResponsive from 'src/hooks/useResponsive';
+import { WalletLadgerSkeleton } from 'src/components/Skeletons/WalletLadgerSkeleton';
+import { ReportSkeleton } from 'src/components/Skeletons/ReportSkeleton';
 //aws
 AWS.config.update({
   accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
@@ -414,13 +416,6 @@ function Reportexport() {
           New Request
         </LoadingButton>
       </Stack>
-      {verifyLoding ? (
-        <>
-          <Stack flexDirection="row" justifyContent="center">
-            <ApiDataLoading />
-          </Stack>
-        </>
-      ) : (
         <Grid item xs={12} md={6} lg={8} sx={{ width: '100%' }}>
           <TableContainer component={Paper}>
             <Scrollbar
@@ -438,9 +433,9 @@ function Reportexport() {
                     ))}
                   </TableRow>
                 </TableHead>
-
                 <TableBody>
-                  {tableData?.map((row: any) => (
+                {verifyLoding ? <ReportSkeleton/> : 
+                  tableData?.map((row: any) => (
                     <TableRow sx={{ display: 'table-row' }} key={row?.id}>
                       <TableCell>
                         <Stack direction="row" spacing={1}>
@@ -516,7 +511,6 @@ function Reportexport() {
             />
           </TableContainer>
         </Grid>
-      )}
       <Modal
         open={open}
         aria-labelledby="modal-modal-title"

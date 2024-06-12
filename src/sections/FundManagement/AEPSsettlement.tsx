@@ -386,6 +386,7 @@ const SettlementToMainWallet = ({ userBankList }: childProps) => {
       }
     });
   };
+  
 
   return (
     <Box style={{ borderRadius: '20px' }}>

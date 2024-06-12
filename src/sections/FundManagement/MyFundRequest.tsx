@@ -43,6 +43,10 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import useResponsive from 'src/hooks/useResponsive';
 import MotionModal from 'src/components/animate/MotionModal';
+import { WalletLadgerSkeleton } from 'src/components/Skeletons/WalletLadgerSkeleton';
+import { MasterTransactionSkeleton } from 'src/components/Skeletons/MasterTransactionSkeleton';
+import BbpsSkeleton from 'src/components/Skeletons/BbpsSkeleton';
+import FundsRequestSkeleton from 'src/components/Skeletons/FundRequstSkeleton';
 // ----------------------------------------------------------------------
 
 export default function (props: any) {
@@ -149,6 +153,7 @@ export default function (props: any) {
           enqueueSnackbar(Response.data.message);
           setPageCount(Response.data.count);
           setSdata(Response.data.data);
+          setIsLoading(false);
         } else {
           console.log('======getRaisedRequests=======>' + Response);
           enqueueSnackbar(Response.data.message);
@@ -159,6 +164,11 @@ export default function (props: any) {
       }
     });
   };
+
+  if(isLoading){
+    return <FundsRequestSkeleton/>
+
+  }
 
   const filterRequest = (refId: string) => {
     setSdata([]);
@@ -263,6 +273,8 @@ export default function (props: any) {
     },
   }));
 
+
+
   return (
     <>
       <Helmet>
@@ -279,7 +291,8 @@ export default function (props: any) {
       </Stack>
 
       {isLoading ? (
-        <ApiDataLoading />
+        // <ApiDataLoading />
+        <></>
       ) : (
         <Grid item xs={16} md={12} lg={12}>
           <MotionModal open={open} onClose={handleClose} width={{ xs: '95%', sm: 500 }}>
@@ -454,11 +467,11 @@ export default function (props: any) {
                       </Label>
                     </StyledTableCell>
                     <StyledTableCell>
-                      {row.status.toLowerCase() === "rejected" && (
-                       <Typography> {row.comments || "NA"}</Typography>
+                      {row.status.toLowerCase() === 'rejected' && (
+                        <Typography> {row.comments || 'NA'}</Typography>
                       )}
-                         {row.status.toLowerCase() === "approved" && (
-                       <Typography> {row.comments || "NA"}</Typography>
+                      {row.status.toLowerCase() === 'approved' && (
+                        <Typography> {row.comments || 'NA'}</Typography>
                       )}
                     </StyledTableCell>
                   </StyledTableRow>
