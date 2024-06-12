@@ -99,7 +99,7 @@ const navConfig = [
         icon: ICONS.user,
       },
       {
-        title: 'Reference API Docs',
+        title: ' API Docs',
         path: PATH_DASHBOARD.Referenceapidocs,
         icon: ICONS.ecommerce,
       },
