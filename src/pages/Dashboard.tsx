@@ -1,13 +1,11 @@
 import { Stack } from '@mui/material';
 import React from 'react';
-import AgentDashboard from 'src/layouts/newDashboard/agentDashbord/AgentDashboard';
+import PartnerDashbord from 'src/layouts/newDashboard/PartnerDashbord';
 
 function Dashboard() {
   return (
     <>
-      <Stack>
-        <AgentDashboard />
-      </Stack>
+      <PartnerDashbord />
     </>
   );
 }
