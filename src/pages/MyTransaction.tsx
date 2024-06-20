@@ -730,7 +730,7 @@ function TransactionRow({ row }: childProps) {
         <StyledTableCell>
           <Typography variant="body2">{newRow?.transactionType}</Typography>
           <Typography variant="body2" whiteSpace={'nowrap'}>
-           Client Id : {newRow?.clientRefId}{' '}
+            Client Id : {newRow?.clientRefId}{' '}
             <Tooltip title="Copy" placement="top">
               <IconButton onClick={() => onCopy(newRow?.clientRefId)}>
                 <Iconify icon="eva:copy-fill" width={20} />
@@ -738,7 +738,7 @@ function TransactionRow({ row }: childProps) {
             </Tooltip>
           </Typography>
           <Typography variant="body2" whiteSpace={'nowrap'}>
-           Txn Id : {newRow?.partnerTransactionId}{' '}
+            Txn Id : {newRow?.partnerTransactionId}{' '}
             <Tooltip title="Copy" placement="top">
               <IconButton onClick={() => onCopy(newRow?.partnerTransactionId)}>
                 <Iconify icon="eva:copy-fill" width={20} />
@@ -819,7 +819,10 @@ function TransactionRow({ row }: childProps) {
         {/* Operator */}
         <StyledTableCell sx={{ whiteSpace: 'nowrap' }}>
           <Typography variant="body2">{newRow?.operator?.key1}</Typography>
-          <Typography variant="body2">{newRow?.operator?.key2}</Typography>
+          <Typography variant="body2">
+            {'*'.repeat(newRow?.operator?.key2?.length - 4) +
+              newRow?.operator?.key2.slice(newRow?.operator?.key2?.length - 4)}
+          </Typography>
           <Typography variant="body2">{newRow?.operator?.key3}</Typography>
         </StyledTableCell>
 
