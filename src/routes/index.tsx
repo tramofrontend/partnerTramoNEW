@@ -26,6 +26,7 @@ import {
   BankDetail,
   AepsSettlement,
   ResetPage,
+  NpinReset,
 } from './elements';
 import MyFundRequest from 'src/sections/FundManagement/MyFundRequest';
 
@@ -115,6 +116,17 @@ export default function Router() {
             { path: 'bankDetail', element: <BankDetail /> },
             { path: 'aepssettlement', element: <AepsSettlement /> },
             { path: 'myfundrequest', element: <MyFundRequest /> },
+          ],
+        },
+
+        {
+          path: 'setting',
+          children: [
+            {
+              element: <Navigate to="/auth/" replace />,
+              index: true,
+            },
+            { path: 'npinreset', element: <NpinReset /> },
           ],
         },
       ],
