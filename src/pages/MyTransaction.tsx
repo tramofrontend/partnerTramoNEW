@@ -73,6 +73,7 @@ import MotionModal from 'src/components/animate/MotionModal';
 type FormValuesProps = {
   status: string;
   partnerTransactionId: string;
+  transactionType: string;
   category: string;
   product: string;
   accountNumber: string;
@@ -87,7 +88,7 @@ export default function MyTransactions() {
   let token = localStorage.getItem('token');
   const isMobile = useResponsive('up', 'sm');
   const isDesktop = useResponsive('up', 'sm');
-  const { user } = useAuthContext();
+  const [txnType, setTxnType] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
   const [Loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<any>(1);
@@ -107,6 +108,7 @@ export default function MyTransactions() {
   });
 
   const defaultValues = {
+    transactionType: '',
     category: '',
     status: '',
     clientRefId: '',
@@ -136,10 +138,25 @@ export default function MyTransactions() {
 
   useEffect(() => {
     getCategoryList();
+    getTxnType();
+  }, []);
+
+  useEffect(() => {
     getTransaction();
   }, [currentPage]);
 
   useEffect(() => setCurrentPage(1), [currentTab]);
+
+  const getTxnType = () => {
+    let token = localStorage.getItem('token');
+    Api(`adminTransaction/transactionTypes`, 'GET', '', token).then((Response: any) => {
+      if (Response?.status == 200) {
+        if (Response.data.code == 200) {
+          setTxnType(Response.data.data.filter((item: string) => item != 'Fund Flow'));
+        }
+      }
+    });
+  };
 
   const getProductlist = (val: string) => {
     Api(`product/get_ProductList/${val}`, 'GET', '', token).then((Response: any) => {
@@ -210,7 +227,7 @@ export default function MyTransactions() {
         },
         clientRefId: data.partnerTransactionId,
         status: data.status,
-        transactionType: '',
+        transactionType: data.transactionType,
         categoryId: data.category,
         productId: data.product,
         mobileNumber: data.mobileNumber,
@@ -275,105 +292,105 @@ export default function MyTransactions() {
     { id: 'status', label: 'Status' },
   ];
 
-  const ExportData = () => {
-    let token = localStorage.getItem('token');
+  // const ExportData = () => {
+  //   let token = localStorage.getItem('token');
 
-    let body = {
-      pageInitData: {
-        pageSize: '',
-        currentPage: '',
-      },
-      partnerTransactionId: getValues('partnerTransactionId'),
-      accountNumber: getValues('accountNumber'),
-      mobileNumber: getValues('mobileNumber'),
-      status: getValues('status'),
-      transactionType: '',
-      categoryId: getValues('category'),
-      productId: getValues('product') || '',
-      startDate: fDateFormatForApi(getValues('startDate')),
-      endDate: fDateFormatForApi(getValues('endDate')),
-    };
+  //   let body = {
+  //     pageInitData: {
+  //       pageSize: '',
+  //       currentPage: '',
+  //     },
+  //     partnerTransactionId: getValues('partnerTransactionId'),
+  //     accountNumber: getValues('accountNumber'),
+  //     mobileNumber: getValues('mobileNumber'),
+  //     status: getValues('status'),
+  //     transactionType: '',
+  //     categoryId: getValues('category'),
+  //     productId: getValues('product') || '',
+  //     startDate: fDateFormatForApi(getValues('startDate')),
+  //     endDate: fDateFormatForApi(getValues('endDate')),
+  //   };
 
-    Api(`transaction/transactionByUser`, 'POST', body, token).then((Response: any) => {
-      console.log('======Transaction==response=====>' + Response);
-      if (Response.status == 200) {
-        if (Response.data.code == 200) {
-          if (Response.data.data.data.length) {
-            const Dataapi = Response.data.data.data;
-            console.log('Dataapi', Dataapi);
-            const formattedData = Response.data?.data?.data.map((item: any) => ({
-              createdAt: new Date(item?.createdAt).toLocaleString(),
-              client_ref_Id: item?.client_ref_Id,
-              transactionType: item?.transactionType,
-              productName: item?.productName,
-              categoryName: item?.categoryName,
-              'User Name':
-                user?._id === item?.agentDetails?.id?._id
-                  ? item?.agentDetails?.id?.firstName
-                  : user?._id === item?.distributorDetails?.id?._id
-                  ? item?.distributorDetails?.id?.firstName
-                  : user?._id === item?.masterDistributorDetails?.id?._id
-                  ? item?.masterDistributorDetails?.id?.firstName
-                  : '',
+  //   Api(`transaction/transactionByUser`, 'POST', body, token).then((Response: any) => {
+  //     console.log('======Transaction==response=====>' + Response);
+  //     if (Response.status == 200) {
+  //       if (Response.data.code == 200) {
+  //         if (Response.data.data.data.length) {
+  //           const Dataapi = Response.data.data.data;
+  //           console.log('Dataapi', Dataapi);
+  //           const formattedData = Response.data?.data?.data.map((item: any) => ({
+  //             createdAt: new Date(item?.createdAt).toLocaleString(),
+  //             client_ref_Id: item?.client_ref_Id,
+  //             transactionType: item?.transactionType,
+  //             productName: item?.productName,
+  //             categoryName: item?.categoryName,
+  //             'User Name':
+  //               user?._id === item?.agentDetails?.id?._id
+  //                 ? item?.agentDetails?.id?.firstName
+  //                 : user?._id === item?.distributorDetails?.id?._id
+  //                 ? item?.distributorDetails?.id?.firstName
+  //                 : user?._id === item?.masterDistributorDetails?.id?._id
+  //                 ? item?.masterDistributorDetails?.id?.firstName
+  //                 : '',
 
-              'Opening Balance':
-                user?._id === item?.agentDetails?.id?._id
-                  ? item?.agentDetails?.oldMainWalletBalance
-                  : user?._id === item?.distributorDetails?.id?._id
-                  ? item?.distributorDetails?.oldMainWalletBalance
-                  : user?._id === item?.masterDistributorDetails?.id?._id
-                  ? item?.masterDistributorDetails?.oldMainWalletBalance
-                  : '',
+  //             'Opening Balance':
+  //               user?._id === item?.agentDetails?.id?._id
+  //                 ? item?.agentDetails?.oldMainWalletBalance
+  //                 : user?._id === item?.distributorDetails?.id?._id
+  //                 ? item?.distributorDetails?.oldMainWalletBalance
+  //                 : user?._id === item?.masterDistributorDetails?.id?._id
+  //                 ? item?.masterDistributorDetails?.oldMainWalletBalance
+  //                 : '',
 
-              'Closing Balance':
-                user?._id === item?.agentDetails?.id?._id
-                  ? item?.agentDetails?.newMainWalletBalance
-                  : user?._id === item?.distributorDetails?.id?._id
-                  ? item?.distributorDetails?.newMainWalletBalance
-                  : user?._id === item?.masterDistributorDetails?.id?._id
-                  ? item?.masterDistributorDetails?.newMainWalletBalance
-                  : '',
-              ' Commission Amount':
-                user?._id === item?.agentDetails?.id?._id
-                  ? item?.agentDetails?.commissionAmount
-                  : user?._id === item?.distributorDetails?.id?._id
-                  ? item?.distributorDetails?.commissionAmount
-                  : user?._id === item?.masterDistributorDetails?.id?._id
-                  ? item?.masterDistributorDetails?.commissionAmount
-                  : '',
-              amount: item?.amount,
-              credit: item?.credit,
-              debit: item?.debit,
-              TDS: item?.TDS,
-              GST: item?.GST,
-              ipAddress: item?.metaData?.ipAddress,
-              deviceType: item?.checkStatus?.deviceType,
-              three_way_recoon: item?.three_way_recoon,
-              status: item?.status,
-              bankName: item?.moneyTransferBeneficiaryDetails?.bankName,
-              accountNumber: item?.moneyTransferBeneficiaryDetails?.accountNumber,
-              vendorUtrNumber: item?.vendorUtrNumber,
-              providerBank: item?.providerBank,
-              ifsc: item?.ifsc,
-              operator: item?.key1,
-              number: item?.key2,
-              mobileNumber: item?.mobileNumber,
-            }));
+  //             'Closing Balance':
+  //               user?._id === item?.agentDetails?.id?._id
+  //                 ? item?.agentDetails?.newMainWalletBalance
+  //                 : user?._id === item?.distributorDetails?.id?._id
+  //                 ? item?.distributorDetails?.newMainWalletBalance
+  //                 : user?._id === item?.masterDistributorDetails?.id?._id
+  //                 ? item?.masterDistributorDetails?.newMainWalletBalance
+  //                 : '',
+  //             ' Commission Amount':
+  //               user?._id === item?.agentDetails?.id?._id
+  //                 ? item?.agentDetails?.commissionAmount
+  //                 : user?._id === item?.distributorDetails?.id?._id
+  //                 ? item?.distributorDetails?.commissionAmount
+  //                 : user?._id === item?.masterDistributorDetails?.id?._id
+  //                 ? item?.masterDistributorDetails?.commissionAmount
+  //                 : '',
+  //             amount: item?.amount,
+  //             credit: item?.credit,
+  //             debit: item?.debit,
+  //             TDS: item?.TDS,
+  //             GST: item?.GST,
+  //             ipAddress: item?.metaData?.ipAddress,
+  //             deviceType: item?.checkStatus?.deviceType,
+  //             three_way_recoon: item?.three_way_recoon,
+  //             status: item?.status,
+  //             bankName: item?.moneyTransferBeneficiaryDetails?.bankName,
+  //             accountNumber: item?.moneyTransferBeneficiaryDetails?.accountNumber,
+  //             vendorUtrNumber: item?.vendorUtrNumber,
+  //             providerBank: item?.providerBank,
+  //             ifsc: item?.ifsc,
+  //             operator: item?.key1,
+  //             number: item?.key2,
+  //             mobileNumber: item?.mobileNumber,
+  //           }));
 
-            const ws = XLSX.utils.json_to_sheet(formattedData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+  //           const ws = XLSX.utils.json_to_sheet(formattedData);
+  //           const wb = XLSX.utils.book_new();
+  //           XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
-            const currentDate = fDateTime(new Date());
-            XLSX.writeFile(wb, `Transaction${currentDate}.xlsx`);
-            handleClose();
-          } else {
-            enqueueSnackbar('Data Not Found ');
-          }
-        }
-      }
-    });
-  };
+  //           const currentDate = fDateTime(new Date());
+  //           XLSX.writeFile(wb, `Transaction${currentDate}.xlsx`);
+  //           handleClose();
+  //         } else {
+  //           enqueueSnackbar('Data Not Found ');
+  //         }
+  //       }
+  //     }
+  //   });
+  // };
 
   const handleReset = () => {
     reset(defaultValues);
@@ -419,6 +436,23 @@ export default function MyTransactions() {
             {/* <Box> */}
             <FormProvider methods={methods} onSubmit={handleSubmit(filterTransaction)}>
               <Stack gap={1} m={1}>
+                <RHFSelect
+                  name="transactionType"
+                  label="Select Transaction Type"
+                  size="small"
+                  SelectProps={{
+                    native: false,
+                    sx: { textTransform: 'capitalize' },
+                  }}
+                >
+                  {txnType.map((item: any, index: number) => {
+                    return (
+                      <MenuItem key={index} value={item}>
+                        {item}
+                      </MenuItem>
+                    );
+                  })}
+                </RHFSelect>
                 <RHFSelect
                   name="category"
                   label="Category"
@@ -476,7 +510,7 @@ export default function MyTransactions() {
                   <MenuItem value="hold">Hold</MenuItem>
                   <MenuItem value="initiated">Initiated</MenuItem>
                 </RHFSelect>
-                <RHFTextField size="small" name="partnerTransactionId" label="ClientRefId" />
+                <RHFTextField size="small" name="partnerTransactionId" label="Client Id" />
                 <RHFTextField size="small" name="accountNumber" label="AccountNumber" />
                 <RHFTextField size="small" name="mobileNumber" label="MobileNumber" />
                 <Stack direction={'row'} gap={1}>
@@ -838,14 +872,7 @@ function TransactionRow({ row }: childProps) {
               {user?.role === 'agent' && <>-{fIndianCurrency(newRow.debit)}/</>}
             </Typography>{' '}
             <Typography variant="body2" whiteSpace={'nowrap'} color={'green'}>
-              +{' '}
-              {fIndianCurrency(
-                user?.role === 'agent'
-                  ? newRow?.agentDetails?.creditedAmount
-                  : user?.role === 'distributor'
-                  ? newRow?.distributorDetails?.creditedAmount
-                  : newRow?.masterDistributorDetails?.creditedAmount
-              ) || 0}
+              + {fIndianCurrency(newRow?.partnerDetails?.creditedAmount) || 0}
             </Typography>
           </Stack>
         </StyledTableCell>
@@ -853,13 +880,7 @@ function TransactionRow({ row }: childProps) {
         {/* Closing Balance */}
         <StyledTableCell>
           <Typography variant="body2" whiteSpace={'nowrap'}>
-            {fIndianCurrency(
-              user?.role === 'agent'
-                ? newRow?.agentDetails?.newMainWalletBalance
-                : user?.role === 'distributor'
-                ? newRow?.distributorDetails?.newMainWalletBalance
-                : newRow?.masterDistributorDetails?.newMainWalletBalance
-            )}
+            {fIndianCurrency(newRow?.partnerDetails?.newMainWalletBalance)}
           </Typography>
         </StyledTableCell>
 
