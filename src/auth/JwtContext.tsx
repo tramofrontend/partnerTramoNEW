@@ -102,15 +102,36 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [location, setLocation] = useState<boolean | null>(true);
   const initialize = useCallback(async () => {
-    // navigator.geolocation.getCurrentPosition(
-    //   ({ coords }: any) => {
-    //     setLocation(true);
-    //   },
-    //   (error) => {
-    //     false;
-    //   }
-    // );
-    await fetchLocation();
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position: any) => {
+          let userAgent: any = navigator.userAgent;
+          localStorage.setItem('userAgent', userAgent);
+          localStorage.setItem(
+            'deviceType',
+            userAgent.match(/Android/i)
+              ? 'android'
+              : userAgent.match(/mac/i)
+              ? 'macbook'
+              : 'windows'
+          );
+          fetch('https://api.ipify.org?format=json')
+            .then((response) => response?.json())
+            .then((data) => {
+              localStorage.setItem('ip', data?.ip);
+            });
+          localStorage.setItem('lat', position.coords.latitude);
+          localStorage.setItem('long', position.coords.longitude);
+          setLocation(true);
+        },
+        (error) => {
+          setLocation(false);
+        }
+      );
+    } else {
+      setLocation(false);
+      console.error('Geolocation is not supported by this browser.');
+    }
     try {
       const accessToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
 

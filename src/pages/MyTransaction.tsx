@@ -141,19 +141,6 @@ export default function MyTransactions() {
 
   useEffect(() => setCurrentPage(1), [currentTab]);
 
-  const {
-    startDate,
-    endDate,
-    onChangeStartDate,
-    onChangeEndDate,
-    open: openPicker,
-    onOpen: onOpenPicker,
-    onClose: onClosePicker,
-    isSelected: isSelectedValuePicker,
-    isError,
-    shortLabel,
-  } = useDateRangePicker(new Date(), new Date());
-
   const getProductlist = (val: string) => {
     Api(`product/get_ProductList/${val}`, 'GET', '', token).then((Response: any) => {
       if (Response.status == 200) {
@@ -275,54 +262,17 @@ export default function MyTransactions() {
     }
   };
 
-  const tableLabels = [
-    { id: 'Date&Time', label: 'Txn Details' },
-    { id: 'agent', label: 'Agent' },
-    { id: 'dist', label: 'Distributor' },
-    { id: 'mode', label: 'Mode' },
-    { id: 'Product', label: 'Product' },
-    { id: 'Operator', label: 'Operator/ Beneficiary' },
-    { id: 'Mobile Number', label: 'Mobile Number' },
-    { id: 'Operator Txn ID', label: 'UTR/ Ref Number' },
-    { id: 'Opening Balance', label: 'Opening Balance' },
-    { id: 'Txn Amount', label: 'Txn Amount' },
-    { id: 'Charge/Commission', label: 'Charge/ Commission' },
-    { id: 'Closing Balance', label: 'Closing Balance' },
-    // { id: "GST/TDS", label: "GST/TDS" },
-    { id: 'status', label: 'Status' },
-    { id: 'Action', label: 'Action' },
-  ];
-  const tableLabels1 = [
-    { id: 'Date&Time', label: 'Txn Details' },
-
-    { id: 'agent', label: 'Agent' },
-    { id: 'mode', label: 'Mode' },
-    { id: 'Product', label: 'Product' },
-    { id: 'Operator', label: 'Operator/ Beneficiary' },
-    { id: 'Mobile Number', label: 'Mobile Number' },
-    { id: 'Operator Txn ID', label: 'UTR/ Ref Number' },
-    { id: 'Opening Balance', label: 'Opening Balance' },
-    { id: 'Txn Amount', label: 'Txn Amount' },
-    { id: 'Charge/ Commission', label: 'Charge/ Commission' },
-    { id: 'Closing Balance', label: 'Closing Balance' },
-    // { id: "GST/TDS", label: "GST/TDS" },
-    { id: 'status', label: 'Status' },
-    { id: 'Action', label: 'Action' },
-  ];
   const tableLabels2 = [
     { id: 'Date&Time', label: 'Txn Details' },
     { id: 'mode', label: 'Mode' },
     { id: 'Product', label: 'Product' },
     { id: 'Operator', label: 'Operator/ Beneficiary' },
     { id: 'Mobile Number', label: 'Mobile Number' },
-    { id: 'Operator Txn ID', label: 'UTR/ Ref Number' },
-    { id: 'Opening Balance', label: 'Opening Balance' },
+    { id: 'Operator Txn ID', label: 'Vendor UTR' },
     { id: 'Txn Amount', label: 'Txn Amount' },
     { id: 'Charge/ Commission', label: 'Charge/ Commission' },
     { id: 'Closing Balance', label: 'Closing Balance' },
-    // { id: "GST/TDS", label: "GST/TDS" },
     { id: 'status', label: 'Status' },
-    { id: 'Action', label: 'Action' },
   ];
 
   const ExportData = () => {
@@ -564,9 +514,9 @@ export default function MyTransactions() {
                   <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
                     Apply
                   </LoadingButton>
-                  <Button variant="contained" onClick={ExportData}>
+                  {/* <Button variant="contained" onClick={ExportData}>
                     Export
-                  </Button>
+                  </Button> */}
                 </Stack>
               </Stack>
             </FormProvider>
@@ -584,15 +534,7 @@ export default function MyTransactions() {
               }
             >
               <Table size="small" aria-label="customized table" stickyHeader>
-                <TableHeadCustom
-                  headLabel={
-                    user?.role == 'm_distributor'
-                      ? tableLabels
-                      : user?.role == 'distributor'
-                      ? tableLabels1
-                      : tableLabels2
-                  }
-                />
+                <TableHeadCustom headLabel={tableLabels2} />
 
                 <TableBody>
                   {(Loading ? [...Array(20)] : filterdValue).map((row: any) =>
@@ -720,6 +662,7 @@ function TransactionRow({ row }: childProps) {
     // hide last border
     '&:last-child td, &:last-child th': {
       border: 0,
+      padding: '0px 20px',
     },
   }));
 
@@ -728,11 +671,10 @@ function TransactionRow({ row }: childProps) {
       <StyledTableRow key={newRow._id}>
         {/* Date & Time */}
         <StyledTableCell>
-          <Typography variant="body2">{newRow?.transactionType}</Typography>
           <Typography variant="body2" whiteSpace={'nowrap'}>
             Client Id : {newRow?.clientRefId}{' '}
             <Tooltip title="Copy" placement="top">
-              <IconButton onClick={() => onCopy(newRow?.clientRefId)}>
+              <IconButton onClick={() => onCopy(newRow?.clientRefId)} sx={{ p: 0 }}>
                 <Iconify icon="eva:copy-fill" width={20} />
               </IconButton>
             </Tooltip>
@@ -740,12 +682,12 @@ function TransactionRow({ row }: childProps) {
           <Typography variant="body2" whiteSpace={'nowrap'}>
             Txn Id : {newRow?.partnerTransactionId}{' '}
             <Tooltip title="Copy" placement="top">
-              <IconButton onClick={() => onCopy(newRow?.partnerTransactionId)}>
+              <IconButton onClick={() => onCopy(newRow?.partnerTransactionId)} sx={{ p: 0 }}>
                 <Iconify icon="eva:copy-fill" width={20} />
               </IconButton>
             </Tooltip>
           </Typography>
-          <Typography variant="body2" whiteSpace={'nowrap'}>
+          <Typography variant="body2" whiteSpace={'nowrap'} color="text.secondary">
             {fDateTime(newRow?.createdAt)}
           </Typography>
         </StyledTableCell>
@@ -813,6 +755,7 @@ function TransactionRow({ row }: childProps) {
 
         {/* Product  */}
         <StyledTableCell>
+          <Typography variant="body2">{newRow?.transactionType}</Typography>
           <Typography variant="body2">{newRow?.productName || '-'}</Typography>
         </StyledTableCell>
 
@@ -820,10 +763,40 @@ function TransactionRow({ row }: childProps) {
         <StyledTableCell sx={{ whiteSpace: 'nowrap' }}>
           <Typography variant="body2">{newRow?.operator?.key1}</Typography>
           <Typography variant="body2">
-            {'*'.repeat(newRow?.operator?.key2?.length - 4) +
-              newRow?.operator?.key2.slice(newRow?.operator?.key2?.length - 4)}
+            {newRow?.productName == 'Money Transfer'
+              ? newRow?.moneyTransferBeneficiaryDetails?.beneName
+              : ['aeps', 'aeps 2', 'aadhaar pay'].includes(newRow?.categoryName?.toLowerCase())
+              ? newRow?.operator?.key2?.length &&
+                'X'
+                  .repeat(newRow?.operator?.key2?.length - 4)
+                  .split('')
+                  .map((item: any, index: number) => {
+                    if (index % 4 == 0) {
+                      return ' ' + item;
+                    } else {
+                      return item;
+                    }
+                  })
+                  .join('') +
+                  newRow?.operator?.key2
+                    ?.slice(newRow?.operator?.key2?.length - 4)
+                    .split('')
+                    .map((item: any, index: number) => {
+                      if (index % 4 == 0) {
+                        return ' ' + item;
+                      } else {
+                        return item;
+                      }
+                    })
+                    .join('')
+              : newRow?.operator?.key2}
           </Typography>
-          <Typography variant="body2">{newRow?.operator?.key3}</Typography>
+          <Typography
+            variant="body2"
+            sx={{ wordBreak: 'break-all', maxWidth: 200, whiteSpace: 'break-spaces' }}
+          >
+            {newRow?.operator?.key3}
+          </Typography>
         </StyledTableCell>
 
         {/* Mobile Number */}
@@ -839,7 +812,7 @@ function TransactionRow({ row }: childProps) {
         </StyledTableCell>
 
         {/* Opening Balance */}
-        <StyledTableCell>
+        {/* <StyledTableCell>
           <Typography variant="body2" whiteSpace={'nowrap'}>
             {fIndianCurrency(
               user?.role === 'agent'
@@ -849,7 +822,7 @@ function TransactionRow({ row }: childProps) {
                 : newRow?.masterDistributorDetails?.oldMainWalletBalance
             )}
           </Typography>
-        </StyledTableCell>
+        </StyledTableCell> */}
 
         {/* Transaction Amount */}
         <StyledTableCell>
@@ -922,33 +895,6 @@ function TransactionRow({ row }: childProps) {
           >
             {newRow.status ? sentenceCase(newRow.status) : ''}
           </Label>
-        </StyledTableCell>
-
-        <StyledTableCell sx={{ width: 'fit-content' }}>
-          <Stack flexDirection={'row'} flexWrap={'nowrap'}>
-            <IconButton>
-              <img src={Group} alt="Receipt Icon" />
-            </IconButton>
-            {/* {newRow.status !== 'success' && newRow.status !== 'failed' && (
-              <Tooltip title="Check Status" placement="top">
-                <IconButton
-                  onClick={() => !loading && CheckTransactionStatus(newRow)}
-                  color="primary"
-                  aria-label="check transaction status"
-                >
-                  <img src={autorenew} alt="Check Status" />
-                </IconButton>
-              </Tooltip>
-            )} */}
-            {user?.role === 'agent' &&
-              (newRow?.categoryName == 'MONEY TRANSFER' || newRow?.categoryName == 'DMT2') && (
-                <Tooltip title="View Receipt" placement="top">
-                  <IconButton>
-                    <img src={receipt_long} alt="Receipt Icon" onClick={openModal} />
-                  </IconButton>
-                </Tooltip>
-              )}
-          </Stack>
         </StyledTableCell>
       </StyledTableRow>
       <Modal open={modalOpen} onClose={closeModal}>
