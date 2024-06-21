@@ -1,104 +1,82 @@
-import { Stack, Typography } from "@mui/material";
-import Chart from "react-apexcharts";
+import { Stack } from '@mui/material';
+import React, { useState } from 'react';
+import ReactApexChart from 'react-apexcharts';
 
-function LineView(props: any) {
-  const chartData: any = {
-    series: [
-      {
-        name: "Series 1",
-        data: [35, 80, 65, 50, 19, 60, 20, 91, 125],
-      },
-      {
-        name: "Series 2",
-        data: [90, 30, 45, 30, 49, 30, 70, 91, 15],
-      },
-      {
-        name: "Series 3",
-        data: [40, 90, 5, 40, 79, 60, 40, 31, 25],
-      },
-      {
-        name: "Series 4",
-        data: [110, 40, 15, 90, 59, 60, 80, 31, 55],
-      },
-      {
-        name: "Series 5",
-        data: [50, 10, 65, 20, 49, 90, 70, 50, 25],
-      },
+const LineView = () => {
+  const [series, setSeries] = useState([14, 23, 21, 17, 15, 20, 17, 21, 19, 11, 16]);
+
+  const getColor = (value: number) => {
+    const max = Math.max(...series);
+    const min = Math.min(...series);
+    const intensity = (value - min) / (max - min);
+    const red = 255;
+    const green = Math.round((1 - intensity) * 255);
+    const blue = Math.round((1 - intensity) * 255);
+    return `rgb(${red}, ${green}, ${blue})`;
+  };
+
+  const [options, setOptions] = useState<any>({
+    stroke: {
+      width: 1,
+      colors: series.map((value) => getColor(value)),
+    },
+    fill: {
+      opacity: 1,
+      colors: series.map((value) => getColor(value)),
+    },
+
+    labels: [
+      'Suspended Fraud',
+      'Nre Account',
+      'Amount Limit Exceeded',
+      'Remittor Cbs Timeout While A C Enquiry',
+      'Duplicate Reference Number ',
+      'Transaction Not Allowed As General Error',
+      'Invalid Response Code',
+      'Limit Exceeded for Member Bank',
+      'Limit Exceeded for Member Bank',
+      'Invalid Ifsc Or No Routing For Institution Network',
+      'Account Closed',
     ],
-    options: {
-      chart: {
-        id: "line-chart",
-        stroke: {
-          curve: "straight",
+    plotOptions: {
+      polarArea: {
+        rings: {
+          strokeWidth: 0,
         },
-        toolbar: {
-          show: true,
-          tools: {
-            download: false,
-            selection: false,
-            zoom: false,
-            zoomin: false,
-            zoomout: false,
-            pan: false,
-            reset: false,
-            customIcons: [],
-          },
+        spokes: {
+          strokeWidth: 0,
         },
-        labels: {
-          offsetY: -20, // Adjust this value as needed to position the labels properly
-          show: true,
-          style: {
-            colors: "#333",
-            fontSize: "12px",
-          },
-        },
-      },
-      contextMenu: {
-        menu: null,
-      },
-
-      xaxis: {
-        categories: [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-        ],
-      },
-      stroke: {
-        show: true,
-        curve: "smooth",
-        width: 2,
       },
     },
-  };
+
+    theme: {
+      monochrome: {
+        enabled: false,
+      },
+    },
+
+    responsive: [
+      {
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: 300,
+          },
+          legend: {
+            position: 'center',
+          },
+        },
+      },
+    ],
+  });
 
   return (
     <Stack>
-      <Stack flexDirection="row" justifyContent="space-between" m={2}>
-        <Typography variant="h6">Services </Typography>
-        <select>
-          <option value="option1">2022</option>
-          <option value="option2">2023</option>
-          <option value="option3">2024</option>
-        </select>
-      </Stack>
-
-      <Stack>
-        <Chart
-          options={chartData.options}
-          series={chartData.series}
-          type="line"
-          height={props.chartHeight}
-        />
+      <Stack id="chart">
+        <ReactApexChart options={options} series={series} type="polarArea" />
       </Stack>
     </Stack>
   );
-}
+};
 
 export default LineView;

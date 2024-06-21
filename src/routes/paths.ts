@@ -49,4 +49,11 @@ export const PATH_DASHBOARD = {
     aepssettlement: path(ROOTS_DASHBOARD, '/fundmanagement/aepssettlement'),
     myfundrequest: path(ROOTS_DASHBOARD, '/fundmanagement/myfundrequest'),
   },
+
+
+  setting: {
+    root: path(ROOTS_DASHBOARD, '/setting'),
+    npinreset: path(ROOTS_DASHBOARD, '/setting/npinreset'),
+
+  },
 };
