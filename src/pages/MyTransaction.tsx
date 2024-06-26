@@ -209,12 +209,32 @@ export default function MyTransactions() {
           setDirectFilter((prevState) => [
             ...prevState,
             ...Response.data.data
-              .filter(
-                (item: any) =>
-                  enabledCategory.includes(item.category_name) &&
-                  item.category_name.toLowerCase() !== 'kyc'
-              )
+              .filter((item: any) => enabledCategory.includes(item.category_name))
               .map((item1: any) => {
+                if (item1.category_name.toLowerCase() == 'kyc') {
+                  Api(`product/get_ProductList/${item1._id}`, 'GET', '', token).then(
+                    (Response: any) => {
+                      if (Response.status == 200) {
+                        if (Response.data.code == 200) {
+                          setDirectFilter((state) => [
+                            ...state,
+                            ...Response.data.data.map((row: any) => {
+                              return {
+                                label: row.productName,
+                                value: {
+                                  transactionType: '',
+                                  category: '',
+                                  product: row._id,
+                                  productName: '',
+                                },
+                              };
+                            }),
+                          ]);
+                        }
+                      }
+                    }
+                  );
+                }
                 if (item1.category_name.toLowerCase() == 'transfer') {
                   return {
                     label: 'UPI Transfer',
@@ -253,33 +273,6 @@ export default function MyTransactions() {
                 category: '',
                 product: '',
                 productName: '',
-              },
-            },
-            {
-              label: 'PAN verification',
-              value: {
-                transactionType: '',
-                category: '',
-                product: '',
-                productName: 'PAN verification',
-              },
-            },
-            {
-              label: 'GST verification',
-              value: {
-                transactionType: '',
-                category: '',
-                product: '',
-                productName: 'GST verification',
-              },
-            },
-            {
-              label: 'Aadhaar verification',
-              value: {
-                transactionType: '',
-                category: '',
-                product: '',
-                productName: 'Aadhaar verification',
               },
             },
           ]);
@@ -427,6 +420,7 @@ export default function MyTransactions() {
                       onClick={() => {
                         setValue('category.categoryId', item.value.category);
                         setValue('transactionType', item.value.transactionType);
+                        setValue('product', item.value.product);
                         setValue('productName', item.value.productName);
                         getProductlist(item.value.category);
                         getTransaction();
