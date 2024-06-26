@@ -26,10 +26,14 @@ import {
   MenuItem,
   Container,
   Chip,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
-import * as Yup from 'yup';
 // form
+import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackbar } from 'notistack';
@@ -74,10 +78,17 @@ type FormValuesProps = {
   status: string;
   partnerTransactionId: string;
   transactionType: string;
-  category: string;
+  category: {
+    categoryId: string;
+    categoryName: string;
+  };
   product: string;
   accountNumber: string;
   mobileNumber: string;
+  productName: string;
+  key1: string;
+  key2: string;
+  key3: string;
   startDate: Date | null;
   endDate: Date | null;
   sDate: Date | null;
@@ -90,6 +101,13 @@ export default function MyTransactions() {
   const isDesktop = useResponsive('up', 'sm');
   const [txnType, setTxnType] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
+  const [selectedTab, setSelectedTab] = useState('');
+  const [directFilter, setDirectFilter] = useState([
+    {
+      label: 'All',
+      value: { transactionType: '', category: '', product: '' },
+    },
+  ]);
   const [Loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<any>(1);
   const [pageCount, setPageCount] = useState<any>(0);
@@ -109,7 +127,10 @@ export default function MyTransactions() {
 
   const defaultValues = {
     transactionType: '',
-    category: '',
+    category: {
+      categoryId: '',
+      categoryName: '',
+    },
     status: '',
     clientRefId: '',
     product: '',
@@ -117,6 +138,9 @@ export default function MyTransactions() {
     eDate: null,
     accountNumber: '',
     mobileNumber: '',
+    key1: '',
+    key2: '',
+    key3: '',
     startDate: null,
     endDate: null,
   };
@@ -168,11 +192,97 @@ export default function MyTransactions() {
     });
   };
 
-  const getCategoryList = () => {
-    Api(`category/get_CategoryList`, 'GET', '', token).then((Response: any) => {
+  const getCategoryList = async () => {
+    let enabledCategory: any = [];
+    await Api(`apiBox/dashboard/getActiveServices`, 'GET', '', token).then((Response: any) => {
+      if (Response.status == 200) {
+        if (Response.data.code == 200) {
+          enabledCategory = Response.data.data;
+        }
+      }
+    });
+
+    await Api(`category/get_CategoryList`, 'GET', '', token).then((Response: any) => {
       if (Response.status == 200) {
         if (Response.data.code == 200) {
           setCategoryList(Response.data.data);
+          setDirectFilter((prevState) => [
+            ...prevState,
+            ...Response.data.data
+              .filter(
+                (item: any) =>
+                  enabledCategory.includes(item.category_name) &&
+                  item.category_name.toLowerCase() !== 'kyc'
+              )
+              .map((item1: any) => {
+                if (item1.category_name.toLowerCase() == 'transfer') {
+                  return {
+                    label: 'UPI Transfer',
+                    value: {
+                      transactionType: 'Product/Service',
+                      category: item1._id,
+                      product: '',
+                      productName: '',
+                    },
+                  };
+                } else {
+                  return {
+                    label: item1.category_name,
+                    value: {
+                      transactionType: '',
+                      category: item1._id,
+                      product: '',
+                      productName: '',
+                    },
+                  };
+                }
+              }),
+            {
+              label: 'UPI varification',
+              value: {
+                transactionType: '',
+                category: '',
+                product: '',
+                productName: 'UPI Verification',
+              },
+            },
+            {
+              label: 'Beneficiary Verification',
+              value: {
+                transactionType: 'Beneficiary Verification',
+                category: '',
+                product: '',
+                productName: '',
+              },
+            },
+            {
+              label: 'PAN verification',
+              value: {
+                transactionType: '',
+                category: '',
+                product: '',
+                productName: 'PAN verification',
+              },
+            },
+            {
+              label: 'GST verification',
+              value: {
+                transactionType: '',
+                category: '',
+                product: '',
+                productName: 'GST verification',
+              },
+            },
+            {
+              label: 'Aadhaar verification',
+              value: {
+                transactionType: '',
+                category: '',
+                product: '',
+                productName: 'Aadhaar verification',
+              },
+            },
+          ]);
         }
       }
     });
@@ -187,13 +297,17 @@ export default function MyTransactions() {
       },
       partnerTransactionId: getValues('partnerTransactionId'),
       accountNumber: getValues('accountNumber'),
+      productName: getValues('productName'),
       mobileNumber: getValues('mobileNumber'),
       status: getValues('status'),
-      transactionType: '',
-      categoryId: getValues('category'),
+      transactionType: getValues('transactionType'),
+      categoryId: getValues('category.categoryId'),
       productId: getValues('product') || '',
       startDate: fDateFormatForApi(getValues('startDate')),
       endDate: fDateFormatForApi(getValues('endDate')),
+      key1: getValues('key1') || '',
+      key2: getValues('key2') || '',
+      key3: getValues('key3') || '',
     };
 
     Api(`apiBox/Transactions/transactionByUser`, 'POST', body, token).then((Response: any) => {
@@ -228,10 +342,14 @@ export default function MyTransactions() {
         clientRefId: data.partnerTransactionId,
         status: data.status,
         transactionType: data.transactionType,
-        categoryId: data.category,
+        categoryId: data.category.categoryId,
         productId: data.product,
         mobileNumber: data.mobileNumber,
+        productName: data.productName,
         accountNumber: data.accountNumber,
+        key1: data.key1,
+        key2: data.key2,
+        key3: data.key3,
         startDate: fDateFormatForApi(getValues('startDate')),
         endDate: fDateFormatForApi(getValues('endDate')),
       };
@@ -258,26 +376,6 @@ export default function MyTransactions() {
       console.log(err);
     }
   };
-  const handleDelete = (val: string) => {
-    setFilterdValue(
-      filterdValue.filter((item: any) => {
-        return val != item.key;
-      })
-    );
-    if (val == 'partnerTransactionId') resetField('partnerTransactionId');
-    if (val == 'status') resetField('status');
-    if (val == 'categoryName') {
-      setValue('category', '');
-      resetField('category');
-    }
-
-    if (val == 'startDate') setValue('startDate', null);
-    if (val == 'endDate') setValue('endDate', null);
-    if (val == 'productName') {
-      resetField('product');
-      setValue('product', '');
-    }
-  };
 
   const tableLabels2 = [
     { id: 'Date&Time', label: 'Txn Details' },
@@ -292,110 +390,12 @@ export default function MyTransactions() {
     { id: 'status', label: 'Status' },
   ];
 
-  // const ExportData = () => {
-  //   let token = localStorage.getItem('token');
-
-  //   let body = {
-  //     pageInitData: {
-  //       pageSize: '',
-  //       currentPage: '',
-  //     },
-  //     partnerTransactionId: getValues('partnerTransactionId'),
-  //     accountNumber: getValues('accountNumber'),
-  //     mobileNumber: getValues('mobileNumber'),
-  //     status: getValues('status'),
-  //     transactionType: '',
-  //     categoryId: getValues('category'),
-  //     productId: getValues('product') || '',
-  //     startDate: fDateFormatForApi(getValues('startDate')),
-  //     endDate: fDateFormatForApi(getValues('endDate')),
-  //   };
-
-  //   Api(`transaction/transactionByUser`, 'POST', body, token).then((Response: any) => {
-  //     console.log('======Transaction==response=====>' + Response);
-  //     if (Response.status == 200) {
-  //       if (Response.data.code == 200) {
-  //         if (Response.data.data.data.length) {
-  //           const Dataapi = Response.data.data.data;
-  //           console.log('Dataapi', Dataapi);
-  //           const formattedData = Response.data?.data?.data.map((item: any) => ({
-  //             createdAt: new Date(item?.createdAt).toLocaleString(),
-  //             client_ref_Id: item?.client_ref_Id,
-  //             transactionType: item?.transactionType,
-  //             productName: item?.productName,
-  //             categoryName: item?.categoryName,
-  //             'User Name':
-  //               user?._id === item?.agentDetails?.id?._id
-  //                 ? item?.agentDetails?.id?.firstName
-  //                 : user?._id === item?.distributorDetails?.id?._id
-  //                 ? item?.distributorDetails?.id?.firstName
-  //                 : user?._id === item?.masterDistributorDetails?.id?._id
-  //                 ? item?.masterDistributorDetails?.id?.firstName
-  //                 : '',
-
-  //             'Opening Balance':
-  //               user?._id === item?.agentDetails?.id?._id
-  //                 ? item?.agentDetails?.oldMainWalletBalance
-  //                 : user?._id === item?.distributorDetails?.id?._id
-  //                 ? item?.distributorDetails?.oldMainWalletBalance
-  //                 : user?._id === item?.masterDistributorDetails?.id?._id
-  //                 ? item?.masterDistributorDetails?.oldMainWalletBalance
-  //                 : '',
-
-  //             'Closing Balance':
-  //               user?._id === item?.agentDetails?.id?._id
-  //                 ? item?.agentDetails?.newMainWalletBalance
-  //                 : user?._id === item?.distributorDetails?.id?._id
-  //                 ? item?.distributorDetails?.newMainWalletBalance
-  //                 : user?._id === item?.masterDistributorDetails?.id?._id
-  //                 ? item?.masterDistributorDetails?.newMainWalletBalance
-  //                 : '',
-  //             ' Commission Amount':
-  //               user?._id === item?.agentDetails?.id?._id
-  //                 ? item?.agentDetails?.commissionAmount
-  //                 : user?._id === item?.distributorDetails?.id?._id
-  //                 ? item?.distributorDetails?.commissionAmount
-  //                 : user?._id === item?.masterDistributorDetails?.id?._id
-  //                 ? item?.masterDistributorDetails?.commissionAmount
-  //                 : '',
-  //             amount: item?.amount,
-  //             credit: item?.credit,
-  //             debit: item?.debit,
-  //             TDS: item?.TDS,
-  //             GST: item?.GST,
-  //             ipAddress: item?.metaData?.ipAddress,
-  //             deviceType: item?.checkStatus?.deviceType,
-  //             three_way_recoon: item?.three_way_recoon,
-  //             status: item?.status,
-  //             bankName: item?.moneyTransferBeneficiaryDetails?.bankName,
-  //             accountNumber: item?.moneyTransferBeneficiaryDetails?.accountNumber,
-  //             vendorUtrNumber: item?.vendorUtrNumber,
-  //             providerBank: item?.providerBank,
-  //             ifsc: item?.ifsc,
-  //             operator: item?.key1,
-  //             number: item?.key2,
-  //             mobileNumber: item?.mobileNumber,
-  //           }));
-
-  //           const ws = XLSX.utils.json_to_sheet(formattedData);
-  //           const wb = XLSX.utils.book_new();
-  //           XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-  //           const currentDate = fDateTime(new Date());
-  //           XLSX.writeFile(wb, `Transaction${currentDate}.xlsx`);
-  //           handleClose();
-  //         } else {
-  //           enqueueSnackbar('Data Not Found ');
-  //         }
-  //       }
-  //     }
-  //   });
-  // };
-
   const handleReset = () => {
     reset(defaultValues);
     setFilterdValue([]);
     getTransaction();
+    setSelectedTab('All');
+    handleClose();
   };
 
   return (
@@ -403,26 +403,45 @@ export default function MyTransactions() {
       <Helmet>
         <title> Transactions </title>
       </Helmet>
-      <Stack
-        flexDirection={'row'}
-        justifyContent={isDesktop ? 'space-between' : 'end'}
-        gap={1}
-        mb={1}
-      >
-        <Stack flexDirection={'row'} m={1} gap={1}>
-          {filterdValue.length > 0 &&
-            filterdValue.map((item: any) => {
-              return (
-                item.value && (
-                  <Chip key={item.key} label={item.value} onDelete={() => handleDelete(item.key)} />
-                )
-              );
-            })}
-        </Stack>
-
-        <Stack flexDirection={'row'} gap={1}>
-          <Button variant="contained" onClick={handleReset}>
-            <Iconify icon="bx:reset" color={'common.white'} mr={1} />
+      <Stack flexDirection={'row'} justifyContent={'space-between'} gap={1} mb={1}>
+        {isDesktop && (
+          <Scrollbar sx={{ width: '100%', p: 1 }}>
+            <Stack sx={{ flexWrap: 'nowrap' }}>
+              <FormControl>
+                <RadioGroup
+                  sx={{ flexWrap: 'nowrap' }}
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                  value={selectedTab}
+                  onChange={(event, newValue) => {
+                    setSelectedTab(newValue);
+                  }}
+                >
+                  {directFilter.map((item: any) => (
+                    <FormControlLabel
+                      key={item.label}
+                      value={item.label}
+                      control={<Radio />}
+                      label={item.label}
+                      onClick={() => {
+                        setValue('category.categoryId', item.value.category);
+                        setValue('transactionType', item.value.transactionType);
+                        setValue('productName', item.value.productName);
+                        getProductlist(item.value.category);
+                        getTransaction();
+                      }}
+                      sx={{ whiteSpace: 'nowrap' }}
+                    />
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </Stack>
+          </Scrollbar>
+        )}
+        <Stack flexDirection={'row'} gap={1} alignItems={'center'}>
+          <Button variant="outlined" onClick={handleReset} size="medium">
+            <Iconify icon="bx:reset" color={'primary.main'} mr={1} />
             Reset
           </Button>
           <Button variant="contained" onClick={handleOpen}>
@@ -433,127 +452,195 @@ export default function MyTransactions() {
       <Stack>
         <MotionModal open={open} onClose={handleClose} width={{ xs: '95%', sm: 500 }}>
           <Stack>
-            {/* <Box> */}
-            <FormProvider methods={methods} onSubmit={handleSubmit(filterTransaction)}>
-              <Stack gap={1} m={1}>
-                <RHFSelect
-                  name="transactionType"
-                  label="Select Transaction Type"
-                  size="small"
-                  SelectProps={{
-                    native: false,
-                    sx: { textTransform: 'capitalize' },
-                  }}
-                >
-                  {txnType.map((item: any, index: number) => {
-                    return (
-                      <MenuItem key={index} value={item}>
-                        {item}
-                      </MenuItem>
-                    );
-                  })}
-                </RHFSelect>
-                <RHFSelect
-                  name="category"
-                  label="Category"
-                  size="small"
-                  SelectProps={{
-                    native: false,
-                    sx: { textTransform: 'capitalize' },
-                  }}
-                >
-                  <MenuItem value="">All</MenuItem>
-                  {categoryList.map((item: any) => {
-                    return (
-                      <MenuItem
-                        key={item._id}
-                        value={item._id}
-                        onClick={() => getProductlist(item._id)}
-                      >
-                        {item?.category_name}
-                      </MenuItem>
-                    );
-                  })}
-                </RHFSelect>
-                <RHFSelect
-                  name="product"
-                  label="Product"
-                  size="small"
-                  SelectProps={{
-                    native: false,
-                    sx: { textTransform: 'capitalize' },
-                  }}
-                >
-                  <MenuItem value="">All</MenuItem>
-                  {ProductList.map((item: any) => {
-                    return (
-                      <MenuItem key={item._id} value={item._id}>
-                        {item?.productName}
-                      </MenuItem>
-                    );
-                  })}
-                </RHFSelect>
-                <RHFSelect
-                  name="status"
-                  label="Status"
-                  size="small"
-                  SelectProps={{
-                    native: false,
-                    sx: { textTransform: 'capitalize' },
-                  }}
-                >
-                  <MenuItem value="">None</MenuItem>
-                  <MenuItem value="success">Success</MenuItem>
-                  <MenuItem value="failed">Failed</MenuItem>
-                  <MenuItem value="pending">Pending</MenuItem>
-                  <MenuItem value="in_process">In process</MenuItem>
-                  <MenuItem value="hold">Hold</MenuItem>
-                  <MenuItem value="initiated">Initiated</MenuItem>
-                </RHFSelect>
-                <RHFTextField size="small" name="partnerTransactionId" label="Client Id" />
-                <RHFTextField size="small" name="accountNumber" label="AccountNumber" />
-                <RHFTextField size="small" name="mobileNumber" label="MobileNumber" />
-                <Stack direction={'row'} gap={1}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label="Start date"
-                      inputFormat="DD/MM/YYYY"
-                      value={watch('startDate')}
-                      maxDate={new Date()}
-                      onChange={(newValue: any) => setValue('startDate', newValue)}
-                      renderInput={(params: any) => (
-                        <TextField {...params} size={'small'} sx={{ width: 150 }} />
+            <Scrollbar sx={{ maxHieght: { xs: 400, md: 800 } }}>
+              {/* <Box> */}
+              <FormProvider methods={methods} onSubmit={handleSubmit(filterTransaction)}>
+                <Stack gap={1} m={1}>
+                  <RHFSelect
+                    name="transactionType"
+                    label="Select Transaction Type"
+                    size="small"
+                    SelectProps={{
+                      native: false,
+                      sx: { textTransform: 'capitalize' },
+                    }}
+                  >
+                    {txnType.map((item: any, index: number) => {
+                      return (
+                        <MenuItem key={index} value={item}>
+                          {item}
+                        </MenuItem>
+                      );
+                    })}
+                  </RHFSelect>
+                  <RHFSelect
+                    name="category.categoryId"
+                    label="Category"
+                    size="small"
+                    SelectProps={{
+                      native: false,
+                      sx: { textTransform: 'capitalize' },
+                    }}
+                  >
+                    <MenuItem value="">All</MenuItem>
+                    {categoryList.map((item: any) => {
+                      return (
+                        <MenuItem
+                          key={item._id}
+                          value={item._id}
+                          onClick={() => {
+                            getProductlist(item._id);
+                            setValue('category.categoryName', item.category_name);
+                          }}
+                        >
+                          {item?.category_name}
+                        </MenuItem>
+                      );
+                    })}
+                  </RHFSelect>
+
+                  {!!watch('category.categoryId') && (
+                    <>
+                      {!['transfer'].includes(watch('category.categoryName').toLowerCase()) && (
+                        <RHFTextField
+                          name="key1"
+                          label={
+                            ['dmt2', 'dmt1', 'money transfer'].includes(
+                              watch('category.categoryName').toLowerCase()
+                            )
+                              ? 'Account Number'
+                              : ['aeps', 'aeps 2', 'aadhaar pay'].includes(
+                                  watch('category.categoryName').toLowerCase()
+                                )
+                              ? 'bank Name'
+                              : ['recharges', 'bill payment'].includes(
+                                  watch('category.categoryName').toLowerCase()
+                                )
+                              ? 'Operator Name'
+                              : 'key1'
+                          }
+                        />
                       )}
-                    />
-                    <DatePicker
-                      label="End date"
-                      inputFormat="DD/MM/YYYY"
-                      value={watch('endDate')}
-                      minDate={watch('startDate')}
-                      maxDate={new Date()}
-                      onChange={(newValue: any) => setValue('endDate', newValue)}
-                      renderInput={(params: any) => (
-                        <TextField {...params} size={'small'} sx={{ width: 150 }} />
+                      <RHFTextField
+                        name="key2"
+                        label={
+                          ['dmt2', 'dmt1', 'money transfer'].includes(
+                            watch('category.categoryName').toLowerCase()
+                          )
+                            ? 'IFSC'
+                            : ['aeps', 'aeps2', 'aadhaar pay'].includes(
+                                watch('category.categoryName').toLowerCase()
+                              )
+                            ? 'Aadhaar Number'
+                            : ['recharges', 'bill payment'].includes(
+                                watch('category.categoryName').toLowerCase()
+                              )
+                            ? 'Number'
+                            : ['transfer'].includes(watch('category.categoryName').toLowerCase())
+                            ? 'UPI ID'
+                            : 'key2'
+                        }
+                      />
+                      {!['recharges', 'bill payment', 'transfer'].includes(
+                        watch('category.categoryName').toLowerCase()
+                      ) && (
+                        <RHFTextField
+                          name="key3"
+                          label={
+                            ['dmt2', 'money transfer', 'dmt1'].includes(
+                              watch('category.categoryName').toLowerCase()
+                            )
+                              ? 'Bank Name'
+                              : ['aeps', 'aadhaar pay'].includes(
+                                  watch('category.categoryName').toLowerCase()
+                                )
+                              ? 'Mobile Number'
+                              : 'key3'
+                          }
+                        />
                       )}
-                    />
-                  </LocalizationProvider>
-                </Stack>
-                <Stack flexDirection={'row'} flexBasis={{ xs: '100%', sm: '50%' }} gap={1}>
-                  <LoadingButton variant="contained" onClick={handleClose}>
-                    Cancel
-                  </LoadingButton>
-                  <LoadingButton variant="contained" onClick={handleReset}>
-                    <Iconify icon="bx:reset" color={'common.white'} mr={1} /> Reset
-                  </LoadingButton>
-                  <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
-                    Apply
-                  </LoadingButton>
-                  {/* <Button variant="contained" onClick={ExportData}>
+                    </>
+                  )}
+                  <RHFSelect
+                    name="product"
+                    label="Product"
+                    size="small"
+                    SelectProps={{
+                      native: false,
+                      sx: { textTransform: 'capitalize' },
+                    }}
+                  >
+                    <MenuItem value="">All</MenuItem>
+                    {ProductList.map((item: any) => {
+                      return (
+                        <MenuItem key={item._id} value={item._id}>
+                          {item?.productName}
+                        </MenuItem>
+                      );
+                    })}
+                  </RHFSelect>
+                  <RHFSelect
+                    name="status"
+                    label="Status"
+                    size="small"
+                    SelectProps={{
+                      native: false,
+                      sx: { textTransform: 'capitalize' },
+                    }}
+                  >
+                    <MenuItem value="">None</MenuItem>
+                    <MenuItem value="success">Success</MenuItem>
+                    <MenuItem value="failed">Failed</MenuItem>
+                    <MenuItem value="pending">Pending</MenuItem>
+                    <MenuItem value="in_process">In process</MenuItem>
+                    <MenuItem value="hold">Hold</MenuItem>
+                    <MenuItem value="initiated">Initiated</MenuItem>
+                  </RHFSelect>
+                  <RHFTextField size="small" name="partnerTransactionId" label="Client Id" />
+                  {/* <RHFTextField size="small" name="accountNumber" label="AccountNumber" /> */}
+                  <RHFTextField size="small" name="mobileNumber" label="MobileNumber" />
+                  <Stack direction={'row'} gap={1}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        label="Start date"
+                        inputFormat="DD/MM/YYYY"
+                        value={watch('startDate')}
+                        maxDate={new Date()}
+                        onChange={(newValue: any) => setValue('startDate', newValue)}
+                        renderInput={(params: any) => (
+                          <TextField {...params} size={'small'} sx={{ width: 150 }} />
+                        )}
+                      />
+                      <DatePicker
+                        label="End date"
+                        inputFormat="DD/MM/YYYY"
+                        value={watch('endDate')}
+                        minDate={watch('startDate')}
+                        maxDate={new Date()}
+                        onChange={(newValue: any) => setValue('endDate', newValue)}
+                        renderInput={(params: any) => (
+                          <TextField {...params} size={'small'} sx={{ width: 150 }} />
+                        )}
+                      />
+                    </LocalizationProvider>
+                  </Stack>
+                  <Stack flexDirection={'row'} flexBasis={{ xs: '100%', sm: '50%' }} gap={1}>
+                    <LoadingButton variant="contained" onClick={handleClose}>
+                      Cancel
+                    </LoadingButton>
+                    <LoadingButton variant="contained" onClick={handleReset}>
+                      <Iconify icon="bx:reset" color={'common.white'} mr={1} /> Reset
+                    </LoadingButton>
+                    <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
+                      Apply
+                    </LoadingButton>
+                    {/* <Button variant="contained" onClick={ExportData}>
                     Export
                   </Button> */}
+                  </Stack>
                 </Stack>
-              </Stack>
-            </FormProvider>
+              </FormProvider>
+            </Scrollbar>
           </Stack>
           {/* </Box> */}
         </MotionModal>
@@ -579,7 +666,7 @@ export default function MyTransactions() {
                     )
                   )}
                 </TableBody>
-                {!Loading && <TableNoData isNotFound={!filterdValue} />}
+                {!filterdValue.length && <TableNoData isNotFound={!filterdValue.length} />}
               </Table>
             </Scrollbar>
 

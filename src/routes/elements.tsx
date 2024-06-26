@@ -19,6 +19,7 @@ export const ResetPage = Loadable(lazy(() => import('../pages/auth/ResetPage')))
 
 // DashBoard
 export const Dashboard = Loadable(lazy(() => import('../pages/Dashboard')));
+export const Services = Loadable(lazy(() => import('../pages/Services')));
 // Trasactions
 export const MyTransactions = Loadable(lazy(() => import('../pages/MyTransaction')));
 // walletladger

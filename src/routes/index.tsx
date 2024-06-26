@@ -27,6 +27,7 @@ import {
   AepsSettlement,
   ResetPage,
   NpinReset,
+  Services,
 } from './elements';
 import MyFundRequest from 'src/sections/FundManagement/MyFundRequest';
 
@@ -66,6 +67,7 @@ export default function Router() {
       children: [
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         { path: 'dashboard', element: <Dashboard /> },
+        { path: 'services', element: <Services /> },
         { path: 'helpsupport', element: <HelpAndSupport /> },
         {
           path: 'partnerbilling',

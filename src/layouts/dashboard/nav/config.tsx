@@ -28,6 +28,11 @@ const navConfig = [
         path: PATH_DASHBOARD.dashboard,
         icon: ICONS.dashboard,
       },
+      // {
+      //   title: 'Services',
+      //   path: PATH_DASHBOARD.services,
+      //   icon: ICONS.dashboard,
+      // },
 
       {
         title: 'Transactions',
@@ -99,7 +104,7 @@ const navConfig = [
         icon: ICONS.user,
       },
       {
-        title: ' API Docs',
+        title: 'API Docs',
         path: PATH_DASHBOARD.Referenceapidocs,
         icon: ICONS.ecommerce,
       },
@@ -107,7 +112,7 @@ const navConfig = [
         title: 'Setting',
         path: PATH_DASHBOARD.setting.root,
         icon: ICONS.ecommerce,
-        children: [{ title: 'Tpon', path: PATH_DASHBOARD.setting.npinreset }],
+        children: [{ title: 'Tpin', path: PATH_DASHBOARD.setting.npinreset }],
       },
     ],
   },
