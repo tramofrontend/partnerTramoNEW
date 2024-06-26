@@ -82,6 +82,7 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
     return {
       ...state,
       isAuthenticated: false,
+      isInitialized: true,
       user: null,
     };
   }
@@ -134,13 +135,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
     try {
       const accessToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
-
       if (accessToken) {
         Api('agent/get_AgentDetail', 'GET', '', accessToken).then((resp: any) => {
           if (resp.status == 200) {
             if (resp.data.code == 200) {
               if ((resp.data.data.role = 'API_User')) {
-                // localStorage.removeItem('token');
                 dispatch({
                   type: Types.INITIAL,
                   payload: {
@@ -148,44 +147,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
                     user: resp.data.data,
                   },
                 });
+              } else {
+                localStorage.removeItem('token');
+                dispatch({
+                  type: Types.LOGOUT,
+                });
               }
             } else {
               localStorage.removeItem('token');
               dispatch({
-                type: Types.INITIAL,
-                payload: {
-                  isAuthenticated: false,
-                  user: null,
-                },
+                type: Types.LOGOUT,
               });
             }
           } else {
             localStorage.removeItem('token');
             dispatch({
-              type: Types.INITIAL,
-              payload: {
-                isAuthenticated: false,
-                user: null,
-              },
+              type: Types.LOGOUT,
             });
           }
         });
       } else {
         dispatch({
-          type: Types.INITIAL,
-          payload: {
-            isAuthenticated: false,
-            user: null,
-          },
+          type: Types.LOGOUT,
         });
       }
     } catch (error) {
+      localStorage.removeItem('token');
       dispatch({
-        type: Types.INITIAL,
-        payload: {
-          isAuthenticated: false,
-          user: null,
-        },
+        type: Types.LOGOUT,
       });
     }
   }, []);
