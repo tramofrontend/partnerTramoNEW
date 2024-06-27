@@ -18,6 +18,7 @@ import ViewBBPSTable from './ViewBBPSTable';
 
 import { useAuthContext } from 'src/auth/useAuthContext';
 import RechargeSkeleton from 'src/components/Skeletons/RechargeSkeleton';
+import ViewTransferTable from './ViewTransferTable';
 // ----------------------------------------------------------------------
 
 export default function ViewAllScheme() {
@@ -94,8 +95,8 @@ export default function ViewAllScheme() {
       }
     });
   };
-  {if(loading)
-    return <RechargeSkeleton/>
+  {
+    if (loading) return <RechargeSkeleton />;
   }
 
   return (
@@ -153,7 +154,7 @@ export default function ViewAllScheme() {
           </TextField>
         </Stack>
       )}
-      {loading ?(
+      {loading ? (
         <Stack
           sx={{ height: '70vh', width: '100%' }}
           justifyContent={'center'}
@@ -175,6 +176,8 @@ export default function ViewAllScheme() {
             <ViewDmt1Table comData={com} tableData={sdata} />
           ) : superCurrentTab.toLowerCase() == 'dmt2' ? (
             <ViewDmt2Table comData={com} tableData={sdata} />
+          ) : superCurrentTab.toLowerCase() == 'transfer' ? (
+            <ViewTransferTable comData={com} />
           ) : superCurrentTab.toLowerCase() == 'matm' ? (
             <ViewMatmTable comData={com} tableData={sdata} />
           ) : null}
