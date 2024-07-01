@@ -1,1 +1,14 @@
 export { default as BeneVerification } from './BeneVerification';
+export { default as AadhaarPay } from './AadhaarPay';
+export { default as AEPS } from './AEPS';
+export { default as BillPayment } from './BillPayment';
+export { default as DMT1 } from './DMT1';
+export { default as DMT2 } from './DMT2';
+export { default as Insurance } from './Insurance';
+export { default as KYC } from './KYC';
+export { default as Loan } from './Loan';
+export { default as MATM } from './MATM';
+export { default as MoneyTransfer } from './MoneyTransfer';
+export { default as Payments } from './Payments';
+export { default as Recharges } from './Recharges';
+export { default as Transfer } from './Transfer';

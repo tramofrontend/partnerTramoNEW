@@ -139,7 +139,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         Api('agent/get_AgentDetail', 'GET', '', accessToken).then((resp: any) => {
           if (resp.status == 200) {
             if (resp.data.code == 200) {
-              if ((resp.data.data.role = 'API_User')) {
+              if (resp?.data?.data?.role == 'API_User') {
                 dispatch({
                   type: Types.INITIAL,
                   payload: {

@@ -8,8 +8,8 @@ import Ellipseone from '../../assets/dashboardIcon/Ellipseone.svg';
 import Ellipsetwo from '../../assets/dashboardIcon/Ellipsetwo.svg';
 import Ellipsethree from '../../assets/dashboardIcon/Ellipsethree.svg';
 import dayjs from 'dayjs';
-import * as Yup from 'yup';
 // form
+import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import LineView from './Charts/LineView';

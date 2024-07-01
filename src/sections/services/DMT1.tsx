@@ -66,15 +66,14 @@ type FormValuesProps = {
   endDate: null;
   transactionId: string;
   clientId: string;
-  mobileNumber: string;
+  mode: string;
   key1: string;
   key2: string;
   key3: string;
   utr: string;
   status: string;
 };
-
-export default React.memo(function BeneVerfication() {
+export default React.memo(function DMT1() {
   const isMobile = useResponsive('up', 'sm');
   let token = localStorage.getItem('token');
   const { enqueueSnackbar } = useSnackbar();
@@ -92,7 +91,7 @@ export default React.memo(function BeneVerfication() {
     endDate: null,
     transactionId: '',
     clientId: '',
-    mobileNumber: '',
+    mode: '',
     key1: '',
     key2: '',
     key3: '',
@@ -114,16 +113,17 @@ export default React.memo(function BeneVerfication() {
     resetField,
     formState: { errors, isSubmitting },
   } = methods;
-
   const tableLabels = [
     { id: 'Date&Time', label: 'Date & Time' },
-    { id: 'Transaction Id', label: 'Transaction ID' },
-    { id: 'Client ID', label: 'Client ID' },
-    { id: 'Mobile Number', label: 'Mobile Number' },
-    { id: 'Bank Name', label: 'Bank Name' },
-    { id: 'Account Number', label: 'Account Number' },
-    { id: 'IFSC', label: 'IFSC' },
+    { id: 'transaction', label: 'Transaction ID' },
+    { id: 'client', label: 'Client ID' },
+    { id: 'mode', label: 'Mode' },
+    { id: 'senderNumber', label: 'Sender Number' },
+    { id: 'bank', label: 'Bank Name' },
+    { id: 'acoount', label: 'Account Number' },
+    { id: 'ifsc', label: 'IFSC' },
     { id: 'UTR/RRN', label: 'UTR/RRN' },
+    { id: 'Transaction Amount', label: 'Transaction Amount' },
     { id: 'Charges', label: 'Charges' },
     { id: 'GST', label: 'GST' },
     { id: 'Debit', label: 'Debit' },
@@ -148,12 +148,12 @@ export default React.memo(function BeneVerfication() {
       startDate: fDateFormatForApi(getValues('startDate')),
       endDate: fDateFormatForApi(getValues('endDate')),
       transactionId: getValues('transactionId'),
-      clientRefId: getValues('clientId'),
-      mobileNumber: getValues('mobileNumber'),
+      clientId: getValues('clientId'),
+      mode: getValues('mode'),
       key1: getValues('key1'),
       key2: getValues('key2'),
       key3: getValues('key3'),
-      vendorUtrNumber: getValues('utr'),
+      utr: getValues('utr'),
       status: getValues('status'),
     };
 
@@ -212,12 +212,12 @@ export default React.memo(function BeneVerfication() {
                 />
               </LocalizationProvider>
             </Stack>
-            <RHFTextField name="transactionId" label="Client Id" />
-            <RHFTextField name="clientId" label="Transaction Id" />
-            <RHFTextField name="mobileNumber" label="Mobile Number" />
-            <RHFTextField name="key1" label="account Number" />
-            <RHFTextField name="key2" label="IFSC" />
-            <RHFTextField name="key3" label="Bank Name" />
+            <RHFTextField size="small" name="transactionId" label="Transaction Id" />
+            <RHFTextField size="small" name="clientId" label="Client Id" />
+            <RHFTextField size="small" name="mode" label="Mode" />
+            <RHFTextField name="key1" label="Bank Name" />
+            <RHFTextField name="key2" label="Aadhaar Number" />
+            <RHFTextField name="key3" label="Customer Number" />
             <RHFTextField name="utr" label="UTR" />
 
             <RHFSelect
@@ -323,132 +323,230 @@ function TransactionRow({ row }: childProps) {
     borderRadius: 2,
   };
 
-  const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 12,
-      padding: 6,
-    },
-  }));
-
-  const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(even)': {
-      backgroundColor: theme.palette.grey[300],
-    },
-    // hide last border
-    '&:last-child td, &:last-child th': {
-      border: 0,
-      padding: '0px 20px',
-    },
-  }));
-
   return (
-    <TableRow key={newRow._id}>
-      {/* Date & Time */}
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'} color="text.secondary">
-          {fDateTime(newRow?.createdAt)}
-        </Typography>
-      </TableCell>
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'}>
-          {newRow?.clientRefId}{' '}
-          <Tooltip title="Copy" placement="top">
-            <IconButton onClick={() => onCopy(newRow?.clientRefId)} sx={{ p: 0 }}>
-              <Iconify icon="eva:copy-fill" width={20} />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-      </TableCell>
+    <>
+      <TableRow key={newRow._id}>
+        {/* Date & Time */}
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'} color="text.secondary">
+            {fDateTime(newRow?.createdAt)}
+          </Typography>
+        </TableCell>
 
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'}>
-          {newRow?.partnerTransactionId}{' '}
-          <Tooltip title="Copy" placement="top">
-            <IconButton onClick={() => onCopy(newRow?.partnerTransactionId)} sx={{ p: 0 }}>
-              <Iconify icon="eva:copy-fill" width={20} />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-      </TableCell>
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {newRow?.partnerTransactionId}{' '}
+            <Tooltip title="Copy" placement="top">
+              <IconButton onClick={() => onCopy(newRow?.partnerTransactionId)} sx={{ p: 0 }}>
+                <Iconify icon="eva:copy-fill" width={20} />
+              </IconButton>
+            </Tooltip>
+          </Typography>
+        </TableCell>
 
-      {/* Product  */}
-      <TableCell>
-        <Typography variant="body2">{newRow?.mobileNumber || '-'}</Typography>
-      </TableCell>
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {newRow?.clientRefId}{' '}
+            <Tooltip title="Copy" placement="top">
+              <IconButton onClick={() => onCopy(newRow?.clientRefId)} sx={{ p: 0 }}>
+                <Iconify icon="eva:copy-fill" width={20} />
+              </IconButton>
+            </Tooltip>
+          </Typography>
+        </TableCell>
 
-      {/* Operator */}
-      <TableCell>
-        <Typography variant="body2" noWrap>
-          {newRow?.operator?.key3}{' '}
-        </Typography>
-      </TableCell>
+        {user?.role === 'distributor' && (
+          <TableCell>
+            <Stack flexDirection={'row'} gap={1}>
+              <CustomAvatar
+                name={newRow?.agentDetails?.id?.firstName}
+                alt={newRow?.agentDetails?.id?.firstName}
+                src={newRow?.agentDetails?.id?.selfie[0]}
+              />
+              <Stack>
+                <Typography variant="body2">
+                  {newRow?.agentDetails?.id?.firstName} {newRow?.agentDetails?.id?.lastName}
+                </Typography>
+                <Typography variant="body2">{newRow?.agentDetails?.id?.userCode}</Typography>
+              </Stack>
+            </Stack>
+          </TableCell>
+        )}
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        <Typography variant="body2">
-          {newRow?.operator?.key1}
-          <Tooltip title="Copy" placement="top">
-            <IconButton onClick={() => onCopy(newRow?.operator?.key1)} sx={{ p: 0 }}>
-              <Iconify icon="eva:copy-fill" width={20} />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-      </TableCell>
+        {/* Distributor Detail */}
+        {user?.role === 'm_distributor' && (
+          <>
+            <TableCell>
+              <Stack flexDirection={'row'} gap={1}>
+                <CustomAvatar
+                  name={newRow?.agentDetails?.id?.firstName}
+                  alt={newRow?.agentDetails?.id?.firstName}
+                  src={newRow?.agentDetails?.id?.selfie[0]}
+                />
+                <Stack>
+                  <Typography variant="body2">
+                    {newRow?.agentDetails?.id?.firstName} {newRow?.agentDetails?.id?.lastName}
+                  </Typography>
+                  <Typography variant="body2">{newRow?.agentDetails?.id?.userCode}</Typography>
+                </Stack>
+              </Stack>
+            </TableCell>
+            <TableCell>
+              <Stack flexDirection={'row'} gap={1}>
+                <CustomAvatar
+                  name={newRow?.distributorDetails?.id?.firstName}
+                  alt={newRow?.distributorDetails?.id?.firstName}
+                  src={newRow?.distributorDetails?.id?.selfie[0]}
+                />
+                <Stack>
+                  <Typography variant="body2">
+                    {newRow?.distributorDetails?.id?.firstName}{' '}
+                    {newRow?.distributorDetails?.id?.lastName}
+                  </Typography>
+                  <Typography variant="body2">
+                    {newRow?.distributorDetails?.id?.userCode}
+                  </Typography>
+                </Stack>
+              </Stack>
+            </TableCell>
+          </>
+        )}
+        {/* mode of payment */}
+        <TableCell>
+          <Typography variant="body2">{newRow?.modeOfPayment || '-'}</Typography>
+        </TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        <Typography variant="body2">{newRow?.operator?.key2}</Typography>
-      </TableCell>
+        {/* Product  */}
+        <TableCell>
+          <Typography variant="body2">{newRow?.transactionType}</Typography>
+          <Typography variant="body2">{newRow?.productName || '-'}</Typography>
+        </TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        <Typography variant="body2">{newRow?.vendorUtrNumber}</Typography>
-      </TableCell>
+        {/* Operator */}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Typography variant="body2">{newRow?.operator?.key1}</Typography>
+          <Typography variant="body2">
+            {newRow?.productName == 'Money Transfer'
+              ? newRow?.moneyTransferBeneficiaryDetails?.beneName
+              : ['aeps', 'aeps 2', 'aadhaar pay'].includes(newRow?.categoryName?.toLowerCase())
+              ? newRow?.operator?.key2?.length &&
+                'X'
+                  .repeat(newRow?.operator?.key2?.length - 4)
+                  .split('')
+                  .map((item: any, index: number) => {
+                    if (index % 4 == 0) {
+                      return ' ' + item;
+                    } else {
+                      return item;
+                    }
+                  })
+                  .join('') +
+                  newRow?.operator?.key2
+                    ?.slice(newRow?.operator?.key2?.length - 4)
+                    .split('')
+                    .map((item: any, index: number) => {
+                      if (index % 4 == 0) {
+                        return ' ' + item;
+                      } else {
+                        return item;
+                      }
+                    })
+                    .join('')
+              : newRow?.operator?.key2}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ wordBreak: 'break-all', maxWidth: 200, whiteSpace: 'break-spaces' }}
+          >
+            {newRow?.operator?.key3}
+          </Typography>
+        </TableCell>
 
-      {/* Charge/Commission */}
-      <TableCell>
-        <Stack flexDirection={'row'} justifyContent={'center'}>
-          <Typography variant="body2" whiteSpace={'nowrap'} color={'error'}>
-            {fIndianCurrency(newRow.amount - newRow.GST)}
-          </Typography>{' '}
-        </Stack>
-      </TableCell>
+        {/* Mobile Number */}
+        <TableCell>
+          <Typography variant="body2">{newRow?.mobileNumber}</Typography>
+        </TableCell>
 
-      {/* Closing Balance */}
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'}>
-          {fIndianCurrency(newRow?.GST)}
-        </Typography>
-      </TableCell>
+        {/* Operator Txn Id */}
+        <TableCell>
+          <Typography variant="body2" textAlign={'center'}>
+            {newRow?.vendorUtrNumber || '-'}
+          </Typography>
+        </TableCell>
 
-      <TableCell>
-        <Stack flexDirection={'row'} justifyContent={'center'}>
-          <Typography variant="body2" whiteSpace={'nowrap'} color={'error'}>
-            {fIndianCurrency(newRow.amount + newRow.debit)}
-          </Typography>{' '}
-        </Stack>
-      </TableCell>
+        {/* Opening Balance */}
+        {/* <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {fIndianCurrency(
+              user?.role === 'agent'
+                ? newRow?.agentDetails?.oldMainWalletBalance
+                : user?.role === 'distributor'
+                ? newRow?.distributorDetails?.oldMainWalletBalance
+                : newRow?.masterDistributorDetails?.oldMainWalletBalance
+            )}
+          </Typography>
+        </TableCell> */}
 
-      <TableCell
-        sx={{
-          textTransform: 'lowercase',
-          fontWeight: 600,
-          textAlign: 'center',
-        }}
-      >
-        <Label
-          variant="soft"
-          color={
-            (newRow.status === 'failed' && 'error') ||
-            ((newRow.status === 'pending' || newRow.status === 'in_process') && 'warning') ||
-            'success'
-          }
-          sx={{ textTransform: 'capitalize' }}
+        {/* Transaction Amount */}
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {fIndianCurrency(newRow.amount) || 0}
+          </Typography>
+        </TableCell>
+
+        {/* Charge/Commission */}
+        <TableCell>
+          <Stack flexDirection={'row'} justifyContent={'center'}>
+            <Typography variant="body2" whiteSpace={'nowrap'} color={'error'}>
+              {user?.role === 'agent' && <>-{fIndianCurrency(newRow.debit)}/</>}
+            </Typography>{' '}
+            <Typography variant="body2" whiteSpace={'nowrap'} color={'green'}>
+              + {fIndianCurrency(newRow?.partnerDetails?.creditedAmount) || 0}
+            </Typography>
+          </Stack>
+        </TableCell>
+
+        {/* Closing Balance */}
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {fIndianCurrency(newRow?.partnerDetails?.newMainWalletBalance)}
+          </Typography>
+        </TableCell>
+
+        {/* GST/TDS */}
+
+        {user?.role == 'agent' && (
+          <TableCell sx={{ whiteSpace: 'nowrap' }}>
+            <Typography variant="body2">
+              GST : {fIndianCurrency((user?.role == 'agent' && newRow?.agentDetails?.GST) || '0')}
+            </Typography>
+            <Typography variant="body2">
+              TDS :{' '}
+              {fIndianCurrency((user?.role == 'agent' && newRow?.agentDetails?.TDSAmount) || '0')}
+            </Typography>
+          </TableCell>
+        )}
+
+        <TableCell
+          sx={{
+            textTransform: 'lowercase',
+            fontWeight: 600,
+            textAlign: 'center',
+          }}
         >
-          {newRow.status ? sentenceCase(newRow.status) : ''}
-        </Label>
-      </TableCell>
-    </TableRow>
+          <Label
+            variant="soft"
+            color={
+              (newRow.status === 'failed' && 'error') ||
+              ((newRow.status === 'pending' || newRow.status === 'in_process') && 'warning') ||
+              'success'
+            }
+            sx={{ textTransform: 'capitalize' }}
+          >
+            {newRow.status ? sentenceCase(newRow.status) : ''}
+          </Label>
+        </TableCell>
+      </TableRow>
+    </>
   );
 }

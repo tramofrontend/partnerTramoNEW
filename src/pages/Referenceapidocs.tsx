@@ -92,7 +92,7 @@ export default function ReferenceApiDocs() {
           <Scrollbar
             sx={
               isMobile
-                ? { maxHeight: window.innerHeight - 200 }
+                ? { maxHeight: window.innerHeight - 210 }
                 : { maxHeight: window.innerHeight - 154 }
             }
           >

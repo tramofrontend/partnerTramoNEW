@@ -6,7 +6,6 @@ import {
   Grid,
   TextField,
   tableCellClasses,
-  Button,
   Table,
   TableRow,
   TableBody,
@@ -19,45 +18,38 @@ import {
   Modal,
   TableContainer,
   Divider,
-  MenuItem,
-  FormControl,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
   Card,
+  MenuItem,
 } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
-// form
-import * as Yup from 'yup';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackbar } from 'notistack';
 import React from 'react';
-import { Api } from 'src/webservices';
 import Scrollbar from 'src/components/scrollbar';
 import { TableHeadCustom, TableNoData } from 'src/components/table';
 import Iconify from 'src/components/iconify/Iconify';
 import ReactToPrint from 'react-to-print';
-import { fDate, fDateTime } from '../../utils/formatTime';
+import { fDateFormatForApi, fDateTime } from '../../utils/formatTime';
 import Label from 'src/components/label/Label';
 import { sentenceCase } from 'change-case';
 import { useAuthContext } from 'src/auth/useAuthContext';
-import CustomPagination from 'src/components/customFunctions/CustomPagination';
-import FormProvider, { RHFSelect, RHFTextField } from '../../components/hook-form';
-import { LoadingButton } from '@mui/lab';
 import Logo from 'src/components/logo/Logo';
 import { fIndianCurrency } from 'src/utils/formatNumber';
 import useCopyToClipboard from 'src/hooks/useCopyToClipboard';
-import { Icon } from '@iconify/react';
 import useResponsive from 'src/hooks/useResponsive';
 import { CustomAvatar } from 'src/components/custom-avatar';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
-import { fDateFormatForApi } from 'src/utils/formatTime';
-import { MasterTransactionSkeleton } from 'src/components/Skeletons/MasterTransactionSkeleton';
-import MotionModal from 'src/components/animate/MotionModal';
 import { CategoryContext } from 'src/pages/Services';
+// form
+import * as Yup from 'yup';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import FormProvider from 'src/components/hook-form/FormProvider';
+import { Api } from 'src/webservices';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { RHFSelect, RHFTextField } from 'src/components/hook-form';
+import { LoadingButton } from '@mui/lab';
+import CustomPagination from 'src/components/customFunctions/CustomPagination';
+import { MasterTransactionSkeleton } from 'src/components/Skeletons/MasterTransactionSkeleton';
 
 // ----------------------------------------------------------------------
 
@@ -66,7 +58,7 @@ type FormValuesProps = {
   endDate: null;
   transactionId: string;
   clientId: string;
-  mobileNumber: string;
+  mode: string;
   key1: string;
   key2: string;
   key3: string;
@@ -74,7 +66,7 @@ type FormValuesProps = {
   status: string;
 };
 
-export default React.memo(function BeneVerfication() {
+export default React.memo(function AadhaarPay() {
   const isMobile = useResponsive('up', 'sm');
   let token = localStorage.getItem('token');
   const { enqueueSnackbar } = useSnackbar();
@@ -92,7 +84,7 @@ export default React.memo(function BeneVerfication() {
     endDate: null,
     transactionId: '',
     clientId: '',
-    mobileNumber: '',
+    mode: '',
     key1: '',
     key2: '',
     key3: '',
@@ -114,19 +106,22 @@ export default React.memo(function BeneVerfication() {
     resetField,
     formState: { errors, isSubmitting },
   } = methods;
-
   const tableLabels = [
     { id: 'Date&Time', label: 'Date & Time' },
-    { id: 'Transaction Id', label: 'Transaction ID' },
-    { id: 'Client ID', label: 'Client ID' },
-    { id: 'Mobile Number', label: 'Mobile Number' },
-    { id: 'Bank Name', label: 'Bank Name' },
-    { id: 'Account Number', label: 'Account Number' },
-    { id: 'IFSC', label: 'IFSC' },
-    { id: 'UTR/RRN', label: 'UTR/RRN' },
+    { id: 'transaction', label: 'Transaction ID' },
+    { id: 'client', label: 'Client ID' },
+    { id: 'mode', label: 'Mode' },
+    { id: 'bank', label: 'Bank Name' },
+    { id: 'aadhaar', label: 'Aadhaar Number' },
+    { id: 'Customer', label: 'Customer Number' },
+    { id: 'UTR', label: 'UTR' },
+    { id: 'Transaction Amount', label: 'Transaction Amount' },
     { id: 'Charges', label: 'Charges' },
     { id: 'GST', label: 'GST' },
+    { id: 'Commission', label: 'Commission' },
+    { id: 'TDS', label: 'TDS' },
     { id: 'Debit', label: 'Debit' },
+    { id: 'Credit', label: 'Credit' },
     { id: 'Status', label: 'Status' },
   ];
 
@@ -148,12 +143,12 @@ export default React.memo(function BeneVerfication() {
       startDate: fDateFormatForApi(getValues('startDate')),
       endDate: fDateFormatForApi(getValues('endDate')),
       transactionId: getValues('transactionId'),
-      clientRefId: getValues('clientId'),
-      mobileNumber: getValues('mobileNumber'),
+      clientId: getValues('clientId'),
+      mode: getValues('mode'),
       key1: getValues('key1'),
       key2: getValues('key2'),
       key3: getValues('key3'),
-      vendorUtrNumber: getValues('utr'),
+      utr: getValues('utr'),
       status: getValues('status'),
     };
 
@@ -212,12 +207,12 @@ export default React.memo(function BeneVerfication() {
                 />
               </LocalizationProvider>
             </Stack>
-            <RHFTextField name="transactionId" label="Client Id" />
-            <RHFTextField name="clientId" label="Transaction Id" />
-            <RHFTextField name="mobileNumber" label="Mobile Number" />
-            <RHFTextField name="key1" label="account Number" />
-            <RHFTextField name="key2" label="IFSC" />
-            <RHFTextField name="key3" label="Bank Name" />
+            <RHFTextField size="small" name="transactionId" label="Transaction Id" />
+            <RHFTextField size="small" name="clientId" label="Client Id" />
+            <RHFTextField size="small" name="mode" label="Mode" />
+            <RHFTextField name="key1" label="Bank Name" />
+            <RHFTextField name="key2" label="Aadhaar Number" />
+            <RHFTextField name="key3" label="Customer Number" />
             <RHFTextField name="utr" label="UTR" />
 
             <RHFSelect
@@ -346,109 +341,122 @@ function TransactionRow({ row }: childProps) {
   }));
 
   return (
-    <TableRow key={newRow._id}>
-      {/* Date & Time */}
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'} color="text.secondary">
-          {fDateTime(newRow?.createdAt)}
-        </Typography>
-      </TableCell>
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'}>
-          {newRow?.clientRefId}{' '}
-          <Tooltip title="Copy" placement="top">
-            <IconButton onClick={() => onCopy(newRow?.clientRefId)} sx={{ p: 0 }}>
-              <Iconify icon="eva:copy-fill" width={20} />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-      </TableCell>
+    <>
+      <TableRow key={newRow._id}>
+        {/* Date & Time */}
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'} color="text.secondary">
+            {fDateTime(newRow?.createdAt)}
+          </Typography>
+        </TableCell>
 
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'}>
-          {newRow?.partnerTransactionId}{' '}
-          <Tooltip title="Copy" placement="top">
-            <IconButton onClick={() => onCopy(newRow?.partnerTransactionId)} sx={{ p: 0 }}>
-              <Iconify icon="eva:copy-fill" width={20} />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-      </TableCell>
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {newRow?.clientRefId}{' '}
+            <Tooltip title="Copy" placement="top">
+              <IconButton onClick={() => onCopy(newRow?.clientRefId)} sx={{ p: 0 }}>
+                <Iconify icon="eva:copy-fill" width={20} />
+              </IconButton>
+            </Tooltip>
+          </Typography>
+        </TableCell>
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {newRow?.partnerTransactionId}{' '}
+            <Tooltip title="Copy" placement="top">
+              <IconButton onClick={() => onCopy(newRow?.partnerTransactionId)} sx={{ p: 0 }}>
+                <Iconify icon="eva:copy-fill" width={20} />
+              </IconButton>
+            </Tooltip>
+          </Typography>
+        </TableCell>
 
-      {/* Product  */}
-      <TableCell>
-        <Typography variant="body2">{newRow?.mobileNumber || '-'}</Typography>
-      </TableCell>
+        <TableCell>
+          <Typography variant="body2" noWrap>
+            {newRow?.operator?.key1 || '-'}
+          </Typography>
+        </TableCell>
+        <TableCell>
+          <Typography variant="body2" noWrap>
+            {newRow?.operator?.key2?.length &&
+              'X'
+                .repeat(newRow?.operator?.key2?.length - 4)
+                .split('')
+                .map((item: any, index: number) => {
+                  if (index % 4 == 0) {
+                    return ' ' + item;
+                  } else {
+                    return item;
+                  }
+                })
+                .join('') +
+                newRow?.operator?.key2
+                  ?.slice(newRow?.operator?.key2?.length - 4)
+                  .split('')
+                  .map((item: any, index: number) => {
+                    if (index % 4 == 0) {
+                      return ' ' + item;
+                    } else {
+                      return item;
+                    }
+                  })
+                  .join('')}
+          </Typography>
+        </TableCell>
+        <TableCell>
+          <Typography variant="body2">{newRow?.operator?.key3 || '-'}</Typography>
+        </TableCell>
 
-      {/* Operator */}
-      <TableCell>
-        <Typography variant="body2" noWrap>
-          {newRow?.operator?.key3}{' '}
-        </Typography>
-      </TableCell>
+        {/* Product  */}
+        <TableCell>
+          <Typography variant="body2">{newRow?.vendorUtrNumber}</Typography>
+        </TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        <Typography variant="body2">
-          {newRow?.operator?.key1}
-          <Tooltip title="Copy" placement="top">
-            <IconButton onClick={() => onCopy(newRow?.operator?.key1)} sx={{ p: 0 }}>
-              <Iconify icon="eva:copy-fill" width={20} />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-      </TableCell>
+        {/* Transaction Amount */}
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {fIndianCurrency(newRow.amount) || '₹0'}
+          </Typography>
+        </TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        <Typography variant="body2">{newRow?.operator?.key2}</Typography>
-      </TableCell>
+        <TableCell>
+          <Typography variant="body2" noWrap>
+            {fIndianCurrency(newRow?.amount - newRow?.debit) || '₹0'}
+          </Typography>
+        </TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        <Typography variant="body2">{newRow?.vendorUtrNumber}</Typography>
-      </TableCell>
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {fIndianCurrency(newRow.GST) || '₹0'}
+          </Typography>
+        </TableCell>
 
-      {/* Charge/Commission */}
-      <TableCell>
-        <Stack flexDirection={'row'} justifyContent={'center'}>
-          <Typography variant="body2" whiteSpace={'nowrap'} color={'error'}>
-            {fIndianCurrency(newRow.amount - newRow.GST)}
-          </Typography>{' '}
-        </Stack>
-      </TableCell>
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {fIndianCurrency(newRow?.partnerDetails?.creditedAmount) || '₹0'}
+          </Typography>
+        </TableCell>
 
-      {/* Closing Balance */}
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'}>
-          {fIndianCurrency(newRow?.GST)}
-        </Typography>
-      </TableCell>
-
-      <TableCell>
-        <Stack flexDirection={'row'} justifyContent={'center'}>
-          <Typography variant="body2" whiteSpace={'nowrap'} color={'error'}>
-            {fIndianCurrency(newRow.amount + newRow.debit)}
-          </Typography>{' '}
-        </Stack>
-      </TableCell>
-
-      <TableCell
-        sx={{
-          textTransform: 'lowercase',
-          fontWeight: 600,
-          textAlign: 'center',
-        }}
-      >
-        <Label
-          variant="soft"
-          color={
-            (newRow.status === 'failed' && 'error') ||
-            ((newRow.status === 'pending' || newRow.status === 'in_process') && 'warning') ||
-            'success'
-          }
-          sx={{ textTransform: 'capitalize' }}
+        <TableCell
+          sx={{
+            textTransform: 'lowercase',
+            fontWeight: 600,
+            textAlign: 'center',
+          }}
         >
-          {newRow.status ? sentenceCase(newRow.status) : ''}
-        </Label>
-      </TableCell>
-    </TableRow>
+          <Label
+            variant="soft"
+            color={
+              (newRow.status === 'failed' && 'error') ||
+              ((newRow.status === 'pending' || newRow.status === 'in_process') && 'warning') ||
+              'success'
+            }
+            sx={{ textTransform: 'capitalize' }}
+          >
+            {newRow.status ? sentenceCase(newRow.status) : ''}
+          </Label>
+        </TableCell>
+      </TableRow>
+    </>
   );
 }
