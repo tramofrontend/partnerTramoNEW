@@ -12,3 +12,4 @@ export { default as MoneyTransfer } from './MoneyTransfer';
 export { default as Payments } from './Payments';
 export { default as Recharges } from './Recharges';
 export { default as Transfer } from './Transfer';
+export { default as PayoutTransfer } from './PayoutTransfer';

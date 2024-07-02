@@ -139,7 +139,18 @@ function ServiceWiseDashBoard() {
                         maxDate={new Date()}
                         onChange={(newValue: any) => setValue('startDate', newValue)}
                         renderInput={(params: any) => (
-                          <TextField {...params} size={'small'} sx={{ width: 400 }} disabled />
+                          <TextField
+                            {...params}
+                            size={'small'}
+                            sx={{
+                              width: 400,
+                              '& .css-d58xje-MuiInputBase-input-MuiOutlinedInput-input.Mui-disabled':
+                                {
+                                  '-webkit-text-fill-color': '#000000',
+                                },
+                            }}
+                            disabled
+                          />
                         )}
                       />
                       <DatePicker
@@ -150,7 +161,18 @@ function ServiceWiseDashBoard() {
                         maxDate={new Date()}
                         onChange={(newValue: any) => setValue('endDate', newValue)}
                         renderInput={(params: any) => (
-                          <TextField {...params} size={'small'} sx={{ width: 400 }} disabled />
+                          <TextField
+                            {...params}
+                            size={'small'}
+                            sx={{
+                              width: 400,
+                              '& .css-d58xje-MuiInputBase-input-MuiOutlinedInput-input.Mui-disabled':
+                                {
+                                  '-webkit-text-fill-color': '#000000',
+                                },
+                            }}
+                            disabled
+                          />
                         )}
                       />
                     </LocalizationProvider>

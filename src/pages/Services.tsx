@@ -19,6 +19,7 @@ import {
   KYC,
   MoneyTransfer,
   Payments,
+  PayoutTransfer,
   Recharges,
   Transfer,
 } from 'src/sections/services';
@@ -165,7 +166,7 @@ export default function Services() {
         <Tabs
           value={watch('transactionLabel')}
           aria-label="basic tabs example"
-          sx={{ background: '#F4F6F8', height: '48px', mb: 2, borderRadius: 2 }}
+          sx={{ background: '#F4F6F8', height: '48px', borderRadius: 2 }}
           onChange={(event, newVal) => {
             setValue('transactionLabel', newVal);
           }}
@@ -202,6 +203,8 @@ export default function Services() {
             <BillPayment />
           ) : watch('transactionLabel').toLowerCase() == 'upi transfer' ? (
             <Transfer />
+          ) : watch('transactionLabel').toLowerCase() == 'payout payments' ? (
+            <PayoutTransfer />
           ) : watch('transactionLabel').toLowerCase() == 'account verification' ? (
             <BeneVerfication />
           ) : watch('transactionLabel').toLowerCase() == 'aadhaar verification' ? (
