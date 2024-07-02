@@ -52,6 +52,7 @@ import { MasterTransactionSkeleton } from 'src/components/Skeletons/MasterTransa
 // ----------------------------------------------------------------------
 
 type FormValuesProps = {
+  searchBy: string;
   startDate: null;
   endDate: null;
   transactionId: string;
@@ -166,6 +167,14 @@ export default React.memo(function Recharges() {
     });
   };
 
+  useEffect(() => {
+    setValue('clientId', '');
+    setValue('utr', '');
+    setValue('transactionId', '');
+    setValue('key1', '');
+    setValue('key2', '');
+  }, [watch('searchBy')]);
+
   return (
     <>
       <Helmet>
@@ -175,6 +184,36 @@ export default React.memo(function Recharges() {
         <FormProvider methods={methods} onSubmit={handleSubmit(getTransaction)}>
           <Scrollbar>
             <Grid display={'grid'} gridTemplateColumns={'repeat(5, 1fr)'} gap={1} my={1}>
+              <RHFSelect
+                name="searchBy"
+                label="Search By"
+                size="small"
+                SelectProps={{
+                  native: false,
+                  sx: { textTransform: 'capitalize' },
+                }}
+              >
+                <MenuItem value=""></MenuItem>
+                <MenuItem value="transaction_id">Transaction ID</MenuItem>
+                <MenuItem value="client_id">Client ID</MenuItem>
+                <MenuItem value="operator_id">Operator ID</MenuItem>
+                <MenuItem value="operator">Operator</MenuItem>
+                <MenuItem value="mobile_number">Mobile Number</MenuItem>
+              </RHFSelect>
+
+              {watch('searchBy') == 'client_id' && (
+                <RHFTextField size="small" name="transactionId" label="Client Id" />
+              )}
+              {watch('searchBy') == 'transaction_id' && (
+                <RHFTextField size="small" name="clientId" label="Transaction Id" />
+              )}
+              {watch('searchBy') == 'operator' && <RHFTextField name="key1" label="Operator" />}
+              {watch('searchBy') == 'mobile_number' && (
+                <RHFTextField name="key2" label="Mobile Number" />
+              )}
+              {watch('searchBy') == 'operator_id' && (
+                <RHFTextField name="utr" label="Operator ID" />
+              )}
               <Stack direction={'row'} gap={1}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
@@ -200,12 +239,6 @@ export default React.memo(function Recharges() {
                   />
                 </LocalizationProvider>
               </Stack>
-              <RHFTextField size="small" name="transactionId" label="Client Id" />
-              <RHFTextField size="small" name="clientId" label="Transaction Id" />
-              <RHFTextField name="key1" label="Operator" />
-              <RHFTextField name="key2" label="Mobile Number" />
-              <RHFTextField name="utr" label="Operator ID" />
-
               <RHFSelect
                 name="status"
                 label="Status"

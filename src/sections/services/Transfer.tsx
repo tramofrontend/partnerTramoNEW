@@ -62,6 +62,7 @@ import { CategoryContext } from 'src/pages/Services';
 // ----------------------------------------------------------------------
 
 type FormValuesProps = {
+  searchBy: string;
   startDate: null;
   endDate: null;
   transactionId: string;
@@ -88,6 +89,7 @@ export default React.memo(function Transfer() {
   const txnSchema = Yup.object().shape({});
 
   const defaultValues = {
+    searchBy: '',
     startDate: null,
     endDate: null,
     transactionId: '',
@@ -153,7 +155,7 @@ export default React.memo(function Transfer() {
       key1: getValues('key1'),
       key2: getValues('key2'),
       key3: getValues('key3'),
-      utr: getValues('utr'),
+      vendorUtrNumber: getValues('utr'),
       status: getValues('status'),
     };
 
@@ -179,6 +181,15 @@ export default React.memo(function Transfer() {
     });
   };
 
+  useEffect(() => {
+    setValue('transactionId', '');
+    setValue('clientId', '');
+    setValue('mobileNumber', '');
+    setValue('key1', '');
+    setValue('key2', '');
+    setValue('utr', '');
+  }, [watch('searchBy')]);
+
   return (
     <>
       <Helmet>
@@ -187,6 +198,37 @@ export default React.memo(function Transfer() {
       <FormProvider methods={methods} onSubmit={handleSubmit(getTransaction)}>
         <Scrollbar>
           <Grid display={'grid'} gridTemplateColumns={'repeat(5, 1fr)'} gap={1} my={1}>
+            <RHFSelect
+              name="searchBy"
+              label="Search By"
+              size="small"
+              SelectProps={{
+                native: false,
+                sx: { textTransform: 'capitalize' },
+              }}
+            >
+              <MenuItem value=""></MenuItem>
+              <MenuItem value="transaction_id">Transaction ID</MenuItem>
+              <MenuItem value="client_id">Client ID</MenuItem>
+              <MenuItem value="mobile_number">Sender Number</MenuItem>
+              <MenuItem value="upi_handle">UPI Handle</MenuItem>
+              <MenuItem value="upi_id">UPI ID</MenuItem>
+              <MenuItem value="utr">UTR</MenuItem>
+            </RHFSelect>
+
+            {watch('searchBy') == 'client_id' && (
+              <RHFTextField size="small" name="transactionId" label="Client Id" />
+            )}
+            {watch('searchBy') == 'transaction_id' && (
+              <RHFTextField size="small" name="clientId" label="Transaction Id" />
+            )}
+            {watch('searchBy') == 'mobile_number' && (
+              <RHFTextField size="small" name="mobileNumber" label="Sender Number" />
+            )}
+            {watch('searchBy') == 'upi_handle' && <RHFTextField name="key1" label="UPI Handle" />}
+            {watch('searchBy') == 'upi_id' && <RHFTextField name="key2" label="UPI ID" />}
+            {watch('searchBy') == 'utr' && <RHFTextField name="utr" label="UTR" />}
+
             <Stack direction={'row'} gap={1}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
@@ -212,11 +254,6 @@ export default React.memo(function Transfer() {
                 />
               </LocalizationProvider>
             </Stack>
-            <RHFTextField size="small" name="transactionId" label="Client Id" />
-            <RHFTextField size="small" name="clientId" label="Transaction Id" />
-            <RHFTextField size="small" name="mobileNumber" label="Sender Number" />
-            <RHFTextField name="key1" label="UPI Handle" />
-            <RHFTextField name="key2" label="UPI ID" />
 
             <RHFSelect
               name="status"

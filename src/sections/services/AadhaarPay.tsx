@@ -50,10 +50,12 @@ import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import { LoadingButton } from '@mui/lab';
 import CustomPagination from 'src/components/customFunctions/CustomPagination';
 import { MasterTransactionSkeleton } from 'src/components/Skeletons/MasterTransactionSkeleton';
+import dayjs from 'dayjs';
 
 // ----------------------------------------------------------------------
 
 type FormValuesProps = {
+  searchBy: string;
   startDate: null;
   endDate: null;
   transactionId: string;
@@ -77,9 +79,15 @@ export default React.memo(function AadhaarPay() {
   const [pageSize, setPageSize] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const txnSchema = Yup.object().shape({});
+  const txnSchema = Yup.object().shape({
+    endDate: Yup.date()
+      .typeError('please enter a valid date')
+      .required('Please select Date')
+      .max(dayjs(new Date()), 'please enter valid date'),
+  });
 
   const defaultValues = {
+    searchBy: '',
     startDate: null,
     endDate: null,
     transactionId: '',
@@ -182,6 +190,38 @@ export default React.memo(function AadhaarPay() {
       <FormProvider methods={methods} onSubmit={handleSubmit(getTransaction)}>
         <Scrollbar>
           <Grid display={'grid'} gridTemplateColumns={'repeat(5, 1fr)'} gap={1} my={1}>
+            <RHFSelect
+              name="searchBy"
+              label="Search By"
+              size="small"
+              SelectProps={{
+                native: false,
+                sx: { textTransform: 'capitalize' },
+              }}
+            >
+              <MenuItem value=""></MenuItem>
+              <MenuItem value="transaction_id">Transaction ID</MenuItem>
+              <MenuItem value="client_id">Client ID</MenuItem>
+              <MenuItem value="bank_name">Bank Name</MenuItem>
+              <MenuItem value="aadhaar_number">Aadhaar Number</MenuItem>
+              <MenuItem value="customer_number">Customer Number</MenuItem>
+              <MenuItem value="utr">UTR</MenuItem>
+            </RHFSelect>
+            {watch('searchBy') == 'client_id' && (
+              <RHFTextField size="small" name="transactionId" label="Client Id" />
+            )}
+            {watch('searchBy') == 'transaction_id' && (
+              <RHFTextField size="small" name="clientId" label="Transaction Id" />
+            )}
+            {watch('searchBy') == 'bank_name' && <RHFTextField name="key1" label="Bank Name" />}
+            {watch('searchBy') == 'aadhaar_name' && (
+              <RHFTextField name="key2" label="Aadhaar Number" />
+            )}
+            {watch('searchBy') == 'customer_number' && (
+              <RHFTextField name="key3" label="Customer Number" />
+            )}
+            {watch('searchBy') == 'utr' && <RHFTextField name="utr" label="UTR" />}
+
             <Stack direction={'row'} gap={1}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
@@ -191,7 +231,7 @@ export default React.memo(function AadhaarPay() {
                   maxDate={new Date()}
                   onChange={(newValue: any) => setValue('startDate', newValue)}
                   renderInput={(params: any) => (
-                    <TextField {...params} size={'small'} sx={{ width: 150 }} />
+                    <TextField {...params} size={'small'} sx={{ width: 200 }} />
                   )}
                 />
                 <DatePicker
@@ -202,18 +242,11 @@ export default React.memo(function AadhaarPay() {
                   maxDate={new Date()}
                   onChange={(newValue: any) => setValue('endDate', newValue)}
                   renderInput={(params: any) => (
-                    <TextField {...params} size={'small'} sx={{ width: 150 }} />
+                    <RHFTextField {...params} name="endDate" size={'small'} sx={{ width: 200 }} />
                   )}
                 />
               </LocalizationProvider>
             </Stack>
-            <RHFTextField size="small" name="transactionId" label="Transaction Id" />
-            <RHFTextField size="small" name="clientId" label="Client Id" />
-            <RHFTextField size="small" name="mode" label="Mode" />
-            <RHFTextField name="key1" label="Bank Name" />
-            <RHFTextField name="key2" label="Aadhaar Number" />
-            <RHFTextField name="key3" label="Customer Number" />
-            <RHFTextField name="utr" label="UTR" />
 
             <RHFSelect
               name="status"
@@ -232,7 +265,12 @@ export default React.memo(function AadhaarPay() {
               <MenuItem value="hold">Hold</MenuItem>
               <MenuItem value="initiated">Initiated</MenuItem>
             </RHFSelect>
-            <Stack flexDirection={'row'} flexBasis={{ xs: '100%', sm: '50%' }} gap={1}>
+            <Stack
+              flexDirection={'row'}
+              alignItems={'start'}
+              flexBasis={{ xs: '100%', sm: '50%' }}
+              gap={1}
+            >
               <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
                 Apply
               </LoadingButton>

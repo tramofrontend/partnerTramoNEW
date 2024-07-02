@@ -62,6 +62,7 @@ import { CategoryContext } from 'src/pages/Services';
 // ----------------------------------------------------------------------
 
 type FormValuesProps = {
+  searchBy: string;
   startDate: null;
   endDate: null;
   transactionId: string;
@@ -89,6 +90,7 @@ export default React.memo(function BillPayment() {
   const txnSchema = Yup.object().shape({});
 
   const defaultValues = {
+    searchBy: '',
     startDate: null,
     endDate: null,
     transactionId: '',
@@ -151,7 +153,7 @@ export default React.memo(function BillPayment() {
       startDate: fDateFormatForApi(getValues('startDate')),
       endDate: fDateFormatForApi(getValues('endDate')),
       transactionId: getValues('transactionId'),
-      clientId: getValues('clientId'),
+      clientRefId: getValues('clientId'),
       mobileNumber: getValues('mobileNumber'),
       key1: getValues('key1'),
       key2: getValues('key2'),
@@ -182,6 +184,16 @@ export default React.memo(function BillPayment() {
     });
   };
 
+  useEffect(() => {
+    setValue('transactionId', '');
+    setValue('clientId', '');
+    setValue('type', '');
+    setValue('key1', '');
+    setValue('key2', '');
+    setValue('mobileNumber', '');
+    setValue('utr', '');
+  }, [watch('searchBy')]);
+
   return (
     <>
       <Helmet>
@@ -190,6 +202,40 @@ export default React.memo(function BillPayment() {
       <FormProvider methods={methods} onSubmit={handleSubmit(getTransaction)}>
         <Scrollbar>
           <Grid display={'grid'} gridTemplateColumns={'repeat(5, 1fr)'} gap={1} my={1}>
+            <RHFSelect
+              name="searchBy"
+              label="Search By"
+              size="small"
+              SelectProps={{
+                native: false,
+                sx: { textTransform: 'capitalize' },
+              }}
+            >
+              <MenuItem value=""></MenuItem>
+              <MenuItem value="transaction_id">Transaction ID</MenuItem>
+              <MenuItem value="client_id">Client ID</MenuItem>
+              <MenuItem value="type">Type</MenuItem>
+              <MenuItem value="operator">Operator</MenuItem>
+              <MenuItem value="ca_number">CA Number</MenuItem>
+              <MenuItem value="mobile_number">Mobile Number</MenuItem>
+              <MenuItem value="utr">UTR</MenuItem>
+            </RHFSelect>
+
+            {watch('searchBy') == 'client_id' && (
+              <RHFTextField size="small" name="transactionId" label="Client Id" />
+            )}
+            {watch('searchBy') == 'transaction_id' && (
+              <RHFTextField size="small" name="clientId" label="Transaction Id" />
+            )}
+            {watch('searchBy') == 'type' && <RHFTextField size="small" name="type" label="Type" />}
+            {watch('searchBy') == 'operator' && <RHFTextField name="key1" label="Operator" />}
+            {watch('searchBy') == 'ca_number' && (
+              <RHFTextField name="key2" label="Account / CA Number" />
+            )}
+            {watch('searchBy') == 'mobile_number' && (
+              <RHFTextField name="mobileNumber" label="Mobile Number" />
+            )}
+            {watch('searchBy') == 'utr' && <RHFTextField name="utr" label="UTR" />}
             <Stack direction={'row'} gap={1}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
@@ -215,13 +261,6 @@ export default React.memo(function BillPayment() {
                 />
               </LocalizationProvider>
             </Stack>
-            <RHFTextField size="small" name="transactionId" label="Client Id" />
-            <RHFTextField size="small" name="clientId" label="Transaction Id" />
-            <RHFTextField size="small" name="type" label="Type" />
-            <RHFTextField name="key1" label="Operator" />
-            <RHFTextField name="key2" label="Account / CA Number" />
-            <RHFTextField name="mobileNumber" label="Mobile Number" />
-            <RHFTextField name="utr" label="UTR" />
 
             <RHFSelect
               name="status"

@@ -62,6 +62,7 @@ import { CategoryContext } from 'src/pages/Services';
 // ----------------------------------------------------------------------
 
 type FormValuesProps = {
+  searchBy: string;
   startDate: null;
   endDate: null;
   transactionId: string;
@@ -88,6 +89,7 @@ export default React.memo(function PanVerification() {
   const txnSchema = Yup.object().shape({});
 
   const defaultValues = {
+    searchBy: '',
     startDate: null,
     endDate: null,
     transactionId: '',
@@ -174,6 +176,12 @@ export default React.memo(function PanVerification() {
     });
   };
 
+  useEffect(() => {
+    setValue('clientId', '');
+    setValue('transactionId', '');
+    setValue('key2', '');
+  }, [watch('searchBy')]);
+
   return (
     <>
       <Helmet>
@@ -182,6 +190,28 @@ export default React.memo(function PanVerification() {
       <FormProvider methods={methods} onSubmit={handleSubmit(getTransaction)}>
         <Scrollbar>
           <Grid display={'grid'} gridTemplateColumns={'repeat(6, 1fr)'} gap={1} my={1}>
+            <RHFSelect
+              name="searchBy"
+              label="Search By"
+              size="small"
+              SelectProps={{
+                native: false,
+                sx: { textTransform: 'capitalize' },
+              }}
+            >
+              <MenuItem value=""></MenuItem>
+              <MenuItem value="transaction_id">Transaction ID</MenuItem>
+              <MenuItem value="client_id">Client ID</MenuItem>
+              <MenuItem value="pan_number">PAN Number</MenuItem>
+            </RHFSelect>
+            {watch('searchBy') == 'client_id' && (
+              <RHFTextField size="small" name="transactionId" label="Client Id" />
+            )}
+            {watch('searchBy') == 'transaction_id' && (
+              <RHFTextField size="small" name="clientId" label="Transaction Id" />
+            )}
+            {watch('searchBy') == 'pan_number' && <RHFTextField name="key2" label="PAN Number" />}
+
             <Stack direction={'row'} gap={1}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
@@ -207,9 +237,6 @@ export default React.memo(function PanVerification() {
                 />
               </LocalizationProvider>
             </Stack>
-            <RHFTextField size="small" name="transactionId" label="Client Id" />
-            <RHFTextField size="small" name="clientId" label="Transaction Id" />
-            <RHFTextField name="key2" label="PAN Number" />
 
             <RHFSelect
               name="status"

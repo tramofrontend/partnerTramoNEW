@@ -62,6 +62,7 @@ import { CategoryContext } from 'src/pages/Services';
 // ----------------------------------------------------------------------
 
 type FormValuesProps = {
+  searchBy: string;
   startDate: null;
   endDate: null;
   transactionId: string;
@@ -88,6 +89,7 @@ export default React.memo(function BeneVerfication() {
   const txnSchema = Yup.object().shape({});
 
   const defaultValues = {
+    searchBy: '',
     startDate: null,
     endDate: null,
     transactionId: '',
@@ -179,6 +181,16 @@ export default React.memo(function BeneVerfication() {
     });
   };
 
+  useEffect(() => {
+    setValue('transactionId', '');
+    setValue('clientId', '');
+    setValue('mobileNumber', '');
+    setValue('key1', '');
+    setValue('key2', '');
+    setValue('key3', '');
+    setValue('utr', '');
+  }, [watch('searchBy')]);
+
   return (
     <>
       <Helmet>
@@ -187,6 +199,41 @@ export default React.memo(function BeneVerfication() {
       <FormProvider methods={methods} onSubmit={handleSubmit(getTransaction)}>
         <Scrollbar>
           <Grid display={'grid'} gridTemplateColumns={'repeat(5, 1fr)'} gap={1} my={1}>
+            <RHFSelect
+              name="searchBy"
+              label="Search By"
+              size="small"
+              SelectProps={{
+                native: false,
+                sx: { textTransform: 'capitalize' },
+              }}
+            >
+              <MenuItem value=""></MenuItem>
+              <MenuItem value="transaction_id">Transaction ID</MenuItem>
+              <MenuItem value="client_id">Client ID</MenuItem>
+              <MenuItem value="mobile_number">Mobile Number</MenuItem>
+              <MenuItem value="account_number">Account Number</MenuItem>
+              <MenuItem value="ifsc">IFSC</MenuItem>
+              <MenuItem value="bank_name">Bank Name</MenuItem>
+              <MenuItem value="utr">UTR</MenuItem>
+            </RHFSelect>
+
+            {watch('searchBy') == 'client_id' && (
+              <RHFTextField name="transactionId" label="Client Id" />
+            )}
+            {watch('searchBy') == 'transaction_id' && (
+              <RHFTextField name="clientId" label="Transaction Id" />
+            )}
+            {watch('searchBy') == 'mobile_number' && (
+              <RHFTextField name="mobileNumber" label="Mobile Number" />
+            )}
+            {watch('searchBy') == 'account_number' && (
+              <RHFTextField name="key1" label="account Number" />
+            )}
+            {watch('searchBy') == 'ifsc' && <RHFTextField name="key2" label="IFSC" />}
+            {watch('searchBy') == 'bank_name' && <RHFTextField name="key3" label="Bank Name" />}
+            {watch('searchBy') == 'utr' && <RHFTextField name="utr" label="UTR" />}
+
             <Stack direction={'row'} gap={1}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
@@ -212,13 +259,6 @@ export default React.memo(function BeneVerfication() {
                 />
               </LocalizationProvider>
             </Stack>
-            <RHFTextField name="transactionId" label="Client Id" />
-            <RHFTextField name="clientId" label="Transaction Id" />
-            <RHFTextField name="mobileNumber" label="Mobile Number" />
-            <RHFTextField name="key1" label="account Number" />
-            <RHFTextField name="key2" label="IFSC" />
-            <RHFTextField name="key3" label="Bank Name" />
-            <RHFTextField name="utr" label="UTR" />
 
             <RHFSelect
               name="status"

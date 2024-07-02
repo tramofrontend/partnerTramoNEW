@@ -20,7 +20,7 @@ export default function useChart(options?: ApexOptions) {
   const LABEL_VALUE = {
     offsetY: 8,
     color: theme.palette.text.primary,
-    fontSize: theme.typography.h3.fontSize as string,
+    fontSize: theme.typography.h5.fontSize as string,
     fontWeight: theme.typography.h3.fontWeight,
     lineHeight: theme.typography.h3.lineHeight,
   };
@@ -114,7 +114,7 @@ export default function useChart(options?: ApexOptions) {
     // Legend
     legend: {
       show: true,
-      fontSize: String(13),
+      fontSize: String(10),
       position: 'top',
       horizontalAlign: 'right',
       markers: {
@@ -131,7 +131,7 @@ export default function useChart(options?: ApexOptions) {
     plotOptions: {
       // Bar
       bar: {
-        borderRadius: 4,
+        borderRadius: 20,
         columnWidth: '28%',
       },
 

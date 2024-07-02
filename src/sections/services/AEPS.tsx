@@ -52,6 +52,7 @@ import { MasterTransactionSkeleton } from 'src/components/Skeletons/MasterTransa
 // ----------------------------------------------------------------------
 
 type FormValuesProps = {
+  searchBy: string;
   startDate: null;
   endDate: null;
   transactionId: string;
@@ -81,6 +82,7 @@ export default React.memo(function AEPS() {
   const txnSchema = Yup.object().shape({});
 
   const defaultValues = {
+    searchBy: '',
     startDate: null,
     endDate: null,
     transactionId: '',
@@ -156,7 +158,7 @@ export default React.memo(function AEPS() {
       },
       transactionType: getValues('transactionType'),
       categoryId: category.category,
-      productId: category.product,
+      productId: getValues('product'),
       productName: category.productName,
       startDate: fDateFormatForApi(getValues('startDate')),
       endDate: fDateFormatForApi(getValues('endDate')),
@@ -192,6 +194,16 @@ export default React.memo(function AEPS() {
     });
   };
 
+  useEffect(() => {
+    setValue('transactionId', '');
+    setValue('clientId', '');
+    setValue('product', '');
+    setValue('key1', '');
+    setValue('key2', '');
+    setValue('key3', '');
+    setValue('utr', '');
+  }, [watch('searchBy')]);
+
   return (
     <>
       <Helmet>
@@ -201,6 +213,74 @@ export default React.memo(function AEPS() {
       <FormProvider methods={methods} onSubmit={handleSubmit(getTransaction)}>
         <Scrollbar>
           <Grid display={'grid'} gridTemplateColumns={'repeat(5, 1fr)'} gap={1} my={1}>
+            <RHFSelect
+              name="searchBy"
+              label="Search By"
+              size="small"
+              SelectProps={{
+                native: false,
+                sx: { textTransform: 'capitalize' },
+              }}
+            >
+              <MenuItem value=""></MenuItem>
+              <MenuItem value="transaction_id">Transaction ID</MenuItem>
+              <MenuItem value="client_id">Client ID</MenuItem>
+              <MenuItem value="mode">Mode</MenuItem>
+              <MenuItem value="bank_name">Bank Name</MenuItem>
+              <MenuItem value="aadhaar_number">Aadhaar Number</MenuItem>
+              <MenuItem value="customer_number">Customer Number</MenuItem>
+              <MenuItem value="utr">UTR</MenuItem>
+            </RHFSelect>
+
+            {watch('searchBy') == 'client_id' && (
+              <RHFTextField size="small" name="transactionId" label="Client Id" />
+            )}
+            {watch('searchBy') == 'transaction_id' && (
+              <RHFTextField size="small" name="clientId" label="Transaction Id" />
+            )}
+            {watch('searchBy') == 'mode' && (
+              <RHFSelect
+                name="product"
+                label="mode"
+                size="small"
+                SelectProps={{
+                  native: false,
+                  sx: { textTransform: 'capitalize' },
+                }}
+              >
+                <MenuItem value="">None</MenuItem>
+                {productList.map((item: any) => (
+                  <MenuItem
+                    key={item._id}
+                    value={item._id}
+                    onClick={() => {
+                      setValue('transactionType', '');
+                      setValue('product', item._id);
+                    }}
+                  >
+                    {item.productName}
+                  </MenuItem>
+                ))}
+                <MenuItem
+                  value="AEPS Registration Charge"
+                  onClick={() => {
+                    setValue('product', '');
+                    setValue('transactionType', 'AEPS Registration Charge');
+                  }}
+                >
+                  AEPS Registration Charge
+                </MenuItem>
+              </RHFSelect>
+            )}
+            {watch('searchBy') == 'bank_name' && <RHFTextField name="key1" label="Bank Name" />}
+            {watch('searchBy') == 'aadhaar_number' && (
+              <RHFTextField name="key2" label="Aadhaar Number" />
+            )}
+            {watch('searchBy') == 'customer_number' && (
+              <RHFTextField name="key3" label="Customer Number" />
+            )}
+            {watch('searchBy') == 'utr' && <RHFTextField name="utr" label="UTR" />}
+
             <Stack direction={'row'} gap={1}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
@@ -226,44 +306,6 @@ export default React.memo(function AEPS() {
                 />
               </LocalizationProvider>
             </Stack>
-            <RHFTextField size="small" name="transactionId" label="Client Id" />
-            <RHFTextField size="small" name="clientId" label="Transaction Id" />
-            <RHFSelect
-              name="product"
-              label="mode"
-              size="small"
-              SelectProps={{
-                native: false,
-                sx: { textTransform: 'capitalize' },
-              }}
-            >
-              <MenuItem value="">None</MenuItem>
-              {productList.map((item: any) => (
-                <MenuItem
-                  key={item._id}
-                  value={item._id}
-                  onClick={() => {
-                    setValue('mode', item._id);
-                    setValue('transactionType', '');
-                  }}
-                >
-                  {item.productName}
-                </MenuItem>
-              ))}
-              <MenuItem
-                value="AEPS Registration Charge"
-                onClick={() => {
-                  setValue('transactionType', 'AEPS Registration Charge');
-                  setValue('mode', '');
-                }}
-              >
-                AEPS Registration Charge
-              </MenuItem>
-            </RHFSelect>
-            <RHFTextField name="key1" label="Bank Name" />
-            <RHFTextField name="key2" label="Aadhaar Number" />
-            <RHFTextField name="key3" label="Customer Number" />
-            <RHFTextField name="utr" label="UTR" />
 
             <RHFSelect
               name="status"

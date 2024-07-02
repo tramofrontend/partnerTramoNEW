@@ -1,51 +1,19 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-
 // @mui
-import {
-  Table,
-  TableRow,
-  TableBody,
-  TableCell,
-  Typography,
-  IconButton,
-  useTheme,
-  Tooltip,
-  Card,
-  TableHead,
-  Grid,
-  Stack,
-  TextField,
-  Tab,
-  Tabs,
-  MenuItem,
-  Button,
-} from '@mui/material';
-import { Helmet } from 'react-helmet-async';
-import { useSnackbar } from 'notistack';
-import React from 'react';
+import { Typography, useTheme, Card, Stack, TextField, MenuItem, Button } from '@mui/material';
 import Scrollbar from 'src/components/scrollbar';
-import { TableHeadCustom, TableNoData } from 'src/components/table';
-import Iconify from 'src/components/iconify/Iconify';
-import { fDate, fDateTime } from '../../utils/formatTime';
-import Label from 'src/components/label/Label';
-import { sentenceCase } from 'change-case';
-import { useAuthContext } from 'src/auth/useAuthContext';
-import { fIndianCurrency } from 'src/utils/formatNumber';
-import useCopyToClipboard from 'src/hooks/useCopyToClipboard';
-import useResponsive from 'src/hooks/useResponsive';
-import FilledCircleGraph from 'src/components/Graph/FilledCircleGraph';
 import LinearGraph from 'src/components/Graph/LinearGraph';
 import { Api } from 'src/webservices';
 import { CategoryContext } from 'src/pages/Services';
-// form
-import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import FormProvider from 'src/components/hook-form/FormProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { RHFSelect } from 'src/components/hook-form';
-import CircleGraph from 'src/components/Graph/CircleGraph';
+import * as Yup from 'yup';
+import { RHFSelect, RHFTextField } from 'src/components/hook-form';
+import MultiCircle from 'src/components/Graph/MultiCircle';
+import { yupResolver } from '@hookform/resolvers/yup';
+import dayjs from 'dayjs';
 
 type FormValuesProps = {
   startDate: Date | null;
@@ -86,8 +54,22 @@ function ServiceWiseDashBoard() {
     dateFilter: 'today',
   };
 
+  const txnSchema = Yup.object().shape({
+    startDate: Yup.date()
+      .typeError('please enter a valid date')
+      .required('Please select Date')
+      .max(dayjs(new Date()), 'Please enter valid date'),
+    endDate: Yup.date()
+      .typeError('please enter a valid date')
+      .required('Please select Date')
+      .min(Yup.ref('startDate'), "End date can't be before Start date")
+      .max(dayjs(new Date()), 'Please enter valid date'),
+  });
+
   const methods = useForm<FormValuesProps>({
+    resolver: yupResolver(txnSchema),
     defaultValues,
+    mode: 'onSubmit',
   });
 
   const {
@@ -129,88 +111,91 @@ function ServiceWiseDashBoard() {
   return (
     <Scrollbar>
       <Card sx={{ my: 2, p: 2 }}>
-        <Stack mb={1}>
-          <FormProvider methods={methods} onSubmit={handleSubmit(filterDashboard)}>
-            <Stack direction={'row'} gap={1}>
-              <RHFSelect
-                name="dateFilter"
-                label="Select By"
-                size="small"
-                SelectProps={{
-                  native: false,
-                  sx: { textTransform: 'capitalize', maxWidth: 225 },
-                }}
-              >
-                <MenuItem value="today">Today</MenuItem>
-                <MenuItem value="month">Monthly</MenuItem>
-                <MenuItem value="year">Yearly</MenuItem>
-                <MenuItem value="customDate">Date Filter</MenuItem>
-              </RHFSelect>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="Start date"
-                  inputFormat="DD/MM/YYYY"
-                  value={watch('startDate')}
-                  maxDate={new Date()}
-                  onChange={(newValue: any) => setValue('startDate', newValue)}
-                  renderInput={(params: any) => (
-                    <TextField {...params} size={'small'} sx={{ width: 300 }} />
-                  )}
-                />
-                <DatePicker
-                  label="End date"
-                  inputFormat="DD/MM/YYYY"
-                  value={watch('endDate')}
-                  minDate={watch('startDate')}
-                  maxDate={new Date()}
-                  onChange={(newValue: any) => setValue('endDate', newValue)}
-                  renderInput={(params: any) => (
-                    <TextField {...params} size={'small'} sx={{ width: 300 }} />
-                  )}
-                />
-              </LocalizationProvider>
-              <Button
-                type="submit"
-                variant="contained"
-                onClick={() => {
-                  setValue('dateFilter', 'customDate');
-                  getDashboard();
-                }}
-              >
-                Search
-              </Button>
-              <Button
-                type="submit"
-                variant="outlined"
-                onClick={() => {
-                  setValue('startDate', null);
-                  setValue('endDate', null);
-                  setValue('dateFilter', 'today');
-                }}
-              >
-                Clear
-              </Button>
-            </Stack>
-          </FormProvider>
-        </Stack>
+        <Scrollbar>
+          <Stack mb={1}>
+            <FormProvider methods={methods} onSubmit={handleSubmit(filterDashboard)}>
+              <Stack direction={'row'} gap={1} py={1}>
+                <RHFSelect
+                  name="dateFilter"
+                  label="Select By"
+                  size="small"
+                  SelectProps={{
+                    native: false,
+                    sx: { textTransform: 'capitalize', maxWidth: 225 },
+                  }}
+                >
+                  <MenuItem value="today">Today</MenuItem>
+                  <MenuItem value="month">Monthly</MenuItem>
+                  <MenuItem value="year">Yearly</MenuItem>
+                  <MenuItem value="customDate">Date Filter</MenuItem>
+                </RHFSelect>
+                {watch('dateFilter') == 'customDate' && (
+                  <>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        label="Start date"
+                        inputFormat="DD/MM/YYYY"
+                        value={watch('startDate')}
+                        maxDate={new Date()}
+                        onChange={(newValue: any) => setValue('startDate', newValue)}
+                        renderInput={(params: any) => (
+                          <TextField {...params} size={'small'} sx={{ width: 400 }} disabled />
+                        )}
+                      />
+                      <DatePicker
+                        label="End date"
+                        inputFormat="DD/MM/YYYY"
+                        value={watch('endDate')}
+                        minDate={watch('startDate')}
+                        maxDate={new Date()}
+                        onChange={(newValue: any) => setValue('endDate', newValue)}
+                        renderInput={(params: any) => (
+                          <TextField {...params} size={'small'} sx={{ width: 400 }} disabled />
+                        )}
+                      />
+                    </LocalizationProvider>
+                    <Stack flexDirection={'row'} alignItems={'start'} gap={1}>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        onClick={() => {
+                          setValue('dateFilter', 'customDate');
+                          getDashboard();
+                        }}
+                      >
+                        Search
+                      </Button>
+                      <Button
+                        type="submit"
+                        variant="outlined"
+                        onClick={() => {
+                          setValue('startDate', null);
+                          setValue('endDate', null);
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    </Stack>
+                  </>
+                )}
+              </Stack>
+            </FormProvider>
+          </Stack>
+        </Scrollbar>
         {!isLoading && (
           <>
             {statusCount.totalTransaction.count ? (
               <>
                 <Stack flexDirection={{ md: 'row' }} gap={2}>
                   <Stack sx={{ flexBasis: '30%' }}>
-                    <CircleGraph
-                      title=""
+                    <MultiCircle
+                      title="Transactions"
+                      total={statusCount.totalTransaction.amount}
                       chart={{
-                        colors: [
-                          theme.palette.success.main,
-                          theme.palette.error.main,
-                          theme.palette.info.main,
-                        ],
                         series: [
-                          { label: 'Success', value: statusCount.status.success.totalAmount },
-                          { label: 'Failed', value: statusCount.status.failed.totalAmount },
-                          { label: 'Pending', value: statusCount.status.pending.totalAmount },
+                          { label: 'Success', value: statusCount.status.success.successPercentage },
+                          { label: 'Pending', value: statusCount.status.pending.pendingPercentage },
+                          { label: 'Failed', value: statusCount.status.failed.failedPercentage },
                         ],
                       }}
                     />
@@ -225,14 +210,14 @@ function ServiceWiseDashBoard() {
                           value: statusCount.status.success.successPercentage,
                         },
                         {
-                          status: 'Failed',
-                          quantity: statusCount.status.failed.totalCount,
-                          value: statusCount.status.failed.failedPercentage,
-                        },
-                        {
                           status: 'Pending',
                           quantity: statusCount.status.pending.totalCount,
                           value: statusCount.status.pending.pendingPercentage,
+                        },
+                        {
+                          status: 'Failed',
+                          quantity: statusCount.status.failed.totalCount,
+                          value: statusCount.status.failed.failedPercentage,
                         },
                       ]}
                     />
