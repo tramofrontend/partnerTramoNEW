@@ -266,7 +266,7 @@ export default React.memo(function GSTVerification() {
                 sx: { textTransform: 'capitalize' },
               }}
             >
-              <MenuItem value="">None</MenuItem>
+              <MenuItem value="">All</MenuItem>
               <MenuItem value="success">Success</MenuItem>
               <MenuItem value="failed">Failed</MenuItem>
               <MenuItem value="pending">Pending</MenuItem>
@@ -382,7 +382,12 @@ function TransactionRow({ row }: childProps) {
       </TableCell>
 
       <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        <Typography variant="body2">{newRow?.operator?.key2}</Typography>
+        <Typography variant="body2">
+          {newRow?.operator?.key2
+            ?.split('')
+            .map((item: any, index: number) => (index % 2 == 0 ? item : 'x'))
+            .join('')}
+        </Typography>
       </TableCell>
 
       {/* Charge/Commission */}

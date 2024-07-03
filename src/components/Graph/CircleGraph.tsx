@@ -1,7 +1,7 @@
 import { ApexOptions } from 'apexcharts';
 // @mui
 import { useTheme, styled } from '@mui/material/styles';
-import { Card, CardHeader, CardProps } from '@mui/material';
+import { Card, CardHeader, CardProps, Grid, Stack, Typography } from '@mui/material';
 // utils
 import { fIndianCurrency, fNumber } from '../../utils/formatNumber';
 // components
@@ -9,7 +9,7 @@ import Chart, { useChart } from '../../components/chart';
 
 // ----------------------------------------------------------------------
 
-const CHART_HEIGHT = 250;
+const CHART_HEIGHT = 400;
 
 const LEGEND_HEIGHT = 32;
 
@@ -18,9 +18,10 @@ const StyledChart = styled('div')(({ theme }) => ({
   marginTop: theme.spacing(0),
   '& .apexcharts-canvas svg': {
     height: CHART_HEIGHT,
+    textAlign: 'start',
   },
   '& .apexcharts-canvas svg,.apexcharts-canvas foreignObject': {
-    overflow: 'visible',
+    overflow: 'hidden',
   },
   '& .apexcharts-legend': {
     height: LEGEND_HEIGHT,
@@ -66,7 +67,7 @@ export default function CircleGraph({ title, subheader, chart, ...other }: Props
     tooltip: {
       fillSeriesColor: false,
       y: {
-        formatter: (value: number) => fIndianCurrency(value),
+        formatter: (value: number) => fNumber(value),
         title: {
           formatter: (seriesName: string) => `${seriesName}`,
         },
@@ -78,12 +79,12 @@ export default function CircleGraph({ title, subheader, chart, ...other }: Props
           size: '90%',
           labels: {
             value: {
-              formatter: (value: number | string) => fIndianCurrency(value),
+              formatter: (value: number | string) => fNumber(value),
             },
             total: {
               formatter: (w: { globals: { seriesTotals: number[] } }) => {
                 const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
-                return fIndianCurrency(sum);
+                return fNumber(sum);
               },
             },
           },
@@ -96,10 +97,12 @@ export default function CircleGraph({ title, subheader, chart, ...other }: Props
   return (
     <Card {...other}>
       <CardHeader title={title} subheader={subheader} />
-
-      <StyledChart dir="ltr">
-        <Chart type="donut" series={chartSeries} options={chartOptions} height={220} />
-      </StyledChart>
+      <Grid display={'grid'} gridTemplateColumns={'repeat(2, 1fr)'}>
+        <StyledChart dir="ltr">
+          <Chart type="donut" series={chartSeries} options={chartOptions} height={320} />
+        </StyledChart>
+        <Typography>test</Typography>
+      </Grid>
     </Card>
   );
 }

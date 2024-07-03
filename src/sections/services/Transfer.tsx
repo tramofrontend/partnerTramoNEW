@@ -152,7 +152,7 @@ export default React.memo(function Transfer() {
       transactionId: getValues('transactionId'),
       clientRefId: getValues('clientId'),
       mobileNumber: getValues('mobileNumber'),
-      key1: getValues('key1'),
+      key1: getValues('key1').match('@') ? getValues('key1') : '@' + getValues('key1'),
       key2: getValues('key2'),
       key3: getValues('key3'),
       vendorUtrNumber: getValues('utr'),
@@ -284,7 +284,7 @@ export default React.memo(function Transfer() {
                 sx: { textTransform: 'capitalize' },
               }}
             >
-              <MenuItem value="">None</MenuItem>
+              <MenuItem value="">All</MenuItem>
               <MenuItem value="success">Success</MenuItem>
               <MenuItem value="failed">Failed</MenuItem>
               <MenuItem value="pending">Pending</MenuItem>

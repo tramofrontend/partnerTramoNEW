@@ -122,8 +122,6 @@ export default React.memo(function AEPS() {
     { id: 'Customer', label: 'Customer Number' },
     { id: 'UTR', label: 'UTR' },
     { id: 'Transaction Amount', label: 'Transaction Amount' },
-    { id: 'Charges', label: 'Charges' },
-    { id: 'GST', label: 'GST' },
     { id: 'Commission', label: 'Commission' },
     { id: 'TDS', label: 'TDS' },
     { id: 'Debit', label: 'Debit' },
@@ -248,7 +246,7 @@ export default React.memo(function AEPS() {
                   sx: { textTransform: 'capitalize' },
                 }}
               >
-                <MenuItem value="">None</MenuItem>
+                <MenuItem value="">All</MenuItem>
                 {productList.map((item: any) => (
                   <MenuItem
                     key={item._id}
@@ -336,7 +334,7 @@ export default React.memo(function AEPS() {
                 sx: { textTransform: 'capitalize' },
               }}
             >
-              <MenuItem value="">None</MenuItem>
+              <MenuItem value="">All</MenuItem>
               <MenuItem value="success">Success</MenuItem>
               <MenuItem value="failed">Failed</MenuItem>
               <MenuItem value="pending">Pending</MenuItem>
@@ -504,17 +502,6 @@ function TransactionRow({ row }: childProps) {
           </Typography>
         </TableCell>
 
-        <TableCell>
-          <Typography variant="body2" noWrap>
-            {fIndianCurrency(newRow?.amount - newRow?.debit) || '₹0'}
-          </Typography>
-        </TableCell>
-
-        <TableCell>
-          <Typography variant="body2" whiteSpace={'nowrap'}>
-            {fIndianCurrency(newRow.GST) || '₹0'}
-          </Typography>
-        </TableCell>
         <TableCell>
           <Typography variant="body2" whiteSpace={'nowrap'}>
             {fIndianCurrency(newRow?.partnerDetails?.commissionAmount) || '₹0'}

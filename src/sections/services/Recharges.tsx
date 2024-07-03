@@ -268,7 +268,7 @@ export default React.memo(function Recharges() {
                   sx: { textTransform: 'capitalize' },
                 }}
               >
-                <MenuItem value="">None</MenuItem>
+                <MenuItem value="">All</MenuItem>
                 <MenuItem value="success">Success</MenuItem>
                 <MenuItem value="failed">Failed</MenuItem>
                 <MenuItem value="pending">Pending</MenuItem>
