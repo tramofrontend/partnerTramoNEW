@@ -27,13 +27,21 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import dayjs from 'dayjs';
 import CircleGraph from 'src/components/Graph/CircleGraph';
 import { Instance } from '@popperjs/core';
-import { fIndianCurrency } from 'src/utils/formatNumber';
+import { fIndianCurrency, fNumber } from 'src/utils/formatNumber';
 import { fDateFormatForApi } from 'src/utils/formatTime';
 
 type FormValuesProps = {
   startDate: Date | null;
   endDate: Date | null;
   dateFilter: string;
+};
+
+type DashboardProps = {
+  label: string;
+  totalPercentage: number;
+  count: number;
+  amount: number;
+  color: string[];
 };
 
 function Dashboard() {
@@ -53,27 +61,12 @@ function Dashboard() {
   };
   const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
+  const [dashboardData, setDashboardData] = useState<DashboardProps[]>([]);
+
   const [statusCount, setStatusCount] = useState({
     totalTransaction: {
       count: 0,
       amount: 0,
-    },
-    status: {
-      success: {
-        totalCount: 0,
-        totalAmount: 0,
-        successPercentage: 0,
-      },
-      pending: {
-        totalCount: 0,
-        totalAmount: 0,
-        pendingPercentage: 0,
-      },
-      failed: {
-        totalCount: 0,
-        totalAmount: 0,
-        failedPercentage: 0,
-      },
     },
   });
   const defaultValues = {
@@ -115,27 +108,33 @@ function Dashboard() {
 
   const getDashboard = () => {
     setIsLoading(true);
+    setDashboardData([
+      {
+        label: 'Success',
+        totalPercentage: 0,
+        count: 0,
+        amount: 0,
+        color: [theme.palette.success.light, theme.palette.success.main],
+      },
+      {
+        label: 'Pending',
+        totalPercentage: 0,
+        count: 0,
+        amount: 0,
+        color: [theme.palette.warning.light, theme.palette.warning.main],
+      },
+      {
+        label: 'Failed',
+        totalPercentage: 0,
+        count: 0,
+        amount: 0,
+        color: [theme.palette.error.light, theme.palette.error.main],
+      },
+    ]);
     setStatusCount({
       totalTransaction: {
         count: 0,
         amount: 0,
-      },
-      status: {
-        success: {
-          totalCount: 0,
-          totalAmount: 0,
-          successPercentage: 0,
-        },
-        pending: {
-          totalCount: 0,
-          totalAmount: 0,
-          pendingPercentage: 0,
-        },
-        failed: {
-          totalCount: 0,
-          totalAmount: 0,
-          failedPercentage: 0,
-        },
       },
     });
     let token = localStorage.getItem('token');
@@ -151,6 +150,29 @@ function Dashboard() {
       if (Response.status == 200) {
         if (Response.data.code == 200) {
           setStatusCount(Response.data.data);
+          setDashboardData([
+            {
+              label: 'Success',
+              totalPercentage: Response.data.data.status.success.successPercentage,
+              count: Response.data.data.status.success.totalCount,
+              amount: Response.data.data.status.success.totalAmount,
+              color: [theme.palette.success.light, theme.palette.success.main],
+            },
+            {
+              label: 'Pending',
+              totalPercentage: Response.data.data.status.pending.pendingPercentage,
+              count: Response.data.data.status.pending.totalCount,
+              amount: Response.data.data.status.pending.totalAmount,
+              color: [theme.palette.warning.light, theme.palette.warning.main],
+            },
+            {
+              label: 'Failed',
+              totalPercentage: Response.data.data.status.failed.failedPercentage,
+              count: Response.data.data.status.failed.totalCount,
+              amount: Response.data.data.status.failed.totalAmount,
+              color: [theme.palette.error.light, theme.palette.error.main],
+            },
+          ]);
         }
       }
       setIsLoading(false);
@@ -283,118 +305,65 @@ function Dashboard() {
                 </FormProvider>
               </Stack>
             </Scrollbar>
-            <Stack flexDirection={'row'} gap={1}>
-              <Tooltip
-                title={`${statusCount.status.success.successPercentage}%`}
-                placement="top"
-                arrow
-                PopperProps={{
-                  popperRef,
-                  anchorEl: {
-                    getBoundingClientRect: () => {
-                      return new DOMRect(
-                        positionRef.current.x,
-                        areaRef.current!.getBoundingClientRect().y,
-                        0,
-                        0
-                      );
-                    },
-                  },
-                }}
-              >
-                <Stack
-                  ref={areaRef}
-                  onMouseMove={handleMouseMove}
-                  sx={{
-                    height: 20,
-                    width: `${statusCount.status.success.successPercentage}%`,
-                    borderRadius: 7,
-                    backgroundImage: `linear-gradient(to right, ${theme.palette.success.light}, ${theme.palette.success.dark})`,
-                    transition: `width ${
-                      statusCount.status.success.successPercentage / 80
-                    }s linear`,
-                    cursor: 'pointer',
-                    '&:hover': {
-                      backgroundImage: `linear-gradient( ${theme.palette.success.dark}, ${theme.palette.success.dark})`,
-                    },
-                  }}
-                ></Stack>
-              </Tooltip>
-              <Tooltip
-                title={`${statusCount.status.pending.pendingPercentage}%`}
-                placement="top"
-                arrow
-                PopperProps={{
-                  popperRef,
-                  anchorEl: {
-                    getBoundingClientRect: () => {
-                      return new DOMRect(
-                        positionRef.current.x,
-                        areaRef.current!.getBoundingClientRect().y,
-                        0,
-                        0
-                      );
-                    },
-                  },
-                }}
-              >
-                <Stack
-                  ref={areaRef}
-                  onMouseMove={handleMouseMove}
-                  sx={{
-                    height: 20,
-                    width: `${statusCount.status.pending.pendingPercentage}%`,
-                    borderRadius: 7,
-                    backgroundImage: `linear-gradient(to right, ${theme.palette.warning.light}, ${theme.palette.warning.dark})`,
-                    transition: `width ${
-                      statusCount.status.pending.pendingPercentage / 80
-                    }s linear ${statusCount.status.success.successPercentage / 80}s`,
-                    cursor: 'pointer',
-                    '&:hover': {
-                      backgroundImage: `linear-gradient( ${theme.palette.warning.dark}, ${theme.palette.warning.dark})`,
-                    },
-                  }}
-                ></Stack>
-              </Tooltip>
-              <Tooltip
-                title={`${statusCount.status.failed.failedPercentage}%`}
-                placement="top"
-                arrow
-                PopperProps={{
-                  popperRef,
-                  anchorEl: {
-                    getBoundingClientRect: () => {
-                      return new DOMRect(
-                        positionRef.current.x,
-                        areaRef.current!.getBoundingClientRect().y,
-                        0,
-                        0
-                      );
-                    },
-                  },
-                }}
-              >
-                <Stack
-                  ref={areaRef}
-                  onMouseMove={handleMouseMove}
-                  sx={{
-                    height: 20,
-                    width: `${statusCount.status.failed.failedPercentage}%`,
-                    borderRadius: 7,
-                    backgroundImage: `linear-gradient(to right, ${theme.palette.error.light}, ${theme.palette.error.dark})`,
-                    transition: `width ${statusCount.status.failed.failedPercentage / 80}s linear ${
-                      (statusCount.status.success.successPercentage +
-                        statusCount.status.pending.pendingPercentage) /
-                      80
-                    }s`,
-                    cursor: 'pointer',
-                    '&:hover': {
-                      backgroundImage: `linear-gradient( ${theme.palette.error.dark}, ${theme.palette.error.dark})`,
-                    },
-                  }}
-                ></Stack>
-              </Tooltip>
+            <Stack flexDirection={'row'} justifyContent={'end'} gap={1} my={0.5}>
+              <Typography variant="subtitle1">
+                {fNumber(statusCount.totalTransaction.count)} Unit
+              </Typography>
+              <Stack sx={{ width: 5, bgcolor: 'warning.light', borderRadius: 1 }}></Stack>
+              <Typography variant="subtitle1">
+                {fIndianCurrency(statusCount.totalTransaction.amount)}
+              </Typography>
             </Stack>
+            <Stack flexDirection={'row'}>
+              {dashboardData.map((item: DashboardProps, index: number) => {
+                return (
+                  <Tooltip
+                    key={item.label}
+                    title={`${item.totalPercentage}%`}
+                    placement="top"
+                    arrow
+                    PopperProps={{
+                      popperRef,
+                      anchorEl: {
+                        getBoundingClientRect: () => {
+                          return new DOMRect(
+                            positionRef.current.x,
+                            areaRef.current!.getBoundingClientRect().y,
+                            0,
+                            0
+                          );
+                        },
+                      },
+                    }}
+                  >
+                    <Stack
+                      ref={areaRef}
+                      onMouseMove={handleMouseMove}
+                      sx={{
+                        height: 20,
+                        width: `${item.totalPercentage}%`,
+                        borderRadius: 7,
+                        backgroundImage: `linear-gradient(to right, ${item.color[0]}, ${item.color[1]})`,
+                        transition: `width ${item.totalPercentage / 80}s linear ${
+                          index == 1
+                            ? dashboardData[0].totalPercentage / 80
+                            : index == 2
+                            ? (dashboardData[0].totalPercentage +
+                                dashboardData[1].totalPercentage) /
+                              80
+                            : 0
+                        }s`,
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundImage: `linear-gradient( ${item.color[1]}, ${item.color[1]})`,
+                        },
+                      }}
+                    ></Stack>
+                  </Tooltip>
+                );
+              })}
+            </Stack>
+
             {statusCount.totalTransaction.count ? (
               <>
                 {watch('dateFilter') == 'customDate' && (
@@ -407,97 +376,36 @@ function Dashboard() {
                     </Typography>
                   </Stack>
                 )}
-                <Grid sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }} my={3}>
-                  {statusCount.status.success.totalCount > 0 && (
-                    <Stack flexDirection={'row'} gap={0.5} alignItems={'center'}>
-                      <span
-                        style={{
-                          height: 10,
-                          width: 10,
-                          borderRadius: '50%',
-                          backgroundColor: `${theme.palette.success.main}`,
-                        }}
-                      ></span>
-                      <Stack flexDirection={'row'} gap={1}>
-                        <Typography variant="subtitle2">
-                          Success ({statusCount.status.success.successPercentage + '%'}) :
-                        </Typography>
-                        <Typography variant="subtitle2">
-                          {fIndianCurrency(statusCount.status.success.totalAmount) || '₹0'} (
-                          {statusCount.status.success.totalCount})
-                        </Typography>
+                <Stack flexDirection={'row'} justifyContent={'space-between'} my={3}>
+                  {dashboardData.map((item: DashboardProps) => {
+                    return (
+                      <Stack flexDirection={'row'} gap={0.5} alignItems={'center'} key={item.label}>
+                        <span
+                          style={{
+                            height: 10,
+                            width: 10,
+                            borderRadius: '50%',
+                            backgroundColor: `${item.color[1]}`,
+                          }}
+                        ></span>
+                        <Stack flexDirection={'row'} gap={1}>
+                          <Typography variant="subtitle2">
+                            {item.label} ({item.totalPercentage + '%'}) :
+                          </Typography>
+                          <Typography variant="subtitle2">
+                            {fIndianCurrency(item.amount) || '₹0'} ({item.count})
+                          </Typography>
+                        </Stack>
                       </Stack>
-                    </Stack>
-                  )}
-                  {statusCount.status.pending.totalCount > 0 && (
-                    <Stack flexDirection={'row'} gap={0.5} alignItems={'center'}>
-                      <span
-                        style={{
-                          height: 10,
-                          width: 10,
-                          borderRadius: '50%',
-                          backgroundColor: `${theme.palette.warning.main}`,
-                        }}
-                      ></span>
-                      <Stack flexDirection={'row'} gap={1}>
-                        <Typography variant="subtitle2">
-                          Pending ({statusCount.status.pending.pendingPercentage + '%'}) :
-                        </Typography>
-                        <Typography variant="subtitle2">
-                          {fIndianCurrency(statusCount.status.pending.totalAmount) || '₹0'} (
-                          {statusCount.status.pending.totalCount})
-                        </Typography>
-                      </Stack>
-                    </Stack>
-                  )}
-                  {statusCount.status.failed.totalCount > 0 && (
-                    <Stack flexDirection={'row'} gap={0.5} alignItems={'center'}>
-                      <span
-                        style={{
-                          height: 10,
-                          width: 10,
-                          borderRadius: '50%',
-                          backgroundColor: `${theme.palette.error.main}`,
-                        }}
-                      ></span>
-                      <Stack flexDirection={'row'} gap={1}>
-                        <Typography variant="subtitle2">
-                          Pending ({statusCount.status.failed.failedPercentage + '%'}) :
-                        </Typography>
-                        <Typography variant="subtitle2">
-                          {fIndianCurrency(statusCount.status.failed.totalAmount) || '₹0'} (
-                          {statusCount.status.failed.totalCount})
-                        </Typography>
-                      </Stack>
-                    </Stack>
-                  )}
-                </Grid>{' '}
+                    );
+                  })}
+                </Stack>
               </>
             ) : (
               <Typography variant="subtitle1" textAlign={'center'} my={3}>
                 Transactions data not found
               </Typography>
             )}
-            {/* <MultiCircle
-              title="Transactions"
-              total={statusCount.totalTransaction.amount}
-              chart={{
-                series: [
-                  {
-                    label: 'Success',
-                    value: statusCount.status.success.successPercentage,
-                  },
-                  {
-                    label: 'Pending',
-                    value: statusCount.status.pending.pendingPercentage,
-                  },
-                  {
-                    label: 'Failed',
-                    value: statusCount.status.failed.failedPercentage,
-                  },
-                ],
-              }}
-            /> */}
 
             <CircleGraph
               title="Reason of Failure"
