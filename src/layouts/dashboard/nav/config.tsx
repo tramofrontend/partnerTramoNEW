@@ -33,6 +33,11 @@ const navConfig = [
         path: PATH_DASHBOARD.services,
         icon: ICONS.dashboard,
       },
+      {
+        title: 'Reports',
+        path: PATH_DASHBOARD.reports,
+        icon: ICONS.dashboard,
+      },
 
       {
         title: 'Transactions',
