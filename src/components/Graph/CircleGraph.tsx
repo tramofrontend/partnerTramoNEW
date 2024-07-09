@@ -1,108 +1,102 @@
-import { ApexOptions } from 'apexcharts';
-// @mui
-import { useTheme, styled } from '@mui/material/styles';
-import { Card, CardHeader, CardProps, Grid, Stack, Typography } from '@mui/material';
-// utils
-import { fIndianCurrency, fNumber } from '../../utils/formatNumber';
-// components
-import Chart, { useChart } from '../../components/chart';
-
-// ----------------------------------------------------------------------
-
-const CHART_HEIGHT = 400;
-
-const LEGEND_HEIGHT = 32;
-
-const StyledChart = styled('div')(({ theme }) => ({
-  height: CHART_HEIGHT,
-  marginTop: theme.spacing(0),
-  '& .apexcharts-canvas svg': {
-    height: CHART_HEIGHT,
-    textAlign: 'start',
-  },
-  '& .apexcharts-canvas svg,.apexcharts-canvas foreignObject': {
-    overflow: 'hidden',
-  },
-  '& .apexcharts-legend': {
-    height: LEGEND_HEIGHT,
-    alignContent: 'center',
-    position: 'relative !important' as 'relative',
-    borderTop: `solid 1px ${theme.palette.divider}`,
-    top: `calc(${CHART_HEIGHT - LEGEND_HEIGHT}px) !important`,
-  },
-}));
-
-// ----------------------------------------------------------------------
+import { Card, Grid, alpha, useTheme, CardProps, Stack } from '@mui/material';
+import { sentenceCase } from 'change-case';
+import React from 'react';
+import Chart from 'src/components/chart';
+import Scrollbar from 'src/components/scrollbar/Scrollbar';
+import { fIndianCurrency, fNumber } from 'src/utils/formatNumber';
 
 interface Props extends CardProps {
-  title?: string;
-  subheader?: string;
-  chart: {
-    colors?: string[];
-    series: {
-      label: string;
-      value: number;
-    }[];
-    options?: ApexOptions;
-  };
+  serviceData: {
+    service: string;
+    count?: number;
+    percentage?: number;
+  }[];
 }
 
-export default function CircleGraph({ title, subheader, chart, ...other }: Props) {
+export default function CircleGraph({ serviceData, ...other }: Props) {
   const theme = useTheme();
+  const services = serviceData
+    .sort((a: any, b: any) => b.count - a.count)
+    .map((data) => `${sentenceCase(data.service)} - ${data.count}`);
+  console.log(services);
+  const count = serviceData.map((data) => data.count);
+  const totalCount = serviceData.length;
+  const percentages = count.map((count: any) => count);
 
-  const { colors, series, options } = chart;
-
-  const chartSeries = series.map((i) => i.value);
-
-  const chartOptions = useChart({
+  const chartOptions: any = {
     chart: {
-      sparkline: {
-        enabled: true,
+      type: 'donut',
+    },
+    labels: services,
+    colors: [
+      alpha(theme.palette.error.main, 1),
+      alpha(theme.palette.error.main, 0.95),
+      alpha(theme.palette.error.main, 0.9),
+      alpha(theme.palette.error.main, 0.8),
+      alpha(theme.palette.error.main, 0.7),
+      alpha(theme.palette.error.main, 0.6),
+      alpha(theme.palette.error.main, 0.5),
+      alpha(theme.palette.error.main, 0.4),
+      alpha(theme.palette.error.main, 0.3),
+      alpha(theme.palette.error.main, 0.2),
+      alpha(theme.palette.error.main, 0.1),
+    ],
+    dataLabels: {
+      formatter: (val: number, opts: any) => {
+        const serviceName = opts.w.globals.labels[opts.seriesIndex];
+        return ``;
       },
     },
-    colors,
-    labels: series.map((i) => i.label),
-    stroke: { colors: [theme.palette.background.paper] },
-    legend: { floating: true, horizontalAlign: 'center' },
     tooltip: {
       fillSeriesColor: false,
       y: {
         formatter: (value: number) => fNumber(value),
-        title: {
-          formatter: (seriesName: string) => `${seriesName}`,
-        },
       },
     },
     plotOptions: {
       pie: {
         donut: {
-          size: '90%',
+          size: '85%',
           labels: {
-            value: {
-              formatter: (value: number | string) => fNumber(value),
-            },
+            show: true,
             total: {
-              formatter: (w: { globals: { seriesTotals: number[] } }) => {
-                const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
-                return fNumber(sum);
+              show: true,
+              label: 'Total',
+              formatter: () => `${serviceData.length}`,
+              style: {
+                fontSize: '22px',
+                fontWeight: 'bold',
+                color: '#000000', // Change this to your desired color
               },
             },
           },
         },
       },
     },
-    ...options,
-  });
+    legend: {
+      position: 'right',
+    },
+  };
+
+  const chartSeries = percentages;
 
   return (
-    <Card {...other}>
-      <CardHeader title={title} subheader={subheader} />
-      <Grid display={'grid'} gridTemplateColumns={'repeat(2, 1fr)'}>
-        <StyledChart dir="ltr">
-          <Chart type="donut" series={chartSeries} options={chartOptions} height={320} />
-        </StyledChart>
-        <Typography>test</Typography>
-      </Grid>
-    </Card>
+    <Scrollbar>
+      <Stack {...other}>
+        <Grid
+          display={'grid'}
+          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+          my={5}
+        >
+          <Chart
+            options={chartOptions}
+            series={chartSeries}
+            type="donut"
+            // width={'100%'}
+            height={320}
+          />
+        </Grid>
+      </Stack>
+    </Scrollbar>
   );
 }

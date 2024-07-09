@@ -68,6 +68,7 @@ function Dashboard() {
       count: 0,
       amount: 0,
     },
+    remarks: [],
   });
   const defaultValues = {
     startDate: null,
@@ -136,6 +137,7 @@ function Dashboard() {
         count: 0,
         amount: 0,
       },
+      remarks: [],
     });
     let token = localStorage.getItem('token');
     let body = {
@@ -403,26 +405,18 @@ function Dashboard() {
               </>
             ) : (
               <Typography variant="subtitle1" textAlign={'center'} my={3}>
-                Transactions data not found
+                Dashboard data not found
               </Typography>
             )}
 
-            <CircleGraph
-              title="Reason of Failure"
-              chart={{
-                colors: [
-                  alpha(theme.palette.primary.main, 0.8),
-                  alpha(theme.palette.primary.main, 0.7),
-                  alpha(theme.palette.primary.main, 0.6),
-                  alpha(theme.palette.primary.main, 0.5),
-                ],
-                series: [
-                  { label: 'Reason 1', value: 12244 },
-                  { label: 'Reason 2', value: 53345 },
-                  { label: 'Reason 3', value: 44313 },
-                ],
-              }}
-            />
+            {statusCount.remarks.length > 0 && (
+              <CircleGraph
+                serviceData={statusCount.remarks?.map((item: any) => ({
+                  service: item.reason,
+                  count: item.totalCount,
+                }))}
+              />
+            )}
           </Card>
         </Scrollbar>
       </>

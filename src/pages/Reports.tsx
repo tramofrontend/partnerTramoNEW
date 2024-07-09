@@ -24,7 +24,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useAuthContext } from 'src/auth/useAuthContext';
@@ -32,7 +32,7 @@ import { Api } from 'src/webservices';
 import { LoadingButton } from '@mui/lab';
 import dayjs from 'dayjs';
 import CustomPagination from 'src/components/customFunctions/CustomPagination';
-import { TableHeadCustom } from 'src/components/table';
+import { TableHeadCustom, TableNoData } from 'src/components/table';
 import { fDate, fDateFormatForApi, fDateTime } from 'src/utils/formatTime';
 import Iconify from 'src/components/iconify/Iconify';
 import useCopyToClipboard from 'src/hooks/useCopyToClipboard';
@@ -41,30 +41,54 @@ import AWS from 'aws-sdk';
 import Scrollbar from 'src/components/scrollbar/Scrollbar';
 import useResponsive from 'src/hooks/useResponsive';
 import { ReportSkeleton } from 'src/components/Skeletons/ReportSkeleton';
+import ApiDataLoading from 'src/components/customFunctions/ApiDataLoading';
 
 type FormValuesProps = {
   typeOfReport: string;
-  category: {
-    categoryId: string;
-    catgeoryName: string;
-  };
-  transactionType: string;
-  product: {
-    productId: string;
+  service: string;
+  transactionValue: {
+    transactionType: string;
+    category: string;
+    product: string;
     productName: string;
   };
   startDate: Date | null;
   endDate: Date | null;
 };
 
+AWS.config.update({
+  accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+  region: 'ap-south-1',
+});
+
 export default function Reports() {
   const { user } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
   const isMobile = useResponsive('up', 'sm');
   const [currentTab, setCurrentTab] = useState('transactionRecords');
-  const [txnTypes, setTxnTypes] = useState<string[]>([]);
-  const [productList, setProductList] = useState<{ _id: string; productName: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [directFilter, setDirectFilter] = useState<any>([
+    {
+      label: 'Account Verification',
+      value: {
+        transactionType: 'Beneficiary Verification',
+        category: '',
+        product: '',
+        productName: '',
+      },
+    },
+    {
+      label: 'UPI verification',
+      value: {
+        transactionType: 'UPI Verification',
+        category: '',
+        product: '',
+        productName: '',
+      },
+    },
+  ]);
 
   const [reportList, setReportList] = useState([]);
 
@@ -83,13 +107,6 @@ export default function Reports() {
 
   const txnSchema = Yup.object().shape({
     typeOfReport: Yup.string().required(),
-    // category: Yup.object().shape({
-    //   categoryId: Yup.string().required(),
-    // }),
-    // transactionType: Yup.string().required(),
-    // product: Yup.object().shape({
-    //   productId: Yup.string().required(),
-    // }),
     startDate: Yup.date()
       .typeError('please enter a valid date')
       .required('Please select Date')
@@ -103,13 +120,11 @@ export default function Reports() {
 
   const defaultValues = {
     typeOfReport: currentTab,
-    category: {
-      categoryId: '',
-      catgeoryName: '',
-    },
-    transactionType: '',
-    product: {
-      productId: '',
+    service: '',
+    transactionValue: {
+      transactionType: '',
+      category: '',
+      product: '',
       productName: '',
     },
     startDate: null,
@@ -119,6 +134,7 @@ export default function Reports() {
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(txnSchema),
     defaultValues,
+    mode: 'all',
   });
 
   const {
@@ -126,7 +142,7 @@ export default function Reports() {
     watch,
     setValue,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
   } = methods;
 
   const style = {
@@ -140,34 +156,84 @@ export default function Reports() {
     borderRadius: 2,
   };
 
-  useEffect(() => getTxnType(), []);
-  useEffect(() => getReports(currentTab), [pageSize, currentPage, currentTab]);
+  useEffect(() => getCategoryList(), []);
+  useEffect(() => getReports(currentTab), [pageSize, currentPage]);
 
-  const getTxnType = () => {
+  const getCategoryList = useCallback(() => {
     let token = localStorage.getItem('token');
-    Api(`adminTransaction/transactionTypes`, 'GET', '', token).then((Response: any) => {
+    Api(`category/get_CategoryList`, 'GET', '', token).then((Response: any) => {
       if (Response.status == 200) {
         if (Response.data.code == 200) {
-          setTxnTypes(Response.data.data);
+          console.log(
+            Response.data.data.filter((test: any) =>
+              user?.activeCategoryIds
+                .map((item: any) => item.category_name)
+                .includes(test.category_name)
+            )
+          );
+          setDirectFilter((prevState: any) => [
+            ...prevState,
+            ...Response.data.data
+              .filter((item: any) =>
+                user?.activeCategoryIds
+                  .map((item: any) => item.category_name)
+                  .includes(item.category_name)
+              )
+              .map((item1: any) => {
+                if (item1.category_name.toLowerCase() == 'kyc') {
+                  Api(`product/get_ProductList/${item1._id}`, 'GET', '', token).then(
+                    (Response: any) => {
+                      if (Response.status == 200) {
+                        if (Response.data.code == 200) {
+                          setDirectFilter((state: any) => [
+                            ...state,
+                            ...Response.data.data.map((row: any) => {
+                              return {
+                                label: row.productName,
+                                value: {
+                                  transactionType: '',
+                                  category: '',
+                                  product: row._id,
+                                  productName: '',
+                                },
+                              };
+                            }),
+                          ]);
+                        }
+                      }
+                    }
+                  );
+                }
+                if (item1.category_name.toLowerCase() == 'transfer') {
+                  return {
+                    label: 'UPI Transfer',
+                    value: {
+                      transactionType: 'Product/Service',
+                      category: item1._id,
+                      product: '',
+                      productName: '',
+                    },
+                  };
+                } else {
+                  return {
+                    label: item1.category_name,
+                    value: {
+                      transactionType: '',
+                      category: item1._id,
+                      product: '',
+                      productName: '',
+                    },
+                  };
+                }
+              }),
+          ]);
         }
       }
     });
-  };
+  }, []);
 
-  const getProducts = (val: string) => {
-    let token = localStorage.getItem('token');
-    Api(`product/get_ProductList/${val}`, 'GET', '', token).then((Response: any) => {
-      if (Response.status == 200) {
-        if (Response.data.code == 200) {
-          setProductList(Response.data.data);
-        }
-      }
-    });
-  };
-
-  const getReports = (val: string) => {
+  const getReports = useCallback((val: string) => {
     setIsLoading(true);
-    setReportList([]);
     let token = localStorage.getItem('token');
     let body = {
       pageInitData: {
@@ -180,27 +246,24 @@ export default function Reports() {
         console.log('======Transaction==response=====>' + Response);
         if (Response.status == 200) {
           if (Response.data.code == 200) {
-            setIsLoading(false);
             setReportList(Response.data?.data?.data);
             setPageCount(Response.data?.data?.totalNumberOfRecords);
-          } else {
-            setIsLoading(false);
           }
-        } else {
-          setIsLoading(false);
         }
+        setIsLoading(false);
       }
     );
-  };
+  }, []);
 
   const onSubmit = async (data: FormValuesProps) => {
+    console.log(data);
     let body = {
       from_date: fDateFormatForApi(data.startDate),
       to_date: fDateFormatForApi(data.endDate),
       type_of_report: currentTab,
-      categoryId: data.category.categoryId,
-      transactionType: data.transactionType,
-      productId: data.product.productId,
+      categoryId: data.transactionValue.category,
+      transactionType: data.transactionValue.transactionType,
+      productId: data.transactionValue.product,
       email: user?.email,
     };
     let token = localStorage.getItem('token');
@@ -220,14 +283,35 @@ export default function Reports() {
     );
   };
 
+  const DownloadReport = (val: string) => {
+    console.log(process.env.REACT_APP_AWS_BUCKET_NAME);
+
+    const s3 = new AWS.S3();
+    const params = {
+      Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
+      Key: val !== '' && val?.split('/').splice(3, 3).join('/'),
+      Expires: 600,
+    };
+
+    console.log('test url', params);
+    s3.getSignedUrl('getObject', params, (err, url) => {
+      window.open(url);
+    });
+  };
+
+  if (isLoading) {
+    return <ApiDataLoading />;
+  }
+
   return (
     <React.Fragment>
       <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
         <Tabs
           value={currentTab}
           onChange={(event, newValue) => {
-            setCurrentPage(1);
             setCurrentTab(newValue);
+            setCurrentPage(() => 1);
+            getReports(newValue);
           }}
           aria-label="wrapped label tabs example"
         >
@@ -290,19 +374,14 @@ export default function Reports() {
                   { id: 'Download link ', label: 'Download link ' },
                 ]}
               />
-              {isLoading ? (
-                <TableBody>
-                  {[...Array(25)].map((row: any, index: number) => (
-                    <ReportSkeleton key={index} />
-                  ))}
-                </TableBody>
-              ) : (
-                <TableBody>
-                  {reportList.map((row: any) => (
-                    <ReportsRow key={row._id} row={row} />
-                  ))}
-                </TableBody>
-              )}
+              <TableBody>
+                {isLoading
+                  ? [...Array(25)].map((row: any, index: number) => <ReportSkeleton key={index} />)
+                  : reportList.map((row: any) => (
+                      <ReportsRow key={row._id} row={row} download={DownloadReport} />
+                    ))}
+              </TableBody>
+              {!reportList.length && <TableNoData isNotFound={!reportList.length} />}
             </Table>
           </Scrollbar>
         </TableContainer>
@@ -370,50 +449,31 @@ export default function Reports() {
               </LocalizationProvider>
               <RHFTextField name="typeOfReport" label="Type Of Report" disabled variant="filled" />
               <RHFSelect
-                name="catgeory.categoryId"
+                name="service"
                 label="Service"
                 SelectProps={{
                   native: false,
                   sx: { textTransform: 'capitalize' },
                 }}
               >
-                {user?.activeCategoryIds.map((item: any) => (
-                  <MenuItem key={item._id} value={item._id} onClick={() => getProducts(item._id)}>
-                    {item.category_name}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
-              <RHFSelect
-                name="product.productId"
-                label="Product"
-                SelectProps={{
-                  native: false,
-                  sx: { textTransform: 'capitalize' },
-                }}
-              >
-                {productList.map((item: any) => (
-                  <MenuItem key={item._id} value={item.productName}>
-                    {item.productName}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
-              <RHFSelect
-                name="transactionType"
-                label="Transaction Type"
-                SelectProps={{
-                  native: false,
-                  sx: { textTransform: 'capitalize' },
-                }}
-              >
-                {txnTypes.map((item: any) => (
-                  <MenuItem key={item} value={item}>
-                    {item}
+                {directFilter.map((item: any) => (
+                  <MenuItem
+                    key={item.label}
+                    value={item.label}
+                    onClick={() => setValue('transactionValue', item.value)}
+                  >
+                    {item.label}
                   </MenuItem>
                 ))}
               </RHFSelect>
             </Grid>
             <Stack flexDirection={'row'} justifyContent={'start'} my={1} gap={1}>
-              <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
+              <LoadingButton
+                variant="contained"
+                type="submit"
+                loading={isSubmitting}
+                disabled={!isValid}
+              >
                 Submit
               </LoadingButton>
               <LoadingButton variant="outlined" onClick={handleClose}>
@@ -427,24 +487,9 @@ export default function Reports() {
   );
 }
 
-const ReportsRow = React.memo(({ row }: any) => {
+const ReportsRow = ({ row, download }: any) => {
   const { copy } = useCopyToClipboard();
   const { enqueueSnackbar } = useSnackbar();
-
-  const download = (val: string) => {
-    const s3 = new AWS.S3();
-    const params = {
-      Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
-      Key: val !== '' && val?.split('/').splice(3, 3).join('/'),
-      Expires: 600,
-    };
-
-    console.log('test url', params);
-    s3.getSignedUrl('getObject', params, (err, url) => {
-      console.log(url);
-      window.open(url, '_blank');
-    });
-  };
 
   const onCopy = (text: string) => {
     if (text) {
@@ -492,4 +537,4 @@ const ReportsRow = React.memo(({ row }: any) => {
       </TableCell>
     </TableRow>
   );
-});
+};

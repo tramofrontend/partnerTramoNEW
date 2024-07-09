@@ -1,5 +1,3 @@
-//form
-import FormProvider, { RHFRadioGroup, RHFSelect, RHFTextField } from '../components/hook-form';
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -7,8 +5,6 @@ import React, { useEffect, useState } from 'react';
 //mui
 import { Box, Card, Tab, Table, TableBody, Tabs, Typography } from '@mui/material';
 import { Api } from 'src/webservices';
-import { useSnackbar } from 'notistack';
-import CustomPagination from 'src/components/customFunctions/CustomPagination';
 import BeneVerfication from 'src/sections/services/BeneVerification';
 import {
   AEPS,
@@ -16,7 +12,6 @@ import {
   BillPayment,
   DMT1,
   DMT2,
-  KYC,
   MoneyTransfer,
   Payments,
   PayoutTransfer,
@@ -26,12 +21,11 @@ import {
 import AadhaarVerification from 'src/sections/services/AadhaarVerification';
 import PanVerification from 'src/sections/services/PanVerification';
 import GSTVerification from 'src/sections/services/GSTVerification';
-import { MasterTransactionSkeleton } from 'src/components/Skeletons/MasterTransactionSkeleton';
-import Scrollbar from 'src/components/scrollbar/Scrollbar';
-import { TableHeadCustom } from 'src/components/table';
 import useResponsive from 'src/hooks/useResponsive';
 import UPIVerification from 'src/sections/services/UPIVerification';
 import ServiceWiseDashBoard from 'src/sections/services/ServiceWiseDashBoard';
+import { useAuthContext } from 'src/auth/useAuthContext';
+import { Rowing } from '@mui/icons-material';
 
 type FormValuesProps = {
   transactionLabel: string;
@@ -42,6 +36,7 @@ export const CategoryContext = React.createContext({});
 
 export default function Services() {
   let token = localStorage.getItem('token');
+  const { user } = useAuthContext();
   const isMobile = useResponsive('up', 'sm');
   const [directFilter, setDirectFilter] = useState<any>([
     {
@@ -91,22 +86,17 @@ export default function Services() {
   }, []);
 
   const getCategoryList = async () => {
-    let enabledCategory: any = [];
-    await Api(`apiBox/dashboard/getActiveServices`, 'GET', '', token).then((Response: any) => {
-      if (Response.status == 200) {
-        if (Response.data.code == 200) {
-          enabledCategory = Response.data.data;
-        }
-      }
-    });
-
     await Api(`category/get_CategoryList`, 'GET', '', token).then((Response: any) => {
       if (Response.status == 200) {
         if (Response.data.code == 200) {
           setDirectFilter((prevState: any) => [
             ...prevState,
             ...Response.data.data
-              .filter((item: any) => enabledCategory.includes(item.category_name))
+              .filter((item: any) =>
+                user?.activeCategoryIds
+                  .map((row: any) => row.category_name)
+                  .includes(item.category_name)
+              )
               .map((item1: any) => {
                 if (item1.category_name.toLowerCase() == 'kyc') {
                   Api(`product/get_ProductList/${item1._id}`, 'GET', '', token).then(

@@ -27,6 +27,7 @@ import dayjs from 'dayjs';
 import { Instance } from '@popperjs/core';
 import { fIndianCurrency } from 'src/utils/formatNumber';
 import ApiDataLoading from 'src/components/customFunctions/ApiDataLoading';
+import CircleGraph from 'src/components/Graph/CircleGraph';
 
 type FormValuesProps = {
   startDate: Date | null;
@@ -74,6 +75,7 @@ function ServiceWiseDashBoard() {
         failedPercentage: 0,
       },
     },
+    remarks: [],
   });
   const defaultValues = {
     startDate: null,
@@ -137,6 +139,7 @@ function ServiceWiseDashBoard() {
           failedPercentage: 0,
         },
       },
+      remarks: [],
     });
     let token = localStorage.getItem('token');
     let body = {
@@ -454,7 +457,7 @@ function ServiceWiseDashBoard() {
                 ></span>
                 <Stack flexDirection={'row'} gap={1}>
                   <Typography variant="subtitle2">
-                    Pending ({statusCount.status.failed.failedPercentage + '%'}) :
+                    Failed ({statusCount.status.failed.failedPercentage + '%'}) :
                   </Typography>
                   <Typography variant="subtitle2">
                     {fIndianCurrency(statusCount.status.failed.totalAmount) || '₹0'} (
@@ -467,7 +470,7 @@ function ServiceWiseDashBoard() {
         </>
       ) : (
         <Typography variant="subtitle1" textAlign={'center'}>
-          Transactions data not found
+          Dashboard data not found
         </Typography>
       )}
       {/* {!isLoading && (
@@ -519,6 +522,15 @@ function ServiceWiseDashBoard() {
           )}{' '}
         </>
       )} */}
+      {statusCount.remarks.length > 0 && (
+        <CircleGraph
+          serviceData={statusCount.remarks?.map((item: any) => ({
+            service: item.reason,
+            count: item.totalCount,
+          }))}
+          // sx={{ width: 500 }}
+        />
+      )}
     </Card>
   );
 }
