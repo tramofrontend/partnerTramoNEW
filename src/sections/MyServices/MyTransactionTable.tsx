@@ -376,7 +376,7 @@ export default function MyTransactions() {
                 sx: { textTransform: 'capitalize' },
               }}
             >
-              <MenuItem value="">None</MenuItem>
+              <MenuItem value="">All</MenuItem>
               {categoryList.map((item: any) => {
                 return (
                   <MenuItem value={item._id} key={item._id}>
@@ -393,7 +393,7 @@ export default function MyTransactions() {
                 sx: { textTransform: 'capitalize' },
               }}
             >
-              <MenuItem value="">None</MenuItem>
+              <MenuItem value="">All</MenuItem>
               <MenuItem value="success">Success</MenuItem>
               <MenuItem value="failed">Failed</MenuItem>
               <MenuItem value="pending">Pending</MenuItem>

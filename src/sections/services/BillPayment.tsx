@@ -67,6 +67,7 @@ type FormValuesProps = {
   endDate: null;
   transactionId: string;
   clientId: string;
+  type: string;
   mobileNumber: string;
   key1: string;
   key2: string;
@@ -75,7 +76,7 @@ type FormValuesProps = {
   status: string;
 };
 
-export default React.memo(function BeneVerfication() {
+export default React.memo(function BillPayment() {
   const isMobile = useResponsive('up', 'sm');
   let token = localStorage.getItem('token');
   const { enqueueSnackbar } = useSnackbar();
@@ -94,6 +95,7 @@ export default React.memo(function BeneVerfication() {
     endDate: null,
     transactionId: '',
     clientId: '',
+    type: '',
     mobileNumber: '',
     key1: '',
     key2: '',
@@ -116,18 +118,19 @@ export default React.memo(function BeneVerfication() {
     resetField,
     formState: { errors, isSubmitting },
   } = methods;
-
   const tableLabels = [
     { id: 'Date&Time', label: 'Date & Time' },
-    { id: 'Transaction Id', label: 'Transaction ID' },
-    { id: 'Client ID', label: 'Client ID' },
+    { id: 'transaction', label: 'Transaction ID' },
+    { id: 'client', label: 'Client ID' },
+    { id: 'Type', label: 'Type' },
+    { id: 'operator', label: 'Operator' },
+    { id: 'acoount', label: 'Account / CA Number' },
+    { id: 'Due Date', label: 'Due Date' },
     { id: 'Mobile Number', label: 'Mobile Number' },
-    { id: 'Bank Name', label: 'Bank Name' },
-    { id: 'Account Number', label: 'Account Number' },
-    { id: 'IFSC', label: 'IFSC' },
-    { id: 'UTR/RRN', label: 'UTR/RRN' },
-    { id: 'Charges', label: 'Charges' },
-    { id: 'GST', label: 'GST' },
+    { id: 'UTR/RRN', label: 'UTR' },
+    { id: 'Transaction Amount', label: 'Transaction Amount' },
+    { id: 'Commission', label: 'Commission' },
+    { id: 'TDS', label: 'TDS' },
     { id: 'Debit', label: 'Debit' },
     { id: 'Status', label: 'Status' },
   ];
@@ -184,10 +187,10 @@ export default React.memo(function BeneVerfication() {
   useEffect(() => {
     setValue('transactionId', '');
     setValue('clientId', '');
-    setValue('mobileNumber', '');
+    setValue('type', '');
     setValue('key1', '');
     setValue('key2', '');
-    setValue('key3', '');
+    setValue('mobileNumber', '');
     setValue('utr', '');
   }, [watch('searchBy')]);
 
@@ -211,29 +214,28 @@ export default React.memo(function BeneVerfication() {
               <MenuItem value=""></MenuItem>
               <MenuItem value="transaction_id">Transaction ID</MenuItem>
               <MenuItem value="client_id">Client ID</MenuItem>
+              <MenuItem value="type">Type</MenuItem>
+              <MenuItem value="operator">Operator</MenuItem>
+              <MenuItem value="ca_number">CA Number</MenuItem>
               <MenuItem value="mobile_number">Mobile Number</MenuItem>
-              <MenuItem value="account_number">Account Number</MenuItem>
-              <MenuItem value="ifsc">IFSC</MenuItem>
-              <MenuItem value="bank_name">Bank Name</MenuItem>
               <MenuItem value="utr">UTR</MenuItem>
             </RHFSelect>
 
             {watch('searchBy') == 'client_id' && (
-              <RHFTextField name="transactionId" label="Client Id" />
+              <RHFTextField size="small" name="transactionId" label="Client Id" />
             )}
             {watch('searchBy') == 'transaction_id' && (
-              <RHFTextField name="clientId" label="Transaction Id" />
+              <RHFTextField size="small" name="clientId" label="Transaction Id" />
+            )}
+            {watch('searchBy') == 'type' && <RHFTextField size="small" name="type" label="Type" />}
+            {watch('searchBy') == 'operator' && <RHFTextField name="key1" label="Operator" />}
+            {watch('searchBy') == 'ca_number' && (
+              <RHFTextField name="key2" label="Account / CA Number" />
             )}
             {watch('searchBy') == 'mobile_number' && (
               <RHFTextField name="mobileNumber" label="Mobile Number" />
             )}
-            {watch('searchBy') == 'account_number' && (
-              <RHFTextField name="key1" label="account Number" />
-            )}
-            {watch('searchBy') == 'ifsc' && <RHFTextField name="key2" label="IFSC" />}
-            {watch('searchBy') == 'bank_name' && <RHFTextField name="key3" label="Bank Name" />}
             {watch('searchBy') == 'utr' && <RHFTextField name="utr" label="UTR" />}
-
             <Stack direction={'row'} gap={1}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
@@ -373,142 +375,122 @@ function TransactionRow({ row }: childProps) {
     }
   };
 
-  const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: { xs: '90%', sm: 720 },
-    bgcolor: '#ffffff',
-    borderRadius: 2,
-  };
-
-  const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 12,
-      padding: 6,
-    },
-  }));
-
-  const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(even)': {
-      backgroundColor: theme.palette.grey[300],
-    },
-    // hide last border
-    '&:last-child td, &:last-child th': {
-      border: 0,
-      padding: '0px 20px',
-    },
-  }));
-
   return (
-    <TableRow key={newRow._id}>
-      {/* Date & Time */}
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'} color="text.secondary">
-          {fDateTime(newRow?.createdAt)}
-        </Typography>
-      </TableCell>
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'}>
-          {newRow?.clientRefId}{' '}
-          <Tooltip title="Copy" placement="top">
-            <IconButton onClick={() => onCopy(newRow?.clientRefId)} sx={{ p: 0 }}>
-              <Iconify icon="eva:copy-fill" width={20} />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-      </TableCell>
+    <>
+      <TableRow key={newRow._id}>
+        {/* Date & Time */}
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'} color="text.secondary">
+            {fDateTime(newRow?.createdAt)}
+          </Typography>
+        </TableCell>
 
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'}>
-          {newRow?.partnerTransactionId}{' '}
-          <Tooltip title="Copy" placement="top">
-            <IconButton onClick={() => onCopy(newRow?.partnerTransactionId)} sx={{ p: 0 }}>
-              <Iconify icon="eva:copy-fill" width={20} />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-      </TableCell>
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {newRow?.clientRefId}{' '}
+            <Tooltip title="Copy" placement="top">
+              <IconButton onClick={() => onCopy(newRow?.clientRefId)} sx={{ p: 0 }}>
+                <Iconify icon="eva:copy-fill" width={20} />
+              </IconButton>
+            </Tooltip>
+          </Typography>
+        </TableCell>
 
-      {/* Product  */}
-      <TableCell>
-        <Typography variant="body2">{newRow?.mobileNumber || '-'}</Typography>
-      </TableCell>
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {newRow?.partnerTransactionId}{' '}
+            <Tooltip title="Copy" placement="top">
+              <IconButton onClick={() => onCopy(newRow?.partnerTransactionId)} sx={{ p: 0 }}>
+                <Iconify icon="eva:copy-fill" width={20} />
+              </IconButton>
+            </Tooltip>
+          </Typography>
+        </TableCell>
 
-      {/* Operator */}
-      <TableCell>
-        <Typography variant="body2" noWrap>
-          {newRow?.operator?.key3}{' '}
-        </Typography>
-      </TableCell>
+        {/* mode of payment */}
+        <TableCell>
+          <Typography variant="body2">{newRow?.modeOfPayment || '-'}</Typography>
+        </TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        <Typography variant="body2">
-          {newRow?.operator?.key1}
-          <Tooltip title="Copy" placement="top">
-            <IconButton onClick={() => onCopy(newRow?.operator?.key1)} sx={{ p: 0 }}>
-              <Iconify icon="eva:copy-fill" width={20} />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-      </TableCell>
+        {/* Product  */}
+        <TableCell>
+          <Typography variant="body2" noWrap>
+            {newRow?.productName || '-'}
+          </Typography>
+        </TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        <Typography variant="body2">{newRow?.operator?.key2}</Typography>
-      </TableCell>
+        {/* Operator */}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Typography variant="body2">{newRow?.operator?.key2}</Typography>
+        </TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        <Typography variant="body2">{newRow?.vendorUtrNumber}</Typography>
-      </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Typography
+            variant="body2"
+            sx={{ wordBreak: 'break-all', maxWidth: 200, whiteSpace: 'break-spaces' }}
+          >
+            {newRow?.operator?.key3}
+          </Typography>
+        </TableCell>
 
-      {/* Charge/Commission */}
-      <TableCell>
-        <Stack flexDirection={'row'} justifyContent={'center'}>
-          <Typography variant="body2" whiteSpace={'nowrap'} color={'error'}>
-            {fIndianCurrency(newRow.amount - newRow.GST)}
-          </Typography>{' '}
-        </Stack>
-      </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Typography variant="body2" noWrap>
+            {newRow?.mobileNumber}
+          </Typography>
+        </TableCell>
 
-      {/* Closing Balance */}
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'}>
-          {fIndianCurrency(newRow?.GST)}
-        </Typography>
-      </TableCell>
+        {/* Operator Txn Id */}
+        <TableCell>
+          <Typography variant="body2" textAlign={'center'}>
+            {newRow?.vendorUtrNumber || '-'}
+          </Typography>
+        </TableCell>
 
-      <TableCell>
-        <Stack flexDirection={'row'} justifyContent={'center'}>
-          <Typography variant="body2" whiteSpace={'nowrap'} color={'error'}>
-            {fIndianCurrency(newRow.amount + newRow.debit)}
-          </Typography>{' '}
-        </Stack>
-      </TableCell>
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {fIndianCurrency(newRow.amount) || '₹0'}
+          </Typography>
+        </TableCell>
 
-      <TableCell
-        sx={{
-          textTransform: 'lowercase',
-          fontWeight: 600,
-          textAlign: 'center',
-        }}
-      >
-        <Label
-          variant="soft"
-          color={
-            (newRow.status === 'failed' && 'error') ||
-            ((newRow.status === 'pending' || newRow.status === 'in_process') && 'warning') ||
-            'success'
-          }
-          sx={{ textTransform: 'capitalize' }}
+        {/* Charge/Commission */}
+        <TableCell>
+          <Typography variant="body2" noWrap color={'green'}>
+            {fIndianCurrency(newRow?.partnerDetails?.creditedAmount) || '₹0'}
+          </Typography>
+        </TableCell>
+
+        <TableCell>
+          <Typography variant="body2">
+            {fIndianCurrency(newRow?.partnerDetails?.TDSAmount) || '₹0'}
+          </Typography>
+        </TableCell>
+
+        <TableCell>
+          <Typography variant="body2" color={'error.main'}>
+            {fIndianCurrency(newRow.amount - newRow?.partnerDetails?.creditedAmount) || '₹0'}
+          </Typography>
+        </TableCell>
+
+        <TableCell
+          sx={{
+            textTransform: 'lowercase',
+            fontWeight: 600,
+            textAlign: 'center',
+          }}
         >
-          {newRow.status ? sentenceCase(newRow.status) : ''}
-        </Label>
-      </TableCell>
-    </TableRow>
+          <Label
+            variant="soft"
+            color={
+              (newRow.status === 'failed' && 'error') ||
+              ((newRow.status === 'pending' || newRow.status === 'in_process') && 'warning') ||
+              'success'
+            }
+            sx={{ textTransform: 'capitalize' }}
+          >
+            {newRow.status ? sentenceCase(newRow.status) : ''}
+          </Label>
+        </TableCell>
+      </TableRow>
+    </>
   );
 }

@@ -28,11 +28,16 @@ const navConfig = [
         path: PATH_DASHBOARD.dashboard,
         icon: ICONS.dashboard,
       },
-      // {
-      //   title: 'Services',
-      //   path: PATH_DASHBOARD.services,
-      //   icon: ICONS.dashboard,
-      // },
+      {
+        title: 'Services',
+        path: PATH_DASHBOARD.services,
+        icon: ICONS.dashboard,
+      },
+      {
+        title: 'Reports',
+        path: PATH_DASHBOARD.reports,
+        icon: ICONS.dashboard,
+      },
 
       {
         title: 'Transactions',

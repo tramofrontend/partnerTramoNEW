@@ -416,25 +416,27 @@ function Reportexport() {
           New Request
         </LoadingButton>
       </Stack>
-        <Grid item xs={12} md={6} lg={8} sx={{ width: '100%' }}>
-          <TableContainer component={Paper}>
-            <Scrollbar
-              sx={
-                isMobile
-                  ? { maxHeight: window.innerHeight - 272 }
-                  : { maxHeight: window.innerHeight - 204 }
-              }
-            >
-              <Table stickyHeader aria-label="sticky table" size="small" sx={{ minWidth: 720 }}>
-                <TableHead>
-                  <TableRow>
-                    {tableLabels.map((column: any) => (
-                      <TableCell key={column.id}>{column.label}</TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                {verifyLoding ? <ReportSkeleton/> : 
+      <Grid item xs={12} md={6} lg={8} sx={{ width: '100%' }}>
+        <TableContainer component={Paper}>
+          <Scrollbar
+            sx={
+              isMobile
+                ? { maxHeight: window.innerHeight - 272 }
+                : { maxHeight: window.innerHeight - 204 }
+            }
+          >
+            <Table stickyHeader aria-label="sticky table" size="small" sx={{ minWidth: 720 }}>
+              <TableHead>
+                <TableRow>
+                  {tableLabels.map((column: any) => (
+                    <TableCell key={column.id}>{column.label}</TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {verifyLoding ? (
+                  <ReportSkeleton />
+                ) : (
                   tableData?.map((row: any) => (
                     <TableRow sx={{ display: 'table-row' }} key={row?.id}>
                       <TableCell>
@@ -485,32 +487,30 @@ function Reportexport() {
                         </Button>
                       </TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
+                  ))
+                )}
+              </TableBody>
 
-                <TableNoData isNotFound={!tableData.length} />
-              </Table>
-            </Scrollbar>
+              <TableNoData isNotFound={!tableData.length} />
+            </Table>
+          </Scrollbar>
 
-            <CustomPagination
-              page={currentPage - 1}
-              count={pageCount}
-              onPageChange={(
-                event: React.MouseEvent<HTMLButtonElement> | null,
-                newPage: number
-              ) => {
-                setCurrentPage(newPage + 1);
-              }}
-              rowsPerPage={pageSize}
-              onRowsPerPageChange={(
-                event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-              ) => {
-                setPageSize(parseInt(event.target.value));
-                setCurrentPage(1);
-              }}
-            />
-          </TableContainer>
-        </Grid>
+          <CustomPagination
+            page={currentPage - 1}
+            count={pageCount}
+            onPageChange={(event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+              setCurrentPage(newPage + 1);
+            }}
+            rowsPerPage={pageSize}
+            onRowsPerPageChange={(
+              event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            ) => {
+              setPageSize(parseInt(event.target.value));
+              setCurrentPage(1);
+            }}
+          />
+        </TableContainer>
+      </Grid>
       <Modal
         open={open}
         aria-labelledby="modal-modal-title"
@@ -549,7 +549,7 @@ function Reportexport() {
                     : sdata == 'GST & TDS Report'
                     ? 'GST & TDS'
                     : sdata == 'Admin Main Wallet Summary Report '
-                    ? ' Main Wallet Summary'
+                    ? 'Main Wallet Summary'
                     : sdata == 'Admin AEPS Wallet Summary Report'
                     ? 'AEPS Wallet Summary'
                     : sdata == 'memberExport'

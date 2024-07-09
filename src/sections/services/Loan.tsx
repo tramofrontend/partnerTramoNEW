@@ -5,10 +5,8 @@ import {
   Stack,
   Grid,
   TextField,
-  Tabs,
   tableCellClasses,
   Button,
-  Box,
   Table,
   TableRow,
   TableBody,
@@ -20,16 +18,13 @@ import {
   Tooltip,
   Modal,
   TableContainer,
-  Avatar,
-  Card,
   Divider,
   MenuItem,
-  Container,
-  Chip,
   FormControl,
   RadioGroup,
   FormControlLabel,
   Radio,
+  Card,
 } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
 // form
@@ -41,23 +36,14 @@ import React from 'react';
 import { Api } from 'src/webservices';
 import Scrollbar from 'src/components/scrollbar';
 import { TableHeadCustom, TableNoData } from 'src/components/table';
-import receipt_long from '../assets/icons/receipt_long.svg';
-import Group from '../assets/icons/Group.svg';
-import autorenew from '../assets/icons/autorenew.svg';
-import LogoMain from '../assets/icons/tramoTrmao-Final-Logo.svg';
-import DateRangePicker, { useDateRangePicker } from 'src/components/date-range-picker';
-import FileFilterButton from '../sections/MyTransaction/FileFilterButton';
 import Iconify from 'src/components/iconify/Iconify';
 import ReactToPrint from 'react-to-print';
-import * as XLSX from 'xlsx';
-import { fDate, fDateTime } from '../utils/formatTime';
-import Image from '../components/image';
-import ApiDataLoading from '../components/customFunctions/ApiDataLoading';
+import { fDate, fDateTime } from '../../utils/formatTime';
 import Label from 'src/components/label/Label';
 import { sentenceCase } from 'change-case';
 import { useAuthContext } from 'src/auth/useAuthContext';
 import CustomPagination from 'src/components/customFunctions/CustomPagination';
-import FormProvider, { RHFSelect, RHFTextField } from '../components/hook-form';
+import FormProvider, { RHFSelect, RHFTextField } from '../../components/hook-form';
 import { LoadingButton } from '@mui/lab';
 import Logo from 'src/components/logo/Logo';
 import { fIndianCurrency } from 'src/utils/formatNumber';
@@ -95,283 +81,10 @@ type FormValuesProps = {
   eDate: Date | null;
 };
 
-export default function MyTransactions() {
-  let token = localStorage.getItem('token');
+export default React.memo(function Loan({ tableData }: any) {
   const isMobile = useResponsive('up', 'sm');
-  const isDesktop = useResponsive('up', 'sm');
-  const [txnType, setTxnType] = useState([]);
-  const { enqueueSnackbar } = useSnackbar();
-  const [selectedTab, setSelectedTab] = useState('');
-  const [directFilter, setDirectFilter] = useState([
-    {
-      label: 'All',
-      value: { transactionType: '', category: '', product: '' },
-    },
-  ]);
-  const [Loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState<any>(1);
-  const [pageCount, setPageCount] = useState<any>(0);
-  const [categoryList, setCategoryList] = useState([]);
-  const [pageSize, setPageSize] = useState<any>(25);
-  const [currentTab, setCurrentTab] = useState('all');
-  const [ProductList, setProductList] = useState([]);
-  const [filterdValue, setFilterdValue] = useState<any>([]);
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const txnSchema = Yup.object().shape({
-    status: Yup.string(),
-    clientRefId: Yup.string(),
-  });
-
-  const defaultValues = {
-    transactionType: '',
-    category: {
-      categoryId: '',
-      categoryName: '',
-    },
-    status: '',
-    clientRefId: '',
-    product: '',
-    sDate: null,
-    eDate: null,
-    accountNumber: '',
-    mobileNumber: '',
-    key1: '',
-    key2: '',
-    key3: '',
-    startDate: null,
-    endDate: null,
-  };
-
-  const methods = useForm<FormValuesProps>({
-    resolver: yupResolver(txnSchema),
-    defaultValues,
-  });
-
-  const {
-    reset,
-    watch,
-    setValue,
-    getValues,
-    handleSubmit,
-    resetField,
-    formState: { errors, isSubmitting },
-  } = methods;
-
-  useEffect(() => {
-    getCategoryList();
-    getTxnType();
-  }, []);
-
-  useEffect(() => {
-    getTransaction();
-  }, [currentPage]);
-
-  useEffect(() => setCurrentPage(1), [currentTab]);
-
-  const getTxnType = () => {
-    let token = localStorage.getItem('token');
-    Api(`adminTransaction/transactionTypes`, 'GET', '', token).then((Response: any) => {
-      if (Response?.status == 200) {
-        if (Response.data.code == 200) {
-          setTxnType(Response.data.data.filter((item: string) => item != 'Fund Flow'));
-        }
-      }
-    });
-  };
-
-  const getProductlist = (val: string) => {
-    Api(`product/get_ProductList/${val}`, 'GET', '', token).then((Response: any) => {
-      if (Response.status == 200) {
-        if (Response.data.code == 200) {
-          setProductList(Response.data.data);
-        }
-      }
-    });
-  };
-
-  const getCategoryList = async () => {
-    let enabledCategory: any = [];
-    await Api(`apiBox/dashboard/getActiveServices`, 'GET', '', token).then((Response: any) => {
-      if (Response.status == 200) {
-        if (Response.data.code == 200) {
-          enabledCategory = Response.data.data;
-        }
-      }
-    });
-
-    await Api(`category/get_CategoryList`, 'GET', '', token).then((Response: any) => {
-      if (Response.status == 200) {
-        if (Response.data.code == 200) {
-          setCategoryList(Response.data.data);
-          setDirectFilter((prevState) => [
-            ...prevState,
-            ...Response.data.data
-              .filter((item: any) => enabledCategory.includes(item.category_name))
-              .map((item1: any) => {
-                if (item1.category_name.toLowerCase() == 'kyc') {
-                  Api(`product/get_ProductList/${item1._id}`, 'GET', '', token).then(
-                    (Response: any) => {
-                      if (Response.status == 200) {
-                        if (Response.data.code == 200) {
-                          setDirectFilter((state) => [
-                            ...state,
-                            ...Response.data.data.map((row: any) => {
-                              return {
-                                label: row.productName,
-                                value: {
-                                  transactionType: '',
-                                  category: '',
-                                  product: row._id,
-                                  productName: '',
-                                },
-                              };
-                            }),
-                          ]);
-                        }
-                      }
-                    }
-                  );
-                }
-                if (item1.category_name.toLowerCase() == 'transfer') {
-                  return {
-                    label: 'UPI Transfer',
-                    value: {
-                      transactionType: 'Product/Service',
-                      category: item1._id,
-                      product: '',
-                      productName: '',
-                    },
-                  };
-                } else {
-                  return {
-                    label: item1.category_name,
-                    value: {
-                      transactionType: '',
-                      category: item1._id,
-                      product: '',
-                      productName: '',
-                    },
-                  };
-                }
-              }),
-            {
-              label: 'UPI varification',
-              value: {
-                transactionType: '',
-                category: '',
-                product: '',
-                productName: 'UPI Verification',
-              },
-            },
-            {
-              label: 'Beneficiary Verification',
-              value: {
-                transactionType: 'Beneficiary Verification',
-                category: '',
-                product: '',
-                productName: '',
-              },
-            },
-          ]);
-        }
-      }
-    });
-  };
-
-  const getTransaction = () => {
-    setLoading(true);
-    let body = {
-      pageInitData: {
-        pageSize: pageSize,
-        currentPage: currentPage,
-      },
-      partnerTransactionId: getValues('partnerTransactionId'),
-      accountNumber: getValues('accountNumber'),
-      productName: getValues('productName'),
-      mobileNumber: getValues('mobileNumber'),
-      status: getValues('status'),
-      transactionType: getValues('transactionType'),
-      categoryId: getValues('category.categoryId'),
-      productId: getValues('product') || '',
-      startDate: fDateFormatForApi(getValues('startDate')),
-      endDate: fDateFormatForApi(getValues('endDate')),
-      key1: getValues('key1') || '',
-      key2: getValues('key2') || '',
-      key3: getValues('key3') || '',
-    };
-
-    Api(`apiBox/Transactions/transactionByUser`, 'POST', body, token).then((Response: any) => {
-      console.log('======Transaction==response=====>' + Response);
-      if (Response.status == 200) {
-        if (Response.data.code == 200) {
-          setFilterdValue(Response.data.data.data);
-          setPageCount(Response.data.data.totalNumberOfRecords);
-          setCurrentTab('');
-          enqueueSnackbar(Response.data.message);
-        } else {
-          enqueueSnackbar(Response.data.message);
-        }
-        setLoading(false);
-      } else {
-        enqueueSnackbar('Failed', { variant: 'error' });
-        setLoading(false);
-      }
-    });
-  };
-
-  const filterTransaction = async (data: FormValuesProps) => {
-    setCurrentPage(1);
-    try {
-      setFilterdValue([]);
-      setLoading(true);
-      let body = {
-        pageInitData: {
-          pageSize: pageSize,
-          currentPage: currentPage,
-        },
-        clientRefId: data.partnerTransactionId,
-        status: data.status,
-        transactionType: data.transactionType,
-        categoryId: data.category.categoryId,
-        productId: data.product,
-        mobileNumber: data.mobileNumber,
-        productName: data.productName,
-        accountNumber: data.accountNumber,
-        key1: data.key1,
-        key2: data.key2,
-        key3: data.key3,
-        startDate: fDateFormatForApi(getValues('startDate')),
-        endDate: fDateFormatForApi(getValues('endDate')),
-      };
-      await Api(`apiBox/Transactions/transactionByUser`, 'POST', body, token).then(
-        (Response: any) => {
-          console.log('======Transaction==response=====>' + Response);
-          if (Response.status == 200) {
-            if (Response.data.code == 200) {
-              setFilterdValue(Response.data.data.data);
-              setPageCount(Response.data.data.totalNumberOfRecords);
-              handleClose();
-              enqueueSnackbar(Response.data.message);
-            } else {
-              enqueueSnackbar(Response.data.message, { variant: 'error' });
-            }
-            setLoading(false);
-          } else {
-            setLoading(false);
-            enqueueSnackbar('Failed', { variant: 'error' });
-          }
-        }
-      );
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const tableLabels2 = [
-    { id: 'Date&Time', label: 'Txn Details' },
+  const tableLabels = [
+    { id: 'Date&Time', label: 'Date & Time' },
     { id: 'mode', label: 'Mode' },
     { id: 'Product', label: 'Product' },
     { id: 'Operator', label: 'Operator/ Beneficiary' },
@@ -383,312 +96,34 @@ export default function MyTransactions() {
     { id: 'status', label: 'Status' },
   ];
 
-  const handleReset = () => {
-    reset(defaultValues);
-    setFilterdValue([]);
-    getTransaction();
-    setSelectedTab('All');
-    handleClose();
-  };
-
   return (
     <>
       <Helmet>
         <title> Transactions </title>
       </Helmet>
-      <Stack flexDirection={'row'} justifyContent={'space-between'} gap={1} mb={1}>
-        {isDesktop && (
-          <Scrollbar sx={{ width: '100%', p: 1 }}>
-            <Stack sx={{ flexWrap: 'nowrap' }}>
-              <FormControl>
-                <RadioGroup
-                  sx={{ flexWrap: 'nowrap' }}
-                  row
-                  aria-labelledby="demo-row-radio-buttons-group-label"
-                  name="row-radio-buttons-group"
-                  value={selectedTab}
-                  onChange={(event, newValue) => {
-                    setSelectedTab(newValue);
-                  }}
-                >
-                  {directFilter.map((item: any) => (
-                    <FormControlLabel
-                      key={item.label}
-                      value={item.label}
-                      control={<Radio />}
-                      label={item.label}
-                      onClick={() => {
-                        setValue('category.categoryId', item.value.category);
-                        setValue('transactionType', item.value.transactionType);
-                        setValue('product', item.value.product);
-                        setValue('productName', item.value.productName);
-                        getProductlist(item.value.category);
-                        getTransaction();
-                      }}
-                      sx={{ whiteSpace: 'nowrap' }}
-                    />
-                  ))}
-                </RadioGroup>
-              </FormControl>
-            </Stack>
-          </Scrollbar>
-        )}
-        <Stack flexDirection={'row'} gap={1} alignItems={'center'}>
-          <Button variant="outlined" onClick={handleReset} size="medium">
-            <Iconify icon="bx:reset" color={'primary.main'} mr={1} />
-            Reset
-          </Button>
-          <Button variant="contained" onClick={handleOpen}>
-            <Iconify icon="icon-park-outline:filter" color={'common.white'} mr={1} /> Filter
-          </Button>
-        </Stack>
-      </Stack>
-      <Stack>
-        <MotionModal open={open} onClose={handleClose} width={{ xs: '95%', sm: 500 }}>
-          <Stack>
-            <Scrollbar sx={{ maxHieght: { xs: 400, md: 800 } }}>
-              {/* <Box> */}
-              <FormProvider methods={methods} onSubmit={handleSubmit(filterTransaction)}>
-                <Stack gap={1} m={1}>
-                  <RHFSelect
-                    name="transactionType"
-                    label="Select Transaction Type"
-                    size="small"
-                    SelectProps={{
-                      native: false,
-                      sx: { textTransform: 'capitalize' },
-                    }}
-                  >
-                    {txnType.map((item: any, index: number) => {
-                      return (
-                        <MenuItem key={index} value={item}>
-                          {item}
-                        </MenuItem>
-                      );
-                    })}
-                  </RHFSelect>
-                  <RHFSelect
-                    name="category.categoryId"
-                    label="Category"
-                    size="small"
-                    SelectProps={{
-                      native: false,
-                      sx: { textTransform: 'capitalize' },
-                    }}
-                  >
-                    <MenuItem value="">All</MenuItem>
-                    {categoryList.map((item: any) => {
-                      return (
-                        <MenuItem
-                          key={item._id}
-                          value={item._id}
-                          onClick={() => {
-                            getProductlist(item._id);
-                            setValue('category.categoryName', item.category_name);
-                          }}
-                        >
-                          {item?.category_name}
-                        </MenuItem>
-                      );
-                    })}
-                  </RHFSelect>
+      <Card>
+        <Scrollbar
+          sx={
+            isMobile
+              ? { maxHeight: window.innerHeight - 210 }
+              : { maxHeight: window.innerHeight - 164 }
+          }
+        >
+          <Table size="small" aria-label="customized table" stickyHeader>
+            <TableHeadCustom headLabel={tableLabels} />
 
-                  {!!watch('category.categoryId') && (
-                    <>
-                      {!['transfer'].includes(watch('category.categoryName').toLowerCase()) && (
-                        <RHFTextField
-                          name="key1"
-                          label={
-                            ['dmt2', 'dmt1', 'money transfer'].includes(
-                              watch('category.categoryName').toLowerCase()
-                            )
-                              ? 'Account Number'
-                              : ['aeps', 'aeps 2', 'aadhaar pay'].includes(
-                                  watch('category.categoryName').toLowerCase()
-                                )
-                              ? 'bank Name'
-                              : ['recharges', 'bill payment'].includes(
-                                  watch('category.categoryName').toLowerCase()
-                                )
-                              ? 'Operator Name'
-                              : 'key1'
-                          }
-                        />
-                      )}
-                      <RHFTextField
-                        name="key2"
-                        label={
-                          ['dmt2', 'dmt1', 'money transfer'].includes(
-                            watch('category.categoryName').toLowerCase()
-                          )
-                            ? 'IFSC'
-                            : ['aeps', 'aeps2', 'aadhaar pay'].includes(
-                                watch('category.categoryName').toLowerCase()
-                              )
-                            ? 'Aadhaar Number'
-                            : ['recharges', 'bill payment'].includes(
-                                watch('category.categoryName').toLowerCase()
-                              )
-                            ? 'Number'
-                            : ['transfer'].includes(watch('category.categoryName').toLowerCase())
-                            ? 'UPI ID'
-                            : 'key2'
-                        }
-                      />
-                      {!['recharges', 'bill payment', 'transfer'].includes(
-                        watch('category.categoryName').toLowerCase()
-                      ) && (
-                        <RHFTextField
-                          name="key3"
-                          label={
-                            ['dmt2', 'money transfer', 'dmt1'].includes(
-                              watch('category.categoryName').toLowerCase()
-                            )
-                              ? 'Bank Name'
-                              : ['aeps', 'aadhaar pay'].includes(
-                                  watch('category.categoryName').toLowerCase()
-                                )
-                              ? 'Mobile Number'
-                              : 'key3'
-                          }
-                        />
-                      )}
-                    </>
-                  )}
-                  <RHFSelect
-                    name="product"
-                    label="Product"
-                    size="small"
-                    SelectProps={{
-                      native: false,
-                      sx: { textTransform: 'capitalize' },
-                    }}
-                  >
-                    <MenuItem value="">All</MenuItem>
-                    {ProductList.map((item: any) => {
-                      return (
-                        <MenuItem key={item._id} value={item._id}>
-                          {item?.productName}
-                        </MenuItem>
-                      );
-                    })}
-                  </RHFSelect>
-                  <RHFSelect
-                    name="status"
-                    label="Status"
-                    size="small"
-                    SelectProps={{
-                      native: false,
-                      sx: { textTransform: 'capitalize' },
-                    }}
-                  >
-                    <MenuItem value="">All</MenuItem>
-                    <MenuItem value="success">Success</MenuItem>
-                    <MenuItem value="failed">Failed</MenuItem>
-                    <MenuItem value="pending">Pending</MenuItem>
-                    <MenuItem value="in_process">In process</MenuItem>
-                    <MenuItem value="hold">Hold</MenuItem>
-                    <MenuItem value="initiated">Initiated</MenuItem>
-                  </RHFSelect>
-                  <RHFTextField size="small" name="partnerTransactionId" label="Client Id" />
-                  {/* <RHFTextField size="small" name="accountNumber" label="AccountNumber" /> */}
-                  <RHFTextField size="small" name="mobileNumber" label="MobileNumber" />
-                  <Stack direction={'row'} gap={1}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DatePicker
-                        label="Start date"
-                        inputFormat="DD/MM/YYYY"
-                        value={watch('startDate')}
-                        maxDate={new Date()}
-                        onChange={(newValue: any) => setValue('startDate', newValue)}
-                        renderInput={(params: any) => (
-                          <TextField {...params} size={'small'} sx={{ width: 150 }} />
-                        )}
-                      />
-                      <DatePicker
-                        label="End date"
-                        inputFormat="DD/MM/YYYY"
-                        value={watch('endDate')}
-                        minDate={watch('startDate')}
-                        maxDate={new Date()}
-                        onChange={(newValue: any) => setValue('endDate', newValue)}
-                        renderInput={(params: any) => (
-                          <TextField {...params} size={'small'} sx={{ width: 150 }} />
-                        )}
-                      />
-                    </LocalizationProvider>
-                  </Stack>
-                  <Stack flexDirection={'row'} flexBasis={{ xs: '100%', sm: '50%' }} gap={1}>
-                    <LoadingButton variant="contained" onClick={handleClose}>
-                      Cancel
-                    </LoadingButton>
-                    <LoadingButton variant="contained" onClick={handleReset}>
-                      <Iconify icon="bx:reset" color={'common.white'} mr={1} /> Reset
-                    </LoadingButton>
-                    <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
-                      Apply
-                    </LoadingButton>
-                    {/* <Button variant="contained" onClick={ExportData}>
-                    Export
-                  </Button> */}
-                  </Stack>
-                </Stack>
-              </FormProvider>
-            </Scrollbar>
-          </Stack>
-          {/* </Box> */}
-        </MotionModal>
-
-        <Grid item xs={12} md={6} lg={8}>
-          <>
-            <Scrollbar
-              sx={
-                isMobile
-                  ? { maxHeight: window.innerHeight - 210 }
-                  : { maxHeight: window.innerHeight - 154 }
-              }
-            >
-              <Table size="small" aria-label="customized table" stickyHeader>
-                <TableHeadCustom headLabel={tableLabels2} />
-
-                <TableBody>
-                  {(Loading ? [...Array(20)] : filterdValue).map((row: any) =>
-                    Loading ? (
-                      <MasterTransactionSkeleton />
-                    ) : (
-                      <TransactionRow key={row._id} row={row} />
-                    )
-                  )}
-                </TableBody>
-                {!filterdValue.length && <TableNoData isNotFound={!filterdValue.length} />}
-              </Table>
-            </Scrollbar>
-
-            {!Loading && (
-              <CustomPagination
-                page={currentPage - 1}
-                count={pageCount}
-                onPageChange={(
-                  event: React.MouseEvent<HTMLButtonElement> | null,
-                  newPage: number
-                ) => {
-                  setCurrentPage(newPage + 1);
-                }}
-                rowsPerPage={pageSize}
-                onRowsPerPageChange={(
-                  event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-                ) => {
-                  setPageSize(parseInt(event.target.value));
-                  setCurrentPage(1);
-                }}
-              />
-            )}
-          </>
-        </Grid>
-      </Stack>
+            <TableBody>
+              {tableData.map((row: any) => (
+                <TransactionRow key={row._id} row={row} />
+              ))}
+            </TableBody>
+            {!tableData.length && <TableNoData isNotFound={!tableData.length} />}
+          </Table>
+        </Scrollbar>
+      </Card>
     </>
   );
-}
+});
 
 type childProps = {
   row: any;
@@ -709,37 +144,6 @@ function TransactionRow({ row }: childProps) {
 
   const handleTextFieldChange = (event: any) => {
     setTextFieldValue(event.target.value);
-  };
-
-  const CheckTransactionStatus = (row: any) => {
-    setLoading(true);
-    let token = localStorage.getItem('token');
-    let rowFor = row;
-    Api(
-      rowFor.categoryName.toLowerCase() == 'money transfer'
-        ? `moneyTransfer/checkStatus/` + rowFor._id
-        : rowFor.categoryName.toLowerCase() == 'recharges'
-        ? `agents/v1/checkStatus/` + rowFor._id
-        : rowFor.categoryName.toLowerCase() == 'dmt2'
-        ? `dmt2/transaction/status/` + rowFor._id
-        : rowFor.transactionType == 'Wallet To Bank Account Settlement' &&
-          `settlement/checkStatus/` + rowFor._id,
-      'GET',
-      '',
-      token
-    ).then((Response: any) => {
-      if (Response.status == 200) {
-        if (Response.data.code == 200) {
-          enqueueSnackbar(Response.data.message);
-          setNewRow({ ...newRow, status: Response.data.data.status });
-        } else {
-          enqueueSnackbar(Response.data.message, { variant: 'error' });
-        }
-        setLoading(false);
-      } else {
-        setLoading(false);
-      }
-    });
   };
 
   const onCopy = (text: string) => {

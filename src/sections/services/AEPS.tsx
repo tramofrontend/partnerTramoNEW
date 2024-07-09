@@ -2,62 +2,52 @@ import { useContext, useEffect, useRef, useState } from 'react';
 
 // @mui
 import {
-  Stack,
-  Grid,
-  TextField,
-  tableCellClasses,
-  Button,
   Table,
   TableRow,
   TableBody,
   TableCell,
   Typography,
   IconButton,
-  styled,
   useTheme,
   Tooltip,
-  Modal,
-  TableContainer,
-  Divider,
-  MenuItem,
-  FormControl,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
   Card,
+  TableHead,
+  Grid,
+  Stack,
+  TextField,
+  Tab,
+  Tabs,
+  MenuItem,
+  Button,
 } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
+import { useSnackbar } from 'notistack';
+import React from 'react';
+import Scrollbar from 'src/components/scrollbar';
+import { TableHeadCustom, TableNoData } from 'src/components/table';
+import Iconify from 'src/components/iconify/Iconify';
+import { fDate, fDateFormatForApi, fDateTime } from '../../utils/formatTime';
+import Label from 'src/components/label/Label';
+import { sentenceCase } from 'change-case';
+import { useAuthContext } from 'src/auth/useAuthContext';
+import { fIndianCurrency } from 'src/utils/formatNumber';
+import useCopyToClipboard from 'src/hooks/useCopyToClipboard';
+import useResponsive from 'src/hooks/useResponsive';
+import FilledCircleGraph from 'src/components/Graph/FilledCircleGraph';
+import LinearGraph from 'src/components/Graph/LinearGraph';
+import { Api } from 'src/webservices';
+import { CategoryContext } from 'src/pages/Services';
 // form
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useSnackbar } from 'notistack';
-import React from 'react';
-import { Api } from 'src/webservices';
-import Scrollbar from 'src/components/scrollbar';
-import { TableHeadCustom, TableNoData } from 'src/components/table';
-import Iconify from 'src/components/iconify/Iconify';
-import ReactToPrint from 'react-to-print';
-import { fDate, fDateTime } from '../../utils/formatTime';
-import Label from 'src/components/label/Label';
-import { sentenceCase } from 'change-case';
-import { useAuthContext } from 'src/auth/useAuthContext';
-import CustomPagination from 'src/components/customFunctions/CustomPagination';
-import FormProvider, { RHFSelect, RHFTextField } from '../../components/hook-form';
-import { LoadingButton } from '@mui/lab';
-import Logo from 'src/components/logo/Logo';
-import { fIndianCurrency } from 'src/utils/formatNumber';
-import useCopyToClipboard from 'src/hooks/useCopyToClipboard';
-import { Icon } from '@iconify/react';
-import useResponsive from 'src/hooks/useResponsive';
-import { CustomAvatar } from 'src/components/custom-avatar';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import FormProvider from 'src/components/hook-form/FormProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
-import { fDateFormatForApi } from 'src/utils/formatTime';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { RHFSelect, RHFTextField } from 'src/components/hook-form';
+import { LoadingButton } from '@mui/lab';
+import CustomPagination from 'src/components/customFunctions/CustomPagination';
 import { MasterTransactionSkeleton } from 'src/components/Skeletons/MasterTransactionSkeleton';
-import MotionModal from 'src/components/animate/MotionModal';
-import { CategoryContext } from 'src/pages/Services';
 
 // ----------------------------------------------------------------------
 
@@ -67,7 +57,9 @@ type FormValuesProps = {
   endDate: null;
   transactionId: string;
   clientId: string;
-  mobileNumber: string;
+  product: string;
+  mode: string;
+  transactionType: string;
   key1: string;
   key2: string;
   key3: string;
@@ -75,12 +67,13 @@ type FormValuesProps = {
   status: string;
 };
 
-export default React.memo(function BeneVerfication() {
+export default React.memo(function AEPS() {
   const isMobile = useResponsive('up', 'sm');
   let token = localStorage.getItem('token');
   const { enqueueSnackbar } = useSnackbar();
   const category: any = useContext(CategoryContext);
   const [tableData, setTableData] = useState([]);
+  const [productList, setProductList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [pageCount, setPageCount] = useState(0);
   const [pageSize, setPageSize] = useState(25);
@@ -94,7 +87,9 @@ export default React.memo(function BeneVerfication() {
     endDate: null,
     transactionId: '',
     clientId: '',
-    mobileNumber: '',
+    product: '',
+    transactionType: '',
+    mode: '',
     key1: '',
     key2: '',
     key3: '',
@@ -119,22 +114,38 @@ export default React.memo(function BeneVerfication() {
 
   const tableLabels = [
     { id: 'Date&Time', label: 'Date & Time' },
-    { id: 'Transaction Id', label: 'Transaction ID' },
-    { id: 'Client ID', label: 'Client ID' },
-    { id: 'Mobile Number', label: 'Mobile Number' },
-    { id: 'Bank Name', label: 'Bank Name' },
-    { id: 'Account Number', label: 'Account Number' },
-    { id: 'IFSC', label: 'IFSC' },
-    { id: 'UTR/RRN', label: 'UTR/RRN' },
-    { id: 'Charges', label: 'Charges' },
-    { id: 'GST', label: 'GST' },
+    { id: 'transaction', label: 'Transaction ID' },
+    { id: 'client', label: 'Client ID' },
+    { id: 'mode', label: 'Mode' },
+    { id: 'bank', label: 'Bank Name' },
+    { id: 'aadhaar', label: 'Aadhaar Number' },
+    { id: 'Customer', label: 'Customer Number' },
+    { id: 'UTR', label: 'UTR' },
+    { id: 'Transaction Amount', label: 'Transaction Amount' },
+    { id: 'Commission', label: 'Commission' },
+    { id: 'TDS', label: 'TDS' },
     { id: 'Debit', label: 'Debit' },
+    { id: 'Credit', label: 'Credit' },
     { id: 'Status', label: 'Status' },
   ];
 
   useEffect(() => {
+    getProducts();
+  }, []);
+
+  useEffect(() => {
     getTransaction();
   }, [pageSize, currentPage]);
+
+  const getProducts = () => {
+    Api(`product/get_ProductList/${category.category}`, 'GET', '', token).then((Response: any) => {
+      if (Response.status == 200) {
+        if (Response.data.code == 200) {
+          setProductList(Response.data.data);
+        }
+      }
+    });
+  };
 
   const getTransaction = () => {
     setIsLoading(true);
@@ -143,15 +154,15 @@ export default React.memo(function BeneVerfication() {
         pageSize: pageSize,
         currentPage: currentPage,
       },
-      transactionType: category.transactionType,
+      transactionType: getValues('transactionType'),
       categoryId: category.category,
-      productId: category.product,
+      productId: getValues('product'),
       productName: category.productName,
       startDate: fDateFormatForApi(getValues('startDate')),
       endDate: fDateFormatForApi(getValues('endDate')),
       transactionId: getValues('transactionId'),
       clientRefId: getValues('clientId'),
-      mobileNumber: getValues('mobileNumber'),
+      mode: getValues('mode'),
       key1: getValues('key1'),
       key2: getValues('key2'),
       key3: getValues('key3'),
@@ -184,7 +195,7 @@ export default React.memo(function BeneVerfication() {
   useEffect(() => {
     setValue('transactionId', '');
     setValue('clientId', '');
-    setValue('mobileNumber', '');
+    setValue('product', '');
     setValue('key1', '');
     setValue('key2', '');
     setValue('key3', '');
@@ -196,6 +207,7 @@ export default React.memo(function BeneVerfication() {
       <Helmet>
         <title> Transactions </title>
       </Helmet>
+
       <FormProvider methods={methods} onSubmit={handleSubmit(getTransaction)}>
         <Scrollbar>
           <Grid display={'grid'} gridTemplateColumns={'repeat(5, 1fr)'} gap={1} my={1}>
@@ -211,27 +223,60 @@ export default React.memo(function BeneVerfication() {
               <MenuItem value=""></MenuItem>
               <MenuItem value="transaction_id">Transaction ID</MenuItem>
               <MenuItem value="client_id">Client ID</MenuItem>
-              <MenuItem value="mobile_number">Mobile Number</MenuItem>
-              <MenuItem value="account_number">Account Number</MenuItem>
-              <MenuItem value="ifsc">IFSC</MenuItem>
+              <MenuItem value="mode">Mode</MenuItem>
               <MenuItem value="bank_name">Bank Name</MenuItem>
+              <MenuItem value="aadhaar_number">Aadhaar Number</MenuItem>
+              <MenuItem value="customer_number">Customer Number</MenuItem>
               <MenuItem value="utr">UTR</MenuItem>
             </RHFSelect>
 
             {watch('searchBy') == 'client_id' && (
-              <RHFTextField name="transactionId" label="Client Id" />
+              <RHFTextField size="small" name="transactionId" label="Client Id" />
             )}
             {watch('searchBy') == 'transaction_id' && (
-              <RHFTextField name="clientId" label="Transaction Id" />
+              <RHFTextField size="small" name="clientId" label="Transaction Id" />
             )}
-            {watch('searchBy') == 'mobile_number' && (
-              <RHFTextField name="mobileNumber" label="Mobile Number" />
+            {watch('searchBy') == 'mode' && (
+              <RHFSelect
+                name="product"
+                label="mode"
+                size="small"
+                SelectProps={{
+                  native: false,
+                  sx: { textTransform: 'capitalize' },
+                }}
+              >
+                <MenuItem value="">All</MenuItem>
+                {productList.map((item: any) => (
+                  <MenuItem
+                    key={item._id}
+                    value={item._id}
+                    onClick={() => {
+                      setValue('transactionType', '');
+                      setValue('product', item._id);
+                    }}
+                  >
+                    {item.productName}
+                  </MenuItem>
+                ))}
+                <MenuItem
+                  value="AEPS Registration Charge"
+                  onClick={() => {
+                    setValue('product', '');
+                    setValue('transactionType', 'AEPS Registration Charge');
+                  }}
+                >
+                  AEPS Registration Charge
+                </MenuItem>
+              </RHFSelect>
             )}
-            {watch('searchBy') == 'account_number' && (
-              <RHFTextField name="key1" label="account Number" />
+            {watch('searchBy') == 'bank_name' && <RHFTextField name="key1" label="Bank Name" />}
+            {watch('searchBy') == 'aadhaar_number' && (
+              <RHFTextField name="key2" label="Aadhaar Number" />
             )}
-            {watch('searchBy') == 'ifsc' && <RHFTextField name="key2" label="IFSC" />}
-            {watch('searchBy') == 'bank_name' && <RHFTextField name="key3" label="Bank Name" />}
+            {watch('searchBy') == 'customer_number' && (
+              <RHFTextField name="key3" label="Customer Number" />
+            )}
             {watch('searchBy') == 'utr' && <RHFTextField name="utr" label="UTR" />}
 
             <Stack direction={'row'} gap={1}>
@@ -373,142 +418,132 @@ function TransactionRow({ row }: childProps) {
     }
   };
 
-  const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: { xs: '90%', sm: 720 },
-    bgcolor: '#ffffff',
-    borderRadius: 2,
-  };
-
-  const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 12,
-      padding: 6,
-    },
-  }));
-
-  const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(even)': {
-      backgroundColor: theme.palette.grey[300],
-    },
-    // hide last border
-    '&:last-child td, &:last-child th': {
-      border: 0,
-      padding: '0px 20px',
-    },
-  }));
-
   return (
-    <TableRow key={newRow._id}>
-      {/* Date & Time */}
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'} color="text.secondary">
-          {fDateTime(newRow?.createdAt)}
-        </Typography>
-      </TableCell>
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'}>
-          {newRow?.clientRefId}{' '}
-          <Tooltip title="Copy" placement="top">
-            <IconButton onClick={() => onCopy(newRow?.clientRefId)} sx={{ p: 0 }}>
-              <Iconify icon="eva:copy-fill" width={20} />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-      </TableCell>
+    <>
+      <TableRow key={newRow._id}>
+        {/* Date & Time */}
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'} color="text.secondary">
+            {fDateTime(newRow?.createdAt)}
+          </Typography>
+        </TableCell>
 
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'}>
-          {newRow?.partnerTransactionId}{' '}
-          <Tooltip title="Copy" placement="top">
-            <IconButton onClick={() => onCopy(newRow?.partnerTransactionId)} sx={{ p: 0 }}>
-              <Iconify icon="eva:copy-fill" width={20} />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-      </TableCell>
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {newRow?.clientRefId}{' '}
+            <Tooltip title="Copy" placement="top">
+              <IconButton onClick={() => onCopy(newRow?.clientRefId)} sx={{ p: 0 }}>
+                <Iconify icon="eva:copy-fill" width={20} />
+              </IconButton>
+            </Tooltip>
+          </Typography>
+        </TableCell>
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {newRow?.partnerTransactionId}{' '}
+            <Tooltip title="Copy" placement="top">
+              <IconButton onClick={() => onCopy(newRow?.partnerTransactionId)} sx={{ p: 0 }}>
+                <Iconify icon="eva:copy-fill" width={20} />
+              </IconButton>
+            </Tooltip>
+          </Typography>
+        </TableCell>
 
-      {/* Product  */}
-      <TableCell>
-        <Typography variant="body2">{newRow?.mobileNumber || '-'}</Typography>
-      </TableCell>
+        <TableCell>
+          <Typography variant="body2" noWrap>
+            {sentenceCase(newRow?.productName) || '-'}
+          </Typography>
+        </TableCell>
+        <TableCell>
+          <Typography variant="body2" noWrap>
+            {newRow?.operator?.key1 || '-'}
+          </Typography>
+        </TableCell>
+        <TableCell>
+          <Typography variant="body2" noWrap>
+            {newRow?.operator?.key2?.length &&
+              'X'
+                .repeat(newRow?.operator?.key2?.length - 4)
+                .split('')
+                .map((item: any, index: number) => {
+                  if (index % 4 == 0) {
+                    return ' ' + item;
+                  } else {
+                    return item;
+                  }
+                })
+                .join('') +
+                newRow?.operator?.key2
+                  ?.slice(newRow?.operator?.key2?.length - 4)
+                  .split('')
+                  .map((item: any, index: number) => {
+                    if (index % 4 == 0) {
+                      return ' ' + item;
+                    } else {
+                      return item;
+                    }
+                  })
+                  .join('')}
+          </Typography>
+        </TableCell>
+        <TableCell>
+          <Typography variant="body2">{newRow?.operator?.key3 || '-'}</Typography>
+        </TableCell>
 
-      {/* Operator */}
-      <TableCell>
-        <Typography variant="body2" noWrap>
-          {newRow?.operator?.key3}{' '}
-        </Typography>
-      </TableCell>
+        {/* Product  */}
+        <TableCell>
+          <Typography variant="body2">{newRow?.vendorUtrNumber}</Typography>
+        </TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        <Typography variant="body2">
-          {newRow?.operator?.key1}
-          <Tooltip title="Copy" placement="top">
-            <IconButton onClick={() => onCopy(newRow?.operator?.key1)} sx={{ p: 0 }}>
-              <Iconify icon="eva:copy-fill" width={20} />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-      </TableCell>
+        {/* Transaction Amount */}
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {fIndianCurrency(newRow.amount) || '₹0'}
+          </Typography>
+        </TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        <Typography variant="body2">{newRow?.operator?.key2}</Typography>
-      </TableCell>
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {fIndianCurrency(newRow?.partnerDetails?.commissionAmount) || '₹0'}
+          </Typography>
+        </TableCell>
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {fIndianCurrency(newRow?.partnerDetails?.TDSAmount) || '₹0'}
+          </Typography>
+        </TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        <Typography variant="body2">{newRow?.vendorUtrNumber}</Typography>
-      </TableCell>
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {fIndianCurrency(newRow.debit) || '₹0'}
+          </Typography>
+        </TableCell>
+        <TableCell>
+          <Typography variant="body2" whiteSpace={'nowrap'}>
+            {fIndianCurrency(newRow?.partnerDetails?.creditedAmount) || '₹0'}
+          </Typography>
+        </TableCell>
 
-      {/* Charge/Commission */}
-      <TableCell>
-        <Stack flexDirection={'row'} justifyContent={'center'}>
-          <Typography variant="body2" whiteSpace={'nowrap'} color={'error'}>
-            {fIndianCurrency(newRow.amount - newRow.GST)}
-          </Typography>{' '}
-        </Stack>
-      </TableCell>
-
-      {/* Closing Balance */}
-      <TableCell>
-        <Typography variant="body2" whiteSpace={'nowrap'}>
-          {fIndianCurrency(newRow?.GST)}
-        </Typography>
-      </TableCell>
-
-      <TableCell>
-        <Stack flexDirection={'row'} justifyContent={'center'}>
-          <Typography variant="body2" whiteSpace={'nowrap'} color={'error'}>
-            {fIndianCurrency(newRow.amount + newRow.debit)}
-          </Typography>{' '}
-        </Stack>
-      </TableCell>
-
-      <TableCell
-        sx={{
-          textTransform: 'lowercase',
-          fontWeight: 600,
-          textAlign: 'center',
-        }}
-      >
-        <Label
-          variant="soft"
-          color={
-            (newRow.status === 'failed' && 'error') ||
-            ((newRow.status === 'pending' || newRow.status === 'in_process') && 'warning') ||
-            'success'
-          }
-          sx={{ textTransform: 'capitalize' }}
+        <TableCell
+          sx={{
+            textTransform: 'lowercase',
+            fontWeight: 600,
+            textAlign: 'center',
+          }}
         >
-          {newRow.status ? sentenceCase(newRow.status) : ''}
-        </Label>
-      </TableCell>
-    </TableRow>
+          <Label
+            variant="soft"
+            color={
+              (newRow.status === 'failed' && 'error') ||
+              ((newRow.status === 'pending' || newRow.status === 'in_process') && 'warning') ||
+              'success'
+            }
+            sx={{ textTransform: 'capitalize' }}
+          >
+            {newRow.status ? sentenceCase(newRow.status) : ''}
+          </Label>
+        </TableCell>
+      </TableRow>
+    </>
   );
 }
