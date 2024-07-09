@@ -25,7 +25,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import dayjs from 'dayjs';
 import CircleGraph from 'src/components/Graph/CircleGraph';
 import { Instance } from '@popperjs/core';
-import { fIndianCurrency, fNumber } from 'src/utils/formatNumber';
+import { fIndianCurrency, fNumber, fPercent } from 'src/utils/formatNumber';
 import { fDateFormatForApi } from 'src/utils/formatTime';
 import Chart from 'src/components/chart';
 
@@ -323,11 +323,11 @@ function Dashboard() {
             </Scrollbar>
             <Stack flexDirection={'row'} justifyContent={'end'} gap={1} my={0.5}>
               <Typography variant="subtitle1">
-                {fNumber(statusCount.totalTransaction.count)} Unit
+                {fNumber(statusCount.totalTransaction.count) || 0} Unit
               </Typography>
               <Stack sx={{ width: 5, bgcolor: 'warning.light', borderRadius: 1 }}></Stack>
               <Typography variant="subtitle1">
-                {fIndianCurrency(statusCount.totalTransaction.amount)}
+                {fIndianCurrency(statusCount.totalTransaction.amount) || '₹0'}
               </Typography>
             </Stack>
             <Stack flexDirection={'row'}>
@@ -460,12 +460,12 @@ interface DonutChartProps {
 }
 
 const DonutChart: React.FC<DonutChartProps> = ({ serviceData, Reason }) => {
-  const services = serviceData.map((data) => `${data.service} - ${fIndianCurrency(data.amount)}`);
+  const services = serviceData.map(
+    (data) => `${data.service} - ${fIndianCurrency(data.amount)} - ${fPercent(data.percentage)}`
+  );
   const amount = serviceData.map((data) => data.amount);
-  console.log(serviceData);
-  console.log(amount);
   const totalCount = amount.reduce((a, b) => a + b, 0);
-  const percentages = amount.map((count) => Number(((count / totalCount) * 100)?.toFixed(2)));
+  const percentages = serviceData.map((item: any) => item.percentage);
 
   const chartOptions: any = {
     chart: {
@@ -483,7 +483,7 @@ const DonutChart: React.FC<DonutChartProps> = ({ serviceData, Reason }) => {
       y: {
         formatter: (val: number, { seriesIndex }: { seriesIndex: number }) => {
           const percentage = (amount[seriesIndex] / totalCount) * 100;
-          return `${percentage.toFixed(2)}%`;
+          return ``;
         },
       },
     },
@@ -493,12 +493,25 @@ const DonutChart: React.FC<DonutChartProps> = ({ serviceData, Reason }) => {
           size: '85%',
           labels: {
             show: true,
+            name: {
+              show: true,
+              formatter: (val: number, { seriesIndex }: { seriesIndex: number }) => {
+                console.log(val);
+                return `${(val + '').split('-')[0]}`;
+              },
+            },
+            value: {
+              show: true,
+              formatter: (val: number, { seriesIndex }: { seriesIndex: number }) => {
+                return `${val}%`;
+              },
+            },
             total: {
               show: true,
               label: 'Total',
               formatter: () => `${fIndianCurrency(totalCount)}`,
               style: {
-                fontSize: '22px',
+                fontSize: '10px',
                 fontWeight: 'bold',
                 color: '#000000', // Change this to your desired color
               },
