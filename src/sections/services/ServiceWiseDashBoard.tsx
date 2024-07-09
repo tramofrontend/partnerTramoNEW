@@ -473,55 +473,7 @@ function ServiceWiseDashBoard() {
           Dashboard data not found
         </Typography>
       )}
-      {/* {!isLoading && (
-        <>
-          {statusCount.totalTransaction.count ? (
-            <>
-              <Stack flexDirection={{ md: 'row' }} gap={2}>
-                <Stack sx={{ flexBasis: '30%' }}>
-                  <MultiCircle
-                    title="Transactions"
-                    total={statusCount.totalTransaction.amount}
-                    chart={{
-                      series: [
-                        { label: 'Success', value: statusCount.status.success.successPercentage },
-                        { label: 'Pending', value: statusCount.status.pending.pendingPercentage },
-                        { label: 'Failed', value: statusCount.status.failed.failedPercentage },
-                      ],
-                    }}
-                  />
-                </Stack>
-                <Stack sx={{ flexBasis: '70%' }}>
-                  <LinearGraph
-                    title="Transaction Count"
-                    data={[
-                      {
-                        status: 'Success',
-                        quantity: statusCount.status.success.totalCount,
-                        value: statusCount.status.success.successPercentage,
-                      },
-                      {
-                        status: 'Pending',
-                        quantity: statusCount.status.pending.totalCount,
-                        value: statusCount.status.pending.pendingPercentage,
-                      },
-                      {
-                        status: 'Failed',
-                        quantity: statusCount.status.failed.totalCount,
-                        value: statusCount.status.failed.failedPercentage,
-                      },
-                    ]}
-                  />
-                </Stack>
-              </Stack>
-            </>
-          ) : (
-            <Typography textAlign={'center'} variant="subtitle1" my={5}>
-              Transactions Not found
-            </Typography>
-          )}{' '}
-        </>
-      )} */}
+
       {statusCount.remarks.length > 0 && (
         <CircleGraph
           serviceData={statusCount.remarks?.map((item: any) => ({
