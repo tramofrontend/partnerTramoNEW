@@ -27,6 +27,7 @@ import CircleGraph from 'src/components/Graph/CircleGraph';
 import { Instance } from '@popperjs/core';
 import { fIndianCurrency, fNumber } from 'src/utils/formatNumber';
 import { fDateFormatForApi } from 'src/utils/formatTime';
+import Chart from 'src/components/chart';
 
 type FormValuesProps = {
   startDate: Date | null;
@@ -39,6 +40,14 @@ type DashboardProps = {
   totalPercentage: number;
   count: number;
   amount: number;
+  color: string[];
+};
+
+type CategoryProps = {
+  categoryName: string;
+  percentage: number;
+  totalCount: number;
+  totalAmount: number;
   color: string[];
 };
 
@@ -60,6 +69,7 @@ function Dashboard() {
   const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState<DashboardProps[]>([]);
+  const [categoryData, setCategoryData] = useState<CategoryProps[]>([]);
 
   const [statusCount, setStatusCount] = useState({
     totalTransaction: {
@@ -173,6 +183,12 @@ function Dashboard() {
               color: [theme.palette.error.light, theme.palette.error.main],
             },
           ]);
+          const categoryData: CategoryProps[] = [];
+          for (let x in Response.data.data.category) {
+            Response.data.data.category[x].totalAmount &&
+              categoryData.push(Response.data.data.category[x]);
+          }
+          setCategoryData(categoryData);
         }
       }
       setIsLoading(false);
@@ -406,15 +422,24 @@ function Dashboard() {
                 Dashboard data not found
               </Typography>
             )}
+            <DonutChart
+              serviceData={categoryData.map((item) => ({
+                service: item.categoryName,
+                amount: item.totalAmount,
+                count: item.totalCount,
+                percentage: item.percentage,
+              }))}
+              Reason={statusCount.remarks}
+            />
 
-            {statusCount.remarks.length > 0 && (
+            {/* {statusCount.remarks.length > 0 && (
               <CircleGraph
                 serviceData={statusCount.remarks?.map((item: any) => ({
                   service: item.reason,
                   count: item.totalCount,
                 }))}
               />
-            )}
+            )} */}
           </Card>
         </Scrollbar>
       </>
@@ -423,3 +448,88 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
+interface DonutChartProps {
+  serviceData: {
+    service: string;
+    amount: number;
+    count: number;
+    percentage: number;
+  }[];
+  Reason: string[];
+}
+
+const DonutChart: React.FC<DonutChartProps> = ({ serviceData, Reason }) => {
+  const services = serviceData.map((data) => `${data.service} - ${fIndianCurrency(data.amount)}`);
+  const amount = serviceData.map((data) => data.amount);
+  console.log(serviceData);
+  console.log(amount);
+  const totalCount = amount.reduce((a, b) => a + b, 0);
+  const percentages = amount.map((count) => Number(((count / totalCount) * 100)?.toFixed(2)));
+
+  const chartOptions: any = {
+    chart: {
+      type: 'donut',
+    },
+    labels: services,
+    dataLabels: {
+      formatter: (val: number, opts: any) => {
+        const serviceName = opts.w.globals.labels[opts.seriesIndex];
+        return ``;
+      },
+    },
+    tooltip: {
+      fillSeriesColor: false,
+      y: {
+        formatter: (val: number, { seriesIndex }: { seriesIndex: number }) => {
+          const percentage = (amount[seriesIndex] / totalCount) * 100;
+          return `${percentage.toFixed(2)}%`;
+        },
+      },
+    },
+    plotOptions: {
+      pie: {
+        donut: {
+          size: '85%',
+          labels: {
+            show: true,
+            total: {
+              show: true,
+              label: 'Total',
+              formatter: () => `${fIndianCurrency(totalCount)}`,
+              style: {
+                fontSize: '22px',
+                fontWeight: 'bold',
+                color: '#000000', // Change this to your desired color
+              },
+            },
+          },
+        },
+      },
+    },
+    legend: {
+      position: 'right',
+      verticalAlign: 'middle',
+    },
+  };
+
+  const chartSeries = percentages;
+
+  return (
+    <Scrollbar sx={{ width: 600 }}>
+      <Grid
+        display={'grid'}
+        // gridTemplateColumns={{ xs: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }}
+        my={5}
+        sx={{
+          '& .apexcharts-legend.apx-legend-position-right': {
+            alignSelf: 'stretch',
+          },
+        }}
+      >
+        <Typography variant="h4">All Services</Typography>
+        <Chart options={chartOptions} series={chartSeries} type="donut" width={'100%'} />
+      </Grid>
+    </Scrollbar>
+  );
+};
