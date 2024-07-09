@@ -455,7 +455,7 @@ function NewFundRequest({ getRaisedRequest }: props) {
           </Stack>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
-              label="Start date"
+              label="deposit date"
               inputFormat="DD/MM/YYYY"
               value={dayjs(watch('date'))}
               maxDate={new Date()}
