@@ -25,7 +25,7 @@ import MultiCircle from 'src/components/Graph/MultiCircle';
 import { yupResolver } from '@hookform/resolvers/yup';
 import dayjs from 'dayjs';
 import { Instance } from '@popperjs/core';
-import { fIndianCurrency } from 'src/utils/formatNumber';
+import { fIndianCurrency, fNumber } from 'src/utils/formatNumber';
 import ApiDataLoading from 'src/components/customFunctions/ApiDataLoading';
 import CircleGraph from 'src/components/Graph/CircleGraph';
 
@@ -289,6 +289,16 @@ function ServiceWiseDashBoard() {
           </FormProvider>
         </Stack>
       </Scrollbar>
+
+      <Stack flexDirection={'row'} justifyContent={'end'} gap={1} my={0.5}>
+        <Typography variant="subtitle1">
+          {fNumber(statusCount.totalTransaction.count || 0)} Unit
+        </Typography>
+        <Stack sx={{ width: 5, bgcolor: 'warning.light', borderRadius: 1 }}></Stack>
+        <Typography variant="subtitle1">
+          {fIndianCurrency(statusCount.totalTransaction.amount) || '₹0'}
+        </Typography>
+      </Stack>
       <Stack flexDirection={'row'} gap={1}>
         <Tooltip
           title={`${statusCount.status.success.successPercentage}%`}
