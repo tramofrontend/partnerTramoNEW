@@ -4,7 +4,7 @@ import React from 'react';
 export const CallBackSkeleton = () => {
   return (
     <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
-        <Stack flexDirection={'row'} gap={2}>
+        <Stack flexDirection={'row'} justifyContent={'space-between'}>
           <Stack>
       <Stack justifyContent={'space-between'}>
         <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={600} height={40} />
