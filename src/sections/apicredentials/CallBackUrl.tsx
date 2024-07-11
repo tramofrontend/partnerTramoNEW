@@ -212,7 +212,7 @@ export default function CallBackUrl() {
         if (Response.status == 200) {
           if (Response.data.code == 200) {
             enqueueSnackbar(Response.data.message);
-            setEdit3(!edit6);
+            setEdit6(!edit6);
             getBBPSUurl();
             console.log('======updateDmt1CallbackUrl==code 200=====>', Response.data.data);
           } else {
@@ -251,7 +251,7 @@ export default function CallBackUrl() {
       <Helmet>
         <title>CallBack URL | Tramo</title>
       </Helmet>
-      <Stack flexDirection={'row'} gap={2}>
+      <Stack flexDirection={'row'} justifyContent={'space-between'}>
         <Stack>
       <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
         <Stack justifyContent={'space-between'}>
