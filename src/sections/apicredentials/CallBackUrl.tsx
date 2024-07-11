@@ -22,12 +22,14 @@ export default function CallBackUrl() {
   const [edit3, setEdit3] = useState(false);
   const [edit4, setEdit4] = useState(false);
   const [edit5, setEdit5] = useState(false);
+  const [edit6, setEdit6] = useState(false);
   const [url, setUrl] = useState('');
   const [url1, setUrl1] = useState('');
   const [url2, setUrl2] = useState('');
   const [url3, setUrl3] = useState('');
   const [url4, setUrl4] = useState('');
   const [url5, setUrl5] = useState('');
+  const [url6, setUrl6] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -197,6 +199,30 @@ export default function CallBackUrl() {
     }
   };
 
+  const setDMT1Url = () => {
+    if (!edit6) {
+      setEdit6(!edit6);
+    } else {
+      let token = localStorage.getItem('token');
+      let body = {
+        dmt1CallbackUrl: url6,
+      };
+      Api(`apiBox/dashboard/updateDmt1CallbackUrl`, 'POST', body, token).then((Response: any) => {
+        console.log('======userProfileInfo==response=====>', Response);
+        if (Response.status == 200) {
+          if (Response.data.code == 200) {
+            enqueueSnackbar(Response.data.message);
+            setEdit3(!edit6);
+            getBBPSUurl();
+            console.log('======updateDmt1CallbackUrl==code 200=====>', Response.data.data);
+          } else {
+            console.log('======updateDmt1CallbackUrl=======>' + Response);
+          }
+        }
+      });
+    }
+  };
+
   const getBBPSUurl = () => {
     let token = localStorage.getItem('token');
     Api(`apiBox/dashboard/callbackUrls`, 'GET', '', token).then((Response: any) => {
@@ -283,6 +309,26 @@ export default function CallBackUrl() {
             />
             <LoadingButton variant="contained" onClick={setRechagurl}>
               {edit2 ? 'Save' : 'Edit'}
+            </LoadingButton>
+          </Stack>
+        </Stack>
+      </Box>
+      <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
+        <Stack justifyContent={'space-between'}>
+          <Typography variant="h4">DMT1 Callback URL</Typography>
+          <Stack flexDirection={'row'} gap={3} marginTop={3}>
+            <TextField
+              label="DMT1 url"
+              placeholder="DMT1 url"
+              type="string"
+              value={url6}
+              size="small"
+              disabled={!edit6}
+              variant={edit6 ? 'outlined' : 'filled'}
+              onChange={(e) => setUrl6(e.target.value)}
+            />
+            <LoadingButton variant="contained" onClick={setDMT1Url}>
+              {edit6 ? 'Save' : 'Edit'}
             </LoadingButton>
           </Stack>
         </Stack>
