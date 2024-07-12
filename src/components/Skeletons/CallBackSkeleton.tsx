@@ -3,32 +3,32 @@ import React from 'react';
 
 export const CallBackSkeleton = () => {
   return (
-    <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
-        <Stack flexDirection={'row'} justifyContent={'space-between'}>
+    <Box sx={{ mt: 2, width: { xs: '100%', md: '100%' } }}>
+        <Stack flexDirection={'row'} gap={15}>
           <Stack>
       <Stack justifyContent={'space-between'}>
-        <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={600} height={40} />
+        <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={200} height={40} />
         <Stack flexDirection={'row'} gap={3} marginTop={3}>
           <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={150} height={60} />
           <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={70} height={60} />
         </Stack>
       </Stack>
       <Stack justifyContent={'space-between'}>
-        <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={600} height={40} />
+        <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={200} height={40} />
         <Stack flexDirection={'row'} gap={3} marginTop={3}>
           <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={150} height={60} />
           <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={70} height={60} />
         </Stack>
       </Stack>
       <Stack justifyContent={'space-between'}>
-        <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={600} height={40} />
+        <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={200} height={40} />
         <Stack flexDirection={'row'} gap={3} marginTop={3}>
           <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={150} height={60} />
           <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={70} height={60} />
         </Stack>
       </Stack>
       <Stack justifyContent={'space-between'}>
-        <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={600} height={40} />
+        <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={200} height={40} />
         <Stack flexDirection={'row'} gap={3} marginTop={3}>
           <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={150} height={60} />
           <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={70} height={60} />
@@ -37,21 +37,21 @@ export const CallBackSkeleton = () => {
       </Stack>
       <Stack>
       <Stack justifyContent={'space-between'}>
-        <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={600} height={40} />
+        <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={200} height={40} />
         <Stack flexDirection={'row'} gap={3} marginTop={3}>
           <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={150} height={60} />
           <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={70} height={60} />
         </Stack>
       </Stack>
       <Stack justifyContent={'space-between'}>
-        <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={600} height={40} />
+        <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={200} height={40} />
         <Stack flexDirection={'row'} gap={3} marginTop={3}>
           <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={150} height={60} />
           <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={70} height={60} />
         </Stack>
       </Stack>
       <Stack justifyContent={'space-between'}>
-        <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={600} height={40} />
+        <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={200} height={40} />
         <Stack flexDirection={'row'} gap={3} marginTop={3}>
           <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={150} height={60} />
           <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={70} height={60} />
