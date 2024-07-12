@@ -233,6 +233,9 @@ export default function CallBackUrl() {
           setUrl1(Response.data.data.partnerCallbackUrls.payout)
           setUrl2(Response.data.data.partnerCallbackUrls.recharge)
           setUrl3(Response.data.data.partnerCallbackUrls.aeps)
+          setUrl4(Response.data.data.partnerCallbackUrls.transfer)
+          setUrl5(Response.data.data.partnerCallbackUrls.payoutPayments)
+          setUrl6(Response.data.data.partnerCallbackUrls.dmt1)
           setIsLoading(false)
           console.log('======userProfileInfo==code 200=====>', Response.data.data);
         } else {
@@ -251,9 +254,9 @@ export default function CallBackUrl() {
       <Helmet>
         <title>CallBack URL | Tramo</title>
       </Helmet>
-      <Stack flexDirection={'row'} justifyContent={'space-between'}>
+      <Stack flexDirection={'row'} gap={15}>
         <Stack>
-      <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
+      <Box sx={{ mt: 2, width: { xs: '100%', md: '100%' } }}>
         <Stack justifyContent={'space-between'}>
           <Typography variant="h4">BBPS Callback URL</Typography>
           <Stack flexDirection={'row'} gap={3} marginTop={3}>
@@ -273,7 +276,7 @@ export default function CallBackUrl() {
           </Stack>
         </Stack>
       </Box>
-      <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
+      <Box sx={{ mt: 2, width: { xs: '100%', md: '100%' } }}>
         <Stack justifyContent={'space-between'}>
           <Typography variant="h4">Money Transfer Callback URL</Typography>
           <Stack flexDirection={'row'} gap={3} marginTop={3}>
@@ -293,7 +296,7 @@ export default function CallBackUrl() {
           </Stack>
         </Stack>
       </Box>
-      <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
+      <Box sx={{ mt: 2, width: { xs: '100%', md: '100%' } }}>
         <Stack justifyContent={'space-between'}>
           <Typography variant="h4">Recharge Callback URL</Typography>
           <Stack flexDirection={'row'} gap={3} marginTop={3}>
@@ -313,7 +316,8 @@ export default function CallBackUrl() {
           </Stack>
         </Stack>
       </Box>
-      <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
+
+      <Box sx={{ mt: 2, width: { xs: '100%', md: '100%' } }}>
         <Stack justifyContent={'space-between'}>
           <Typography variant="h4">DMT1 Callback URL</Typography>
           <Stack flexDirection={'row'} gap={3} marginTop={3}>
@@ -335,7 +339,7 @@ export default function CallBackUrl() {
       </Box>
       </Stack>
       <Stack>
-      <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
+      <Box sx={{ mt: 2, width: { xs: '100%', md: '100%' } }}>
         <Stack justifyContent={'space-between'}>
           <Typography variant="h4">AEPS Callback URL</Typography>
           <Stack flexDirection={'row'} gap={3} marginTop={3}>
@@ -355,7 +359,7 @@ export default function CallBackUrl() {
           </Stack>
         </Stack>
       </Box>
-      <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
+      <Box sx={{ mt: 2, width: { xs: '100%', md: '100%' } }}>
         <Stack justifyContent={'space-between'}>
           <Typography variant="h4">Payout Callback URL</Typography>
           <Stack flexDirection={'row'} gap={3} marginTop={3}>
@@ -375,7 +379,7 @@ export default function CallBackUrl() {
           </Stack>
         </Stack>
       </Box>
-      <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
+      <Box sx={{ mt: 2, width: { xs: '100%', md: '100%' } }}>
         <Stack justifyContent={'space-between'}>
           <Typography variant="h4">Transfer Callback URL</Typography>
           <Stack flexDirection={'row'} gap={3} marginTop={3}>
