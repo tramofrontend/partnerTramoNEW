@@ -101,7 +101,7 @@ export default function MyTransactions() {
   const isDesktop = useResponsive('up', 'sm');
   const [txnType, setTxnType] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
-  const [selectedTab, setSelectedTab] = useState('');
+  const [selectedTab, setSelectedTab] = useState('All');
   const [directFilter, setDirectFilter] = useState([
     {
       label: 'All',
@@ -282,6 +282,7 @@ export default function MyTransactions() {
   };
 
   const getTransaction = () => {
+    setFilterdValue([]);
     setLoading(true);
     let body = {
       pageInitData: {
@@ -418,6 +419,7 @@ export default function MyTransactions() {
                       control={<Radio />}
                       label={item.label}
                       onClick={() => {
+                        reset(defaultValues);
                         setValue('category.categoryId', item.value.category);
                         setValue('transactionType', item.value.transactionType);
                         setValue('product', item.value.product);
