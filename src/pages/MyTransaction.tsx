@@ -325,6 +325,7 @@ export default function MyTransactions() {
 
   const filterTransaction = async (data: FormValuesProps) => {
     setCurrentPage(1);
+    data.partnerTransactionId && setSelectedTab('All');
     try {
       setFilterdValue([]);
       setLoading(true);
@@ -336,7 +337,7 @@ export default function MyTransactions() {
         clientRefId: data.partnerTransactionId,
         status: data.status,
         transactionType: data.transactionType,
-        categoryId: data.category.categoryId,
+        categoryId: data.partnerTransactionId ? '' : data.category.categoryId,
         productId: data.product,
         mobileNumber: data.mobileNumber,
         productName: data.productName,
