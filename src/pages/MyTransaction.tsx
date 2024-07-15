@@ -86,6 +86,7 @@ type FormValuesProps = {
   accountNumber: string;
   mobileNumber: string;
   productName: string;
+  ClientRef:string;
   key1: string;
   key2: string;
   key3: string;
@@ -289,7 +290,7 @@ export default function MyTransactions() {
         pageSize: pageSize,
         currentPage: currentPage,
       },
-      partnerTransactionId: getValues('partnerTransactionId'),
+      partnerTransactionId: getValues('ClientRef'),
       accountNumber: getValues('accountNumber'),
       productName: getValues('productName'),
       mobileNumber: getValues('mobileNumber'),
@@ -335,6 +336,7 @@ export default function MyTransactions() {
           currentPage: currentPage,
         },
         clientRefId: data.partnerTransactionId,
+        partnerTransactionId:data.ClientRef,
         status: data.status,
         transactionType: data.transactionType,
         categoryId: data.partnerTransactionId ? '' : data.category.categoryId,
@@ -593,7 +595,8 @@ export default function MyTransactions() {
                     <MenuItem value="hold">Hold</MenuItem>
                     <MenuItem value="initiated">Initiated</MenuItem>
                   </RHFSelect>
-                  <RHFTextField size="small" name="partnerTransactionId" label="Client Id" />
+                  <RHFTextField size="small" name="ClientRef" label="Client Ref Id" />
+                  <RHFTextField size="small" name="partnerTransactionId" label="Txn Id" />
                   {/* <RHFTextField size="small" name="accountNumber" label="AccountNumber" /> */}
                   <RHFTextField size="small" name="mobileNumber" label="MobileNumber" />
                   <Stack direction={'row'} gap={1}>
@@ -790,7 +793,7 @@ function TransactionRow({ row }: childProps) {
         {/* Date & Time */}
         <StyledTableCell>
           <Typography variant="body2" whiteSpace={'nowrap'}>
-            Client Id : {newRow?.clientRefId}{' '}
+            Txn Id : {newRow?.clientRefId}{' '}
             <Tooltip title="Copy" placement="top">
               <IconButton onClick={() => onCopy(newRow?.clientRefId)} sx={{ p: 0 }}>
                 <Iconify icon="eva:copy-fill" width={20} />
@@ -798,7 +801,7 @@ function TransactionRow({ row }: childProps) {
             </Tooltip>
           </Typography>
           <Typography variant="body2" whiteSpace={'nowrap'}>
-            Txn Id : {newRow?.partnerTransactionId}{' '}
+            Client Id: {newRow?.partnerTransactionId}{' '}
             <Tooltip title="Copy" placement="top">
               <IconButton onClick={() => onCopy(newRow?.partnerTransactionId)} sx={{ p: 0 }}>
                 <Iconify icon="eva:copy-fill" width={20} />
