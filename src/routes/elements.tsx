@@ -40,6 +40,7 @@ export const MyScheme = Loadable(
 export const BBPSSchemePage = Loadable(
   lazy(() => import('../sections/MyServices/ViewScheme/BBPSSchemePage'))
 );
+export const Reportexport = Loadable(lazy(() => import('../pages/Reportexport')));
 
 //help and support
 export const HelpAndSupport = Loadable(lazy(() => import('../pages/SupportTicket')));
