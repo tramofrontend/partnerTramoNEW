@@ -29,6 +29,7 @@ import {
   NpinReset,
   Services,
   Reports,
+  Reportexport,
 } from './elements';
 import MyFundRequest from 'src/sections/FundManagement/MyFundRequest';
 
@@ -82,6 +83,11 @@ export default function Router() {
         {
           path: 'apicredentials',
           element: <ApiCredentials />,
+        },
+
+        {
+          path: 'reportexport',
+          element: <Reportexport />,
         },
 
         {
