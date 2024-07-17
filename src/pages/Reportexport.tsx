@@ -92,7 +92,7 @@ const endDate = fDateFormatForApi(getValues('endDate'));
     let token = localStorage.getItem('token');
     let body = {
       startDate: startDate,
-      endDate: endDate
+      endDate: endDate,
     };
     Api(
       `apiBox/dashboard/getTransactionReport
