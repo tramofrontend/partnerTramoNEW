@@ -92,11 +92,11 @@ const navConfig = [
           },
         ],
       },
-      {
-        title: 'Report',
-        path: PATH_DASHBOARD.reportexport,
-        icon: ICONS.ecommerce,
-      },
+      // {
+      //   title: 'Report',
+      //   path: PATH_DASHBOARD.reportexport,
+      //   icon: ICONS.ecommerce,
+      // },
 
       {
         title: 'Support & Ticket',
