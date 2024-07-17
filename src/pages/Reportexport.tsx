@@ -2,7 +2,7 @@ import { Button, Stack, TableBody, TextField } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import * as Yup from 'yup';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DateRangePicker from 'src/components/date-range-picker/DateRangePicker';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -13,6 +13,7 @@ import FormProvider from 'src/components/hook-form/FormProvider';
 import { LoadingButton } from '@mui/lab';
 import ApiDataLoading from 'src/components/customFunctions/ApiDataLoading';
 import AWS from 'aws-sdk';
+import dayjs from 'dayjs';
 
 type FormValuesProps = {
   startDate: Date | null;
@@ -49,10 +50,17 @@ function Reportexport() {
     formState: { errors, isSubmitting },
   } = methods;
 
+  // Effect to reset end date when start date changes
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name === 'startDate' && value.startDate) {
+        setValue('endDate', null);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setValue]);
 
   const DownloadReport = (val: string) => {
-    console.log(process.env);
-
     const s3 = new AWS.S3();
     const params = {
       Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
@@ -60,7 +68,6 @@ function Reportexport() {
       Expires: 600,
     };
 
-    console.log('test url', params);
     s3.getSignedUrl('getObject', params, (err, url) => {
       window.open(url);
     });
@@ -69,7 +76,6 @@ function Reportexport() {
   if (isLoading) {
     return <ApiDataLoading />;
   }
-
 
   function fDateFormatForApi(date:any) {
     const d = new Date(date);
@@ -95,12 +101,10 @@ const endDate = fDateFormatForApi(getValues('endDate'));
       body,
       token
     ).then((Response: any) => {
-      console.log('======TransactionReport=====>' + Response);
       if (Response.status == 200) {
         if (Response.data.code == 200) {
           enqueueSnackbar(Response.data.status);
-          DownloadReport(Response.data.filePath)
-          console.log('======TransactionReport====>', Response);
+          DownloadReport(Response.data.filePath);
         } else {
           console.log('======TransactionReport=======>' + Response);
         }
@@ -110,7 +114,6 @@ const endDate = fDateFormatForApi(getValues('endDate'));
 
   return (
     <div>
-      
       <FormProvider methods={methods} onSubmit={handleSubmit(ExportData)}>
         <Stack direction={'row'} gap={1}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -127,9 +130,10 @@ const endDate = fDateFormatForApi(getValues('endDate'));
             <DatePicker
               label="End date"
               inputFormat="YYYY/MM/DD"
+              disabled={!watch("startDate")}
               value={watch('endDate')}
-              minDate={watch('startDate')}
-              maxDate={new Date()}
+              minDate={dayjs(watch('startDate'))}
+              maxDate={dayjs(watch('startDate')).add(7, 'day')}
               onChange={(newValue: any) => setValue('endDate', newValue)}
               renderInput={(params: any) => (
                 <TextField {...params} size={'small'} sx={{ width: 150 }} />
