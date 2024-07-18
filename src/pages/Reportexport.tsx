@@ -1,4 +1,4 @@
-import { Button, Stack, TableBody, TextField } from '@mui/material';
+import { Button, Card, Stack, TableBody, TextField, Typography } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import * as Yup from 'yup';
@@ -14,6 +14,7 @@ import { LoadingButton } from '@mui/lab';
 import ApiDataLoading from 'src/components/customFunctions/ApiDataLoading';
 import AWS from 'aws-sdk';
 import dayjs from 'dayjs';
+import WalletLadger from './WalletLadger';
 
 type FormValuesProps = {
   startDate: Date | null;
@@ -26,7 +27,7 @@ AWS.config.update({
   region: 'ap-south-1',
 });
 
-function Reportexport() {
+export default function Reportexport() {
   const { enqueueSnackbar } = useSnackbar();
   const [sdata, setSdata] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +40,7 @@ function Reportexport() {
   const methods = useForm<FormValuesProps, any>({
     defaultValues,
   });
- 
+
   const {
     reset,
     watch,
@@ -73,28 +74,25 @@ function Reportexport() {
     });
   };
 
-  if (isLoading) {
-    return <ApiDataLoading />;
-  }
-
-  function fDateFormatForApi(date:any) {
+  function fDateFormatForApi(date: any) {
     const d = new Date(date);
     const year = d.getFullYear();
     const month = ('0' + (d.getMonth() + 1)).slice(-2);
     const day = ('0' + d.getDate()).slice(-2);
     return `${year}/${month}/${day}`;
-}
+  }
 
-const startDate = fDateFormatForApi(getValues('startDate'));
-const endDate = fDateFormatForApi(getValues('endDate'));
+  const startDate = fDateFormatForApi(getValues('startDate'));
+  const endDate = fDateFormatForApi(getValues('endDate'));
 
-  const ExportData = () => {
+  const ExportData = async () => {
+    setIsLoading(true);
     let token = localStorage.getItem('token');
     let body = {
       startDate: startDate,
       endDate: endDate,
     };
-    Api(
+    await Api(
       `apiBox/dashboard/getTransactionReport
  `,
       'POST',
@@ -105,8 +103,10 @@ const endDate = fDateFormatForApi(getValues('endDate'));
         if (Response.data.code == 200) {
           enqueueSnackbar(Response.data.status);
           DownloadReport(Response.data.filePath);
+          setIsLoading(false);
         } else {
           console.log('======TransactionReport=======>' + Response);
+          setIsLoading(false);
         }
       }
     });
@@ -115,38 +115,185 @@ const endDate = fDateFormatForApi(getValues('endDate'));
   return (
     <div>
       <FormProvider methods={methods} onSubmit={handleSubmit(ExportData)}>
-        <Stack direction={'row'} gap={1}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Start date"
-              inputFormat="YYYY/MM/DD"
-              value={watch('startDate')}
-              maxDate={new Date()}
-              onChange={(newValue: any) => setValue('startDate', newValue)}
-              renderInput={(params: any) => (
-                <TextField {...params} size={'small'} sx={{ width: 150 }} />
-              )}
-            />
-            <DatePicker
-              label="End date"
-              inputFormat="YYYY/MM/DD"
-              disabled={!watch("startDate")}
-              value={watch('endDate')}
-              minDate={dayjs(watch('startDate'))}
-              maxDate={dayjs(watch('startDate')).add(7, 'day')}
-              onChange={(newValue: any) => setValue('endDate', newValue)}
-              renderInput={(params: any) => (
-                <TextField {...params} size={'small'} sx={{ width: 150 }} />
-              )}
-            />
-          </LocalizationProvider>
-          <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
-            Submit
-          </LoadingButton>
-        </Stack>
+        <Card sx={{ width: 500, height: '30vh' }}>
+          <Stack justifyContent={'center'} alignItems={'center'} padding={4}>
+            <Typography variant="h4">Master Transaction Report Export</Typography>
+          </Stack>
+          <Stack direction={'row'} gap={1} justifyContent={'center'}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Start date"
+                inputFormat="YYYY/MM/DD"
+                value={watch('startDate')}
+                maxDate={new Date()}
+                onChange={(newValue: any) => setValue('startDate', newValue)}
+                renderInput={(params: any) => (
+                  <TextField {...params} size={'small'} sx={{ width: 150 }} />
+                )}
+              />
+              <DatePicker
+                label="End date"
+                inputFormat="YYYY/MM/DD"
+                disabled={!watch('startDate')}
+                value={watch('endDate')}
+                minDate={dayjs(watch('startDate'))}
+                maxDate={dayjs(watch('startDate')).add(7, 'day')}
+                onChange={(newValue: any) => setValue('endDate', newValue)}
+                renderInput={(params: any) => (
+                  <TextField {...params} size={'small'} sx={{ width: 150 }} />
+                )}
+              />
+            </LocalizationProvider>
+            <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
+              Submit
+            </LoadingButton>
+          </Stack>
+        </Card>
       </FormProvider>
+      <Stack mt={2}>
+        <Ladgerexport />
+      </Stack>
     </div>
   );
 }
 
-export default Reportexport;
+// ----------------------------------
+
+type FormValuesProps1 = {
+  startDate: Date | null;
+  endDate: Date | null;
+};
+
+const Ladgerexport = () => {
+  AWS.config.update({
+    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+    region: 'ap-south-1',
+  });
+
+  const { enqueueSnackbar } = useSnackbar();
+  const [sdata, setSdata] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const defaultValues = {
+    startDate: null,
+    endDate: null,
+  };
+
+  const methods = useForm<FormValuesProps1, any>({
+    defaultValues,
+  });
+
+  const {
+    reset,
+    watch,
+    setValue,
+    getValues,
+    handleSubmit,
+    resetField,
+    formState: { errors, isSubmitting },
+  } = methods;
+
+  // Effect to reset end date when start date changes
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name === 'startDate' && value.startDate) {
+        setValue('endDate', null);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setValue]);
+
+  const DownloadReport = (val: string) => {
+    const s3 = new AWS.S3();
+    const params = {
+      Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
+      Key: val !== '' && val?.split('/').splice(4, 4).join('/'),
+      Expires: 600,
+    };
+
+    s3.getSignedUrl('getObject', params, (err, url) => {
+      window.open(url);
+    });
+  };
+
+  function fDateFormatForApi(date: any) {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = ('0' + (d.getMonth() + 1)).slice(-2);
+    const day = ('0' + d.getDate()).slice(-2);
+    return `${year}/${month}/${day}`;
+  }
+
+  const startDate = fDateFormatForApi(getValues('startDate'));
+  const endDate = fDateFormatForApi(getValues('endDate'));
+
+
+  const LadgerExport = async () => {
+    setIsLoading(true);
+    let token = localStorage.getItem('token');
+    let body = {
+      startDate: startDate,
+      endDate: endDate,
+    };
+    await Api(
+      `apiBox/dashboard/getWalletLedgerReport
+ `,
+      'POST',
+      body,
+      token
+    ).then((Response: any) => {
+      if (Response.status == 200) {
+        if (Response.data.code == 200) {
+          enqueueSnackbar(Response.data.status);
+          DownloadReport(Response.data.filePath);
+          setIsLoading(false);
+        } else {
+          console.log('======TransactionReport=======>' + Response);
+          setIsLoading(false);
+        }
+      }
+    });
+  };
+
+  return (
+    <div>
+      <FormProvider methods={methods} onSubmit={handleSubmit(LadgerExport)}>
+        <Card sx={{ width: 500, height: '30vh' }}>
+          <Stack justifyContent={'center'} alignItems={'center'} padding={4}>
+            <Typography variant="h4">Wallet Ladger Report Export</Typography>
+          </Stack>
+          <Stack direction={'row'} gap={1} justifyContent={'center'}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Start date"
+                inputFormat="YYYY/MM/DD"
+                value={watch('startDate')}
+                maxDate={new Date()}
+                onChange={(newValue: any) => setValue('startDate', newValue)}
+                renderInput={(params: any) => (
+                  <TextField {...params} size={'small'} sx={{ width: 150 }} />
+                )}
+              />
+              <DatePicker
+                label="End date"
+                inputFormat="YYYY/MM/DD"
+                disabled={!watch('startDate')}
+                value={watch('endDate')}
+                minDate={dayjs(watch('startDate'))}
+                maxDate={dayjs(watch('startDate')).add(7, 'day')}
+                onChange={(newValue: any) => setValue('endDate', newValue)}
+                renderInput={(params: any) => (
+                  <TextField {...params} size={'small'} sx={{ width: 150 }} />
+                )}
+              />
+            </LocalizationProvider>
+            <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
+              Submit
+            </LoadingButton>
+          </Stack>
+        </Card>
+      </FormProvider>
+    </div>
+  );
+};
