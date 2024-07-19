@@ -101,9 +101,11 @@ export default function Reportexport() {
     ).then((Response: any) => {
       if (Response.status == 200) {
         if (Response.data.code == 200) {
-          enqueueSnackbar(Response.data.status);
-          DownloadReport(Response.data.filePath);
-          setIsLoading(false);
+          setTimeout(() => {
+            enqueueSnackbar(Response.data.status);
+            DownloadReport(Response.data.filePath);
+            setIsLoading(false);
+          }, 5000);
         } else {
           console.log('======TransactionReport=======>' + Response);
           setIsLoading(false);
@@ -114,45 +116,51 @@ export default function Reportexport() {
 
   return (
     <div>
-      <FormProvider methods={methods} onSubmit={handleSubmit(ExportData)}>
-        <Card sx={{ width: 500, height: '30vh' }}>
-          <Stack justifyContent={'center'} alignItems={'center'} padding={4}>
-            <Typography variant="h4">Master Transaction Report Export</Typography>
+      {isLoading ? (
+        <ApiDataLoading />
+      ) : (
+        <>
+          <FormProvider methods={methods} onSubmit={handleSubmit(ExportData)}>
+            <Card sx={{ width: 500, height: '30vh' }}>
+              <Stack justifyContent={'center'} alignItems={'center'} padding={4}>
+                <Typography variant="h4">Master Transaction Report Export</Typography>
+              </Stack>
+              <Stack direction={'row'} gap={1} justifyContent={'center'}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Start date"
+                    inputFormat="YYYY/MM/DD"
+                    value={watch('startDate')}
+                    maxDate={new Date()}
+                    onChange={(newValue: any) => setValue('startDate', newValue)}
+                    renderInput={(params: any) => (
+                      <TextField {...params} size={'small'} sx={{ width: 150 }} />
+                    )}
+                  />
+                  <DatePicker
+                    label="End date"
+                    inputFormat="YYYY/MM/DD"
+                    disabled={!watch('startDate')}
+                    value={watch('endDate')}
+                    minDate={dayjs(watch('startDate'))}
+                    maxDate={dayjs(watch('startDate')).add(7, 'day')}
+                    onChange={(newValue: any) => setValue('endDate', newValue)}
+                    renderInput={(params: any) => (
+                      <TextField {...params} size={'small'} sx={{ width: 150 }} />
+                    )}
+                  />
+                </LocalizationProvider>
+                <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
+                  Submit
+                </LoadingButton>
+              </Stack>
+            </Card>
+          </FormProvider>
+          <Stack mt={2}>
+            <Ladgerexport />
           </Stack>
-          <Stack direction={'row'} gap={1} justifyContent={'center'}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Start date"
-                inputFormat="YYYY/MM/DD"
-                value={watch('startDate')}
-                maxDate={new Date()}
-                onChange={(newValue: any) => setValue('startDate', newValue)}
-                renderInput={(params: any) => (
-                  <TextField {...params} size={'small'} sx={{ width: 150 }} />
-                )}
-              />
-              <DatePicker
-                label="End date"
-                inputFormat="YYYY/MM/DD"
-                disabled={!watch('startDate')}
-                value={watch('endDate')}
-                minDate={dayjs(watch('startDate'))}
-                maxDate={dayjs(watch('startDate')).add(7, 'day')}
-                onChange={(newValue: any) => setValue('endDate', newValue)}
-                renderInput={(params: any) => (
-                  <TextField {...params} size={'small'} sx={{ width: 150 }} />
-                )}
-              />
-            </LocalizationProvider>
-            <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
-              Submit
-            </LoadingButton>
-          </Stack>
-        </Card>
-      </FormProvider>
-      <Stack mt={2}>
-        <Ladgerexport />
-      </Stack>
+        </>
+      )}
     </div>
   );
 }
@@ -228,7 +236,6 @@ const Ladgerexport = () => {
   const startDate = fDateFormatForApi(getValues('startDate'));
   const endDate = fDateFormatForApi(getValues('endDate'));
 
-
   const LadgerExport = async () => {
     setIsLoading(true);
     let token = localStorage.getItem('token');
@@ -245,9 +252,11 @@ const Ladgerexport = () => {
     ).then((Response: any) => {
       if (Response.status == 200) {
         if (Response.data.code == 200) {
-          enqueueSnackbar(Response.data.status);
-          DownloadReport(Response.data.filePath);
-          setIsLoading(false);
+          setTimeout(() => {
+            enqueueSnackbar(Response.data.status);
+            DownloadReport(Response.data.filePath);
+            setIsLoading(false);
+          }, 5000);
         } else {
           console.log('======TransactionReport=======>' + Response);
           setIsLoading(false);
@@ -258,42 +267,48 @@ const Ladgerexport = () => {
 
   return (
     <div>
-      <FormProvider methods={methods} onSubmit={handleSubmit(LadgerExport)}>
-        <Card sx={{ width: 500, height: '30vh' }}>
-          <Stack justifyContent={'center'} alignItems={'center'} padding={4}>
-            <Typography variant="h4">Wallet Ladger Report Export</Typography>
-          </Stack>
-          <Stack direction={'row'} gap={1} justifyContent={'center'}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Start date"
-                inputFormat="YYYY/MM/DD"
-                value={watch('startDate')}
-                maxDate={new Date()}
-                onChange={(newValue: any) => setValue('startDate', newValue)}
-                renderInput={(params: any) => (
-                  <TextField {...params} size={'small'} sx={{ width: 150 }} />
-                )}
-              />
-              <DatePicker
-                label="End date"
-                inputFormat="YYYY/MM/DD"
-                disabled={!watch('startDate')}
-                value={watch('endDate')}
-                minDate={dayjs(watch('startDate'))}
-                maxDate={dayjs(watch('startDate')).add(7, 'day')}
-                onChange={(newValue: any) => setValue('endDate', newValue)}
-                renderInput={(params: any) => (
-                  <TextField {...params} size={'small'} sx={{ width: 150 }} />
-                )}
-              />
-            </LocalizationProvider>
-            <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
-              Submit
-            </LoadingButton>
-          </Stack>
-        </Card>
-      </FormProvider>
+      {isLoading ? (
+        <ApiDataLoading />
+      ) : (
+        <>
+          <FormProvider methods={methods} onSubmit={handleSubmit(LadgerExport)}>
+            <Card sx={{ width: 500, height: '30vh' }}>
+              <Stack justifyContent={'center'} alignItems={'center'} padding={4}>
+                <Typography variant="h4">Wallet Ladger Report Export</Typography>
+              </Stack>
+              <Stack direction={'row'} gap={1} justifyContent={'center'}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Start date"
+                    inputFormat="YYYY/MM/DD"
+                    value={watch('startDate')}
+                    maxDate={new Date()}
+                    onChange={(newValue: any) => setValue('startDate', newValue)}
+                    renderInput={(params: any) => (
+                      <TextField {...params} size={'small'} sx={{ width: 150 }} />
+                    )}
+                  />
+                  <DatePicker
+                    label="End date"
+                    inputFormat="YYYY/MM/DD"
+                    disabled={!watch('startDate')}
+                    value={watch('endDate')}
+                    minDate={dayjs(watch('startDate'))}
+                    maxDate={dayjs(watch('startDate')).add(7, 'day')}
+                    onChange={(newValue: any) => setValue('endDate', newValue)}
+                    renderInput={(params: any) => (
+                      <TextField {...params} size={'small'} sx={{ width: 150 }} />
+                    )}
+                  />
+                </LocalizationProvider>
+                <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
+                  Submit
+                </LoadingButton>
+              </Stack>
+            </Card>
+          </FormProvider>
+        </>
+      )}
     </div>
   );
 };
