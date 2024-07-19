@@ -82,6 +82,7 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
     return {
       ...state,
       isAuthenticated: false,
+      isInitialized: true,
       user: null,
     };
   }
@@ -102,24 +103,43 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [location, setLocation] = useState<boolean | null>(true);
   const initialize = useCallback(async () => {
-    // navigator.geolocation.getCurrentPosition(
-    //   ({ coords }: any) => {
-    //     setLocation(true);
-    //   },
-    //   (error) => {
-    //     false;
-    //   }
-    // );
-    await fetchLocation();
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position: any) => {
+          let userAgent: any = navigator.userAgent;
+          localStorage.setItem('userAgent', userAgent);
+          localStorage.setItem(
+            'deviceType',
+            userAgent.match(/Android/i)
+              ? 'android'
+              : userAgent.match(/mac/i)
+              ? 'macbook'
+              : 'windows'
+          );
+          fetch('https://api.ipify.org?format=json')
+            .then((response) => response?.json())
+            .then((data) => {
+              localStorage.setItem('ip', data?.ip);
+            });
+          localStorage.setItem('lat', position.coords.latitude);
+          localStorage.setItem('long', position.coords.longitude);
+          setLocation(true);
+        },
+        (error) => {
+          setLocation(false);
+        }
+      );
+    } else {
+      setLocation(false);
+      console.error('Geolocation is not supported by this browser.');
+    }
     try {
       const accessToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
-
       if (accessToken) {
         Api('agent/get_AgentDetail', 'GET', '', accessToken).then((resp: any) => {
           if (resp.status == 200) {
             if (resp.data.code == 200) {
-              if ((resp.data.data.role = 'API_User')) {
-                // localStorage.removeItem('token');
+              if (resp?.data?.data?.role == 'API_User') {
                 dispatch({
                   type: Types.INITIAL,
                   payload: {
@@ -127,44 +147,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
                     user: resp.data.data,
                   },
                 });
+              } else {
+                localStorage.removeItem('token');
+                dispatch({
+                  type: Types.LOGOUT,
+                });
               }
             } else {
               localStorage.removeItem('token');
               dispatch({
-                type: Types.INITIAL,
-                payload: {
-                  isAuthenticated: false,
-                  user: null,
-                },
+                type: Types.LOGOUT,
               });
             }
           } else {
             localStorage.removeItem('token');
             dispatch({
-              type: Types.INITIAL,
-              payload: {
-                isAuthenticated: false,
-                user: null,
-              },
+              type: Types.LOGOUT,
             });
           }
         });
       } else {
         dispatch({
-          type: Types.INITIAL,
-          payload: {
-            isAuthenticated: false,
-            user: null,
-          },
+          type: Types.LOGOUT,
         });
       }
     } catch (error) {
+      localStorage.removeItem('token');
       dispatch({
-        type: Types.INITIAL,
-        payload: {
-          isAuthenticated: false,
-          user: null,
-        },
+        type: Types.LOGOUT,
       });
     }
   }, []);

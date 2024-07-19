@@ -20,10 +20,16 @@ export default function CallBackUrl() {
   const [edit1, setEdit1] = useState(false);
   const [edit2, setEdit2] = useState(false);
   const [edit3, setEdit3] = useState(false);
+  const [edit4, setEdit4] = useState(false);
+  const [edit5, setEdit5] = useState(false);
+  const [edit6, setEdit6] = useState(false);
   const [url, setUrl] = useState('');
   const [url1, setUrl1] = useState('');
   const [url2, setUrl2] = useState('');
   const [url3, setUrl3] = useState('');
+  const [url4, setUrl4] = useState('');
+  const [url5, setUrl5] = useState('');
+  const [url6, setUrl6] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -119,6 +125,56 @@ export default function CallBackUrl() {
     }
   };
 
+  const setTransferUrl = () => {
+    if (!edit4) {
+      setEdit4(!edit4);
+    } else {
+      let token = localStorage.getItem('token');
+      let body = {
+        transferCallbackUrl: url4,
+      };
+      Api(`apiBox/dashboard/updateTransferCallbackUrl `, 'POST', body, token).then((Response: any) => {
+        console.log('======userProfileInfo==response=====>', Response);
+        if (Response.status == 200) {
+          if (Response.data.code == 200) {
+            enqueueSnackbar(Response.data.message);
+            setEdit4(!edit4);
+            getBBPSUurl();
+            console.log('======updatTransferCallbackUrl==code 200=====>', Response.data.data);
+          } else {
+            console.log('======updatTransferCallbackUrl=======>' + Response);
+          }
+        }
+      });
+    }
+  };
+
+
+  const setPayoutUrl = () => {
+    if (!edit5) {
+      setEdit5(!edit5);
+    } else {
+      let token = localStorage.getItem('token');
+      let body = {
+        payoutPaymentCallbackUrl: url5,
+      };
+      Api(`apiBox/dashboard/updatePayoutPaymentCallbackUrl `, 'POST', body, token).then((Response: any) => {
+        console.log('======userProfileInfo==response=====>', Response);
+        if (Response.status == 200) {
+          if (Response.data.code == 200) {
+            enqueueSnackbar(Response.data.message);
+            setEdit5(!edit5);
+            getBBPSUurl();
+            console.log('======updatTransferCallbackUrl==code 200=====>', Response.data.data);
+          } else {
+            console.log('======updatTransferCallbackUrl=======>' + Response);
+          }
+        }
+      });
+    }
+  };
+
+  
   const setAEPSurl = () => {
     if (!edit3) {
       setEdit3(!edit3);
@@ -143,6 +199,30 @@ export default function CallBackUrl() {
     }
   };
 
+  const setDMT1Url = () => {
+    if (!edit6) {
+      setEdit6(!edit6);
+    } else {
+      let token = localStorage.getItem('token');
+      let body = {
+        dmt1CallbackUrl: url6,
+      };
+      Api(`apiBox/dashboard/updateDmt1CallbackUrl`, 'POST', body, token).then((Response: any) => {
+        console.log('======userProfileInfo==response=====>', Response);
+        if (Response.status == 200) {
+          if (Response.data.code == 200) {
+            enqueueSnackbar(Response.data.message);
+            setEdit6(!edit6);
+            getBBPSUurl();
+            console.log('======updateDmt1CallbackUrl==code 200=====>', Response.data.data);
+          } else {
+            console.log('======updateDmt1CallbackUrl=======>' + Response);
+          }
+        }
+      });
+    }
+  };
+
   const getBBPSUurl = () => {
     let token = localStorage.getItem('token');
     Api(`apiBox/dashboard/callbackUrls`, 'GET', '', token).then((Response: any) => {
@@ -153,6 +233,9 @@ export default function CallBackUrl() {
           setUrl1(Response.data.data.partnerCallbackUrls.payout)
           setUrl2(Response.data.data.partnerCallbackUrls.recharge)
           setUrl3(Response.data.data.partnerCallbackUrls.aeps)
+          setUrl4(Response.data.data.partnerCallbackUrls.transfer)
+          setUrl5(Response.data.data.partnerCallbackUrls.payoutPayments)
+          setUrl6(Response.data.data.partnerCallbackUrls.dmt1)
           setIsLoading(false)
           console.log('======userProfileInfo==code 200=====>', Response.data.data);
         } else {
@@ -171,7 +254,9 @@ export default function CallBackUrl() {
       <Helmet>
         <title>CallBack URL | Tramo</title>
       </Helmet>
-      <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
+      <Stack flexDirection={'row'} gap={15}>
+        <Stack>
+      <Box sx={{ mt: 2, width: { xs: '100%', md: '100%' } }}>
         <Stack justifyContent={'space-between'}>
           <Typography variant="h4">BBPS Callback URL</Typography>
           <Stack flexDirection={'row'} gap={3} marginTop={3}>
@@ -191,7 +276,7 @@ export default function CallBackUrl() {
           </Stack>
         </Stack>
       </Box>
-      <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
+      <Box sx={{ mt: 2, width: { xs: '100%', md: '100%' } }}>
         <Stack justifyContent={'space-between'}>
           <Typography variant="h4">Money Transfer Callback URL</Typography>
           <Stack flexDirection={'row'} gap={3} marginTop={3}>
@@ -211,7 +296,7 @@ export default function CallBackUrl() {
           </Stack>
         </Stack>
       </Box>
-      <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
+      <Box sx={{ mt: 2, width: { xs: '100%', md: '100%' } }}>
         <Stack justifyContent={'space-between'}>
           <Typography variant="h4">Recharge Callback URL</Typography>
           <Stack flexDirection={'row'} gap={3} marginTop={3}>
@@ -231,7 +316,30 @@ export default function CallBackUrl() {
           </Stack>
         </Stack>
       </Box>
-      <Box sx={{ mt: 2, width: { xs: '100%', md: '50%' } }}>
+
+      <Box sx={{ mt: 2, width: { xs: '100%', md: '100%' } }}>
+        <Stack justifyContent={'space-between'}>
+          <Typography variant="h4">DMT1 Callback URL</Typography>
+          <Stack flexDirection={'row'} gap={3} marginTop={3}>
+            <TextField
+              label="DMT1 url"
+              placeholder="DMT1 url"
+              type="string"
+              value={url6}
+              size="small"
+              disabled={!edit6}
+              variant={edit6 ? 'outlined' : 'filled'}
+              onChange={(e) => setUrl6(e.target.value)}
+            />
+            <LoadingButton variant="contained" onClick={setDMT1Url}>
+              {edit6 ? 'Save' : 'Edit'}
+            </LoadingButton>
+          </Stack>
+        </Stack>
+      </Box>
+      </Stack>
+      <Stack>
+      <Box sx={{ mt: 2, width: { xs: '100%', md: '100%' } }}>
         <Stack justifyContent={'space-between'}>
           <Typography variant="h4">AEPS Callback URL</Typography>
           <Stack flexDirection={'row'} gap={3} marginTop={3}>
@@ -251,6 +359,48 @@ export default function CallBackUrl() {
           </Stack>
         </Stack>
       </Box>
+      <Box sx={{ mt: 2, width: { xs: '100%', md: '100%' } }}>
+        <Stack justifyContent={'space-between'}>
+          <Typography variant="h4">Payout Callback URL</Typography>
+          <Stack flexDirection={'row'} gap={3} marginTop={3}>
+            <TextField
+              label="Payout url"
+              placeholder="Payout url"
+              type="string"
+              value={url5}
+              size="small"
+              disabled={!edit5}
+              variant={edit5 ? 'outlined' : 'filled'}
+              onChange={(e) => setUrl5(e.target.value)}
+            />
+            <LoadingButton variant="contained" onClick={setPayoutUrl}>
+              {edit5 ? 'Save' : 'Edit'}
+            </LoadingButton>
+          </Stack>
+        </Stack>
+      </Box>
+      <Box sx={{ mt: 2, width: { xs: '100%', md: '100%' } }}>
+        <Stack justifyContent={'space-between'}>
+          <Typography variant="h4">Transfer Callback URL</Typography>
+          <Stack flexDirection={'row'} gap={3} marginTop={3}>
+            <TextField
+              label="Transfer url"
+              placeholder="Transfer url"
+              type="string"
+              value={url4}
+              size="small"
+              disabled={!edit4}
+              variant={edit4 ? 'outlined' : 'filled'}
+              onChange={(e) => setUrl4(e.target.value)}
+            />
+            <LoadingButton variant="contained" onClick={setTransferUrl}>
+              {edit4 ? 'Save' : 'Edit'}
+            </LoadingButton>
+          </Stack>
+        </Stack>
+      </Box>
+      </Stack>
+      </Stack>
     </>
   );
 }

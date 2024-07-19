@@ -11,8 +11,11 @@ export const PATH_AUTH = {
 export const PATH_DASHBOARD = {
   root: ROOTS_DASHBOARD,
   dashboard: path(ROOTS_DASHBOARD, '/dashboard'),
+  services: path(ROOTS_DASHBOARD, '/services'),
+  reports: path(ROOTS_DASHBOARD, '/reports'),
   //Help and support
   helpsupport: path(ROOTS_DASHBOARD, '/helpsupport'),
+  reportexport: path(ROOTS_DASHBOARD, '/reportexport'),
   //Partner Billing
   partnerbilling: path(ROOTS_DASHBOARD, '/partnerbilling'),
 
@@ -50,10 +53,8 @@ export const PATH_DASHBOARD = {
     myfundrequest: path(ROOTS_DASHBOARD, '/fundmanagement/myfundrequest'),
   },
 
-
   setting: {
     root: path(ROOTS_DASHBOARD, '/setting'),
     npinreset: path(ROOTS_DASHBOARD, '/setting/npinreset'),
-
   },
 };

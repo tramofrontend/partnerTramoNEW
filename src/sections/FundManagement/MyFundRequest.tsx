@@ -165,9 +165,8 @@ export default function (props: any) {
     });
   };
 
-  if(isLoading){
-    return <FundsRequestSkeleton/>
-
+  if (isLoading) {
+    return <FundsRequestSkeleton />;
   }
 
   const filterRequest = (refId: string) => {
@@ -272,8 +271,6 @@ export default function (props: any) {
       border: 0,
     },
   }));
-
-
 
   return (
     <>
@@ -388,7 +385,7 @@ export default function (props: any) {
           <Scrollbar
             sx={
               isMobile
-                ? { maxHeight: window.innerHeight - 200 }
+                ? { maxHeight: window.innerHeight - 210 }
                 : { maxHeight: window.innerHeight - 154 }
             }
           >

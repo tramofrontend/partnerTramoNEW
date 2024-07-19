@@ -19,10 +19,13 @@ export const ResetPage = Loadable(lazy(() => import('../pages/auth/ResetPage')))
 
 // DashBoard
 export const Dashboard = Loadable(lazy(() => import('../pages/Dashboard')));
+export const Services = Loadable(lazy(() => import('../pages/Services')));
 // Trasactions
 export const MyTransactions = Loadable(lazy(() => import('../pages/MyTransaction')));
 // walletladger
 export const WalletLadgerEntry = Loadable(lazy(() => import('../pages/WalletLadger')));
+
+export const Reports = Loadable(lazy(() => import('../pages/Reports')));
 export const ReportExport = Loadable(lazy(() => import('../sections/ReportExport/Reportexport')));
 
 //MyActiveSecvices
@@ -37,6 +40,7 @@ export const MyScheme = Loadable(
 export const BBPSSchemePage = Loadable(
   lazy(() => import('../sections/MyServices/ViewScheme/BBPSSchemePage'))
 );
+export const Reportexport = Loadable(lazy(() => import('../pages/Reportexport')));
 
 //help and support
 export const HelpAndSupport = Loadable(lazy(() => import('../pages/SupportTicket')));
