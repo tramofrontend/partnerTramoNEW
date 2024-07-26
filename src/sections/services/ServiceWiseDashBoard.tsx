@@ -115,7 +115,7 @@ function ServiceWiseDashBoard() {
     getDashboard();
   }, [watch('dateFilter'), category.category, category.product, category.transactionType]);
 
-  const getDashboard = () => {
+  const getDashboard = async () => {
     setIsLoading(true);
     setStatusCount({
       totalTransaction: {
@@ -150,35 +150,29 @@ function ServiceWiseDashBoard() {
       startDate: getValues('startDate'),
       endDate: getValues('endDate'),
     };
-    Api(`apiBox/dashboard/viewCategory`, 'POST', body, token).then((Response: any) => {
+    await Api(`apiBox/dashboard/viewCategory`, 'POST', body, token).then((Response: any) => {
       if (Response.status == 200) {
         if (Response.data.code == 200) {
-          setTimeout(() => {
-            setIsLoading(false);
-            setStatusCount(Response.data.data);
-          }, 500);
+          setIsLoading(false);
+          setStatusCount(Response.data.data);
         } else {
-          setTimeout(() => {
-            setIsLoading(false);
-          }, 500);
+          setIsLoading(false);
         }
       } else {
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 500);
+        setIsLoading(false);
       }
     });
   };
 
   const filterDashboard = () => {};
 
-  // if (isLoading) {
-  //   return (
-  //     <Stack sx={{ width: '100%', color: 'grey.500' }} spacing={2} my={3}>
-  //       <LinearProgress color={'inherit'} />
-  //     </Stack>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <Stack sx={{ width: '100%', color: 'grey.500' }} spacing={2} my={5}>
+        <LinearProgress color={'inherit'} />
+      </Stack>
+    );
+  }
 
   return (
     <Card sx={{ my: 1, p: 2 }}>
