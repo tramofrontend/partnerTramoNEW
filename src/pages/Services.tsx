@@ -136,7 +136,7 @@ export default function Services() {
                   return {
                     label: item1.category_name,
                     value: {
-                      transactionType: '',
+                      transactionType: 'Product/Service',
                       category: item1._id,
                       product: '',
                       productName: '',
