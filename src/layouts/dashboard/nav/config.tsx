@@ -33,11 +33,11 @@ const navConfig = [
         path: PATH_DASHBOARD.services,
         icon: ICONS.dashboard,
       },
-      {
-        title: 'Reports',
-        path: PATH_DASHBOARD.reports,
-        icon: ICONS.dashboard,
-      },
+      // {
+      //   title: 'Reports',
+      //   path: PATH_DASHBOARD.reports,
+      //   icon: ICONS.dashboard,
+      // },
 
       {
         title: 'Transactions',
@@ -92,11 +92,11 @@ const navConfig = [
           },
         ],
       },
-      {
-        title: 'Report',
-        path: PATH_DASHBOARD.reportexport,
-        icon: ICONS.ecommerce,
-      },
+      // {
+      //   title: 'Report',
+      //   path: PATH_DASHBOARD.reportexport,
+      //   icon: ICONS.ecommerce,
+      // },
 
       {
         title: 'Support & Ticket',
