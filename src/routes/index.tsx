@@ -30,6 +30,7 @@ import {
   Services,
   Reports,
   Reportexport,
+  NewReport,
 } from './elements';
 import MyFundRequest from 'src/sections/FundManagement/MyFundRequest';
 
@@ -100,6 +101,7 @@ export default function Router() {
             { path: 'mytransactions', element: <MyTransactions /> },
             { path: 'mywalletladger', element: <WalletLadgerEntry /> },
             // { path: 'reportexport', element: <ReportExport /> },
+            { path: 'newreport', element: <NewReport /> },
           ],
         },
 
