@@ -70,7 +70,7 @@ export default function Router() {
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         { path: 'dashboard', element: <Dashboard /> },
         { path: 'services', element: <Services /> },
-        { path: 'reports', element: <Reports /> },
+        // { path: 'reports', element: <Reports /> },
         { path: 'helpsupport', element: <HelpAndSupport /> },
         {
           path: 'partnerbilling',
@@ -99,7 +99,7 @@ export default function Router() {
             },
             { path: 'mytransactions', element: <MyTransactions /> },
             { path: 'mywalletladger', element: <WalletLadgerEntry /> },
-            { path: 'reportexport', element: <ReportExport /> },
+            // { path: 'reportexport', element: <ReportExport /> },
           ],
         },
 
