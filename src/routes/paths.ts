@@ -16,6 +16,7 @@ export const PATH_DASHBOARD = {
   //Help and support
   helpsupport: path(ROOTS_DASHBOARD, '/helpsupport'),
   reportexport: path(ROOTS_DASHBOARD, '/reportexport'),
+  newreport: path(ROOTS_DASHBOARD, '/newreport'),
   //Partner Billing
   partnerbilling: path(ROOTS_DASHBOARD, '/partnerbilling'),
 
@@ -51,6 +52,7 @@ export const PATH_DASHBOARD = {
     bankDetail: path(ROOTS_DASHBOARD, '/fundmanagement/bankDetail'),
     aepssettlement: path(ROOTS_DASHBOARD, '/fundmanagement/aepssettlement'),
     myfundrequest: path(ROOTS_DASHBOARD, '/fundmanagement/myfundrequest'),
+
   },
 
   setting: {
