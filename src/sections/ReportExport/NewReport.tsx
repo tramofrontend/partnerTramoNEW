@@ -85,30 +85,45 @@ export default function NewReport() {
   const startDate = fDateFormatForApi(getValues('startDate'));
   const endDate = fDateFormatForApi(getValues('endDate'));
 
-  const ExportData = async () => {
-    setIsLoading(true);
+  //   const ExportData = async () => {
+  //     setIsLoading(true);
+  //     let token = localStorage.getItem('token');
+  //     let body = {
+  //       startDate: startDate,
+  //       endDate: endDate,
+  //     };
+  //     await Api(
+  //       `transaction/new/download_transaction_report
+  //  `,
+  //       'GET',
+  //       body,
+  //       token
+  //     ).then((Response: any) => {
+  //       if (Response.status == 200) {
+  //         if (Response.data.code == 200) {
+  //           setTimeout(() => {
+  //             enqueueSnackbar(Response.data.message);
+  //             // DownloadReport(Response.data.filePath);
+  //             setIsLoading(false);
+  //           }, 5000);
+  //         } else {
+  //           console.log('======TransactionReport=======>' + Response);
+  //           setIsLoading(false);
+  //         }
+  //       }
+  //     });
+  //   };
+
+  const ExportData = () => {
     let token = localStorage.getItem('token');
-    let body = {
-      startDate: startDate,
-      endDate: endDate,
-    };
-    await Api(
-      `transaction/new/download_transaction_report
- `,
-      'POST',
-      body,
-      token
-    ).then((Response: any) => {
+    Api(`transaction/new/download_transaction_report`, 'GET', '', token).then((Response: any) => {
+      console.log('======userProfileInfo==response=====>', Response);
       if (Response.status == 200) {
         if (Response.data.code == 200) {
-          setTimeout(() => {
-            enqueueSnackbar(Response.data.message);
-            // DownloadReport(Response.data.filePath);
-            setIsLoading(false);
-          }, 5000);
+          // setCategoryList(Response.data.data);
+          console.log('======userProfileInfo==code 200=====>', Response.data.data);
         } else {
-          console.log('======TransactionReport=======>' + Response);
-          setIsLoading(false);
+          console.log('======userProfileInfo_error=======>' + Response);
         }
       }
     });
@@ -123,7 +138,7 @@ export default function NewReport() {
               <Typography variant="h4">Master Transaction Report Export</Typography>
             </Stack>
             <Stack direction={'row'} gap={1} justifyContent={'center'}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="Start date"
                   inputFormat="YYYY/MM/DD"
@@ -146,9 +161,19 @@ export default function NewReport() {
                     <TextField {...params} size={'small'} sx={{ width: 150 }} />
                   )}
                 />
-              </LocalizationProvider>
-              <LoadingButton variant="contained" type="submit" loading={isSubmitting}>
-                Submit
+              </LocalizationProvider> */}
+              <LoadingButton
+                variant="contained"
+                type="submit"
+                loading={isSubmitting}
+                onClick={() => {
+                  const token = localStorage.getItem('token');
+                  const baseUrl = process.env.REACT_APP_BASE_URL;
+                  const url = `${baseUrl}transaction/new/download_transaction_report?token=${token}`;
+                  window.open(url, '_blank');
+                }}
+              >
+                Download Report
               </LoadingButton>
             </Stack>
           </Card>
