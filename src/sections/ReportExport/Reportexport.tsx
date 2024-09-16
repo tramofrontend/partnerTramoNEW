@@ -438,7 +438,7 @@ function Reportexport() {
                   <ReportSkeleton />
                 ) : (
                   tableData?.map((row: any) => (
-                    <TableRow sx={{ display: 'table-row' }} key={row?.id}>
+                    <TableRow sx={{ display: 'table-row' }} key={row?._id}>
                       <TableCell>
                         <Stack direction="row" spacing={1}>
                           <Typography>{fDateTime(row.created_at)} </Typography>
