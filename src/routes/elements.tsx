@@ -41,6 +41,7 @@ export const BBPSSchemePage = Loadable(
   lazy(() => import('../sections/MyServices/ViewScheme/BBPSSchemePage'))
 );
 export const Reportexport = Loadable(lazy(() => import('../pages/Reportexport')));
+export const NewReport = Loadable(lazy(() => import('../sections/ReportExport/NewReport')));
 
 //help and support
 export const HelpAndSupport = Loadable(lazy(() => import('../pages/SupportTicket')));
@@ -66,5 +67,6 @@ export const AepsSettlement = Loadable(
 export const MyFundRequest = Loadable(
   lazy(() => import('../sections/FundManagement/MyFundRequest'))
 );
+
 export const NpinReset = Loadable(lazy(() => import('../sections/Setting/NpinReset')));
 export const Page404 = Loadable(lazy(() => import('../pages/Page404')));

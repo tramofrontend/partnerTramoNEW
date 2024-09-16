@@ -12,10 +12,11 @@ export const PATH_DASHBOARD = {
   root: ROOTS_DASHBOARD,
   dashboard: path(ROOTS_DASHBOARD, '/dashboard'),
   services: path(ROOTS_DASHBOARD, '/services'),
-  reports: path(ROOTS_DASHBOARD, '/reports'),
+  // reports: path(ROOTS_DASHBOARD, '/reports'),
   //Help and support
   helpsupport: path(ROOTS_DASHBOARD, '/helpsupport'),
   reportexport: path(ROOTS_DASHBOARD, '/reportexport'),
+  newreport: path(ROOTS_DASHBOARD, '/newreport'),
   //Partner Billing
   partnerbilling: path(ROOTS_DASHBOARD, '/partnerbilling'),
 
@@ -31,7 +32,7 @@ export const PATH_DASHBOARD = {
     root: path(ROOTS_DASHBOARD, '/transactions'),
     mytransactions: path(ROOTS_DASHBOARD, '/transactions/mytransactions'),
     mywalletladger: path(ROOTS_DASHBOARD, '/transactions/mywalletladger'),
-    reportexport: path(ROOTS_DASHBOARD, '/transactions/reportexport'),
+    // reportexport: path(ROOTS_DASHBOARD, '/transactions/reportexport'),
   },
 
   //Services
@@ -51,6 +52,7 @@ export const PATH_DASHBOARD = {
     bankDetail: path(ROOTS_DASHBOARD, '/fundmanagement/bankDetail'),
     aepssettlement: path(ROOTS_DASHBOARD, '/fundmanagement/aepssettlement'),
     myfundrequest: path(ROOTS_DASHBOARD, '/fundmanagement/myfundrequest'),
+
   },
 
   setting: {
