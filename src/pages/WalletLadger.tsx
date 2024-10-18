@@ -28,7 +28,7 @@ import * as XLSX from 'xlsx';
 import FileFilterButton from '../sections/MyTransaction/FileFilterButton';
 import { fDate, fDateFormatForApi, fDateTime } from 'src/utils/formatTime';
 import { useAuthContext } from 'src/auth/useAuthContext';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { DatePicker, DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -40,12 +40,16 @@ import useResponsive from 'src/hooks/useResponsive';
 import MotionModal from 'src/components/animate/MotionModal';
 import { WalletLadgerSkeleton } from 'src/components/Skeletons/WalletLadgerSkeleton';
 import { fIndianCurrency } from 'src/utils/formatNumber';
+import dayjs from 'dayjs';
 
 // ----------------------------------------------------------------------
 type FormValuesProps = {
-  startDate: Date | null;
+  startDate:Date | null;
   endDate: Date | null;
+  formattedEndDate: Date | null;
+  formattedStartDate: Date | null;
   clientRefId: string;
+  walletId: string;
 };
 
 type RowProps = {
@@ -116,7 +120,10 @@ export default function WalletLadger() {
   const defaultValues = {
     startDate: null,
     endDate: null,
+    formattedEndDate: null,
+    formattedStartDate: null,
     clientRefId: '',
+    walletId: '',
   };
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(FilterSchema),
@@ -133,8 +140,6 @@ export default function WalletLadger() {
   } = methods;
 
   const {
-    startDate,
-    endDate,
     onChangeStartDate,
     onChangeEndDate,
     open: openPicker,
@@ -149,18 +154,30 @@ export default function WalletLadger() {
     getTransactional();
   }, [currentPage]);
 
+  const startDate = getValues('startDate');
+  const endDate = getValues('endDate');
+
+  const formattedStartDate =
+  startDate && dayjs(startDate).isValid()
+    ? dayjs(startDate).subtract(5, 'hour').subtract(30, 'minute').format('YYYY/MM/DD HH:mm')
+    : '';
+const formattedEndDate =
+  endDate && dayjs(endDate).isValid()
+    ? dayjs(endDate).subtract(5, 'hour').subtract(30, 'minute').format('YYYY/MM/DD HH:mm')
+    : '';
+
   const getTransactional = () => {
     let token = localStorage.getItem('token');
     setSendLoading(true);
-
     let body = {
       pageInitData: {
         pageSize: pageSize,
         currentPage: currentPage,
       },
       clientRefId: getValues('clientRefId') || '',
-      startDate: fDateFormatForApi(getValues('startDate')),
-      endDate: fDateFormatForApi(getValues('endDate')),
+      walletId: getValues('walletId') || '',
+      startDate:formattedStartDate  || '',
+      endDate: formattedEndDate|| '',
     };
     Api(`agent/walletLedger`, 'POST', body, token).then((Response: any) => {
       console.log('======Transaction==response=====>' + Response);
@@ -329,27 +346,32 @@ export default function WalletLadger() {
                   size="small"
                   fullWidth
                 />
+                <RHFTextField name="walletId" placeholder={'Wallet Id'} size="small" fullWidth />
                 <Stack flexDirection={'row'} gap={1}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label="Start date"
-                      inputFormat="DD/MM/YYYY"
+                    <DateTimePicker
+                      label="Start date and time"
+                      inputFormat="YYYY/MM/DD HH:mm"
                       value={watch('startDate')}
                       maxDate={new Date()}
-                      onChange={(newValue: any) => setValue('startDate', newValue)}
+                      onChange={(newValue: Date | null) => {
+                        setValue('startDate', newValue);
+                      }}
                       renderInput={(params: any) => (
-                        <TextField {...params} size={'small'} sx={{ width: 250 }} />
+                        <TextField {...params} size={'small'} sx={{ minWidth: 200 }} />
                       )}
                     />
-                    <DatePicker
-                      label="End date"
-                      inputFormat="DD/MM/YYYY"
+                    <DateTimePicker
+                      label="End date and time"
+                      inputFormat="YYYY/MM/DD HH:mm"
                       value={watch('endDate')}
-                      minDate={watch('startDate')}
+                      minDate={watch('startDate') || undefined}
                       maxDate={new Date()}
-                      onChange={(newValue: any) => setValue('endDate', newValue)}
+                      onChange={(newValue: Date | null) => {
+                        setValue('endDate', newValue);
+                      }}
                       renderInput={(params: any) => (
-                        <TextField {...params} size={'small'} sx={{ width: 250 }} />
+                        <TextField {...params} size={'small'} sx={{ minWidth: 200 }} />
                       )}
                     />
                   </LocalizationProvider>
@@ -392,8 +414,8 @@ export default function WalletLadger() {
                 />
 
                 <TableBody>
-                  {(sendLoading ? [...Array(18)] : ladgerData).map((row: any) =>
-                    sendLoading ? <WalletLadgerSkeleton /> : <LadgerRow key={row._id} row={row} />
+                  {(sendLoading ? [...Array(18)] : ladgerData)?.map((row: any) =>
+                    sendLoading ? <WalletLadgerSkeleton /> : <LadgerRow key={row?._id} row={row} />
                   )}
                 </TableBody>
                 {!sendLoading && <TableNoData isNotFound={!ladgerData?.length} />}
