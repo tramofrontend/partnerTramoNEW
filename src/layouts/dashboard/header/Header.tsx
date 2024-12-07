@@ -27,7 +27,6 @@ type Props = {
 
 export default function Header({ onOpenNav }: Props) {
   const theme = useTheme();
-  console.log('env.process', process.env);
 
   const { user } = useAuthContext();
 
