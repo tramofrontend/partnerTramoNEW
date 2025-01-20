@@ -547,7 +547,7 @@ function Reportexport() {
                     sdata == 'walletLedger'
                     ? 'Wallet Ledger'
                     : sdata == 'GST & TDS Report'
-                    ? 'GST & TDS'
+                    ? 'gstTDSReport'
                     : sdata == 'Admin Main Wallet Summary Report '
                     ? 'Main Wallet Summary'
                     : sdata == 'Admin AEPS Wallet Summary Report'

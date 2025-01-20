@@ -118,6 +118,7 @@ export default function DateRangePicker({
                   inputFormat="DD/MM/YYYY"
                   value={dayjs(endDate)}
                   onChange={onChangeEndDate}
+                  maxDate={dayjs(startDate).add(15, "day").toDate()}
                   renderInput={(params: any) => <TextField {...params} />}
                 />
               </LocalizationProvider>
